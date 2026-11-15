@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YariKurdi | پلاتفۆرمی یارییە ئۆنلاینە کوردییەکان</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Vazirmatn & Noto Sans Arabic for crisp Kurdish typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Noto Sans Arabic', 'sans-serif'],
+                    },
+                    colors: {
+                        royal: {
+                            950: '#050914',
+                            900: '#070D1F',
+                            800: '#0C1633',
+                            700: '#13224D',
+                            600: '#1B316E',
+                        },
+                        gold: {
+                            300: '#FBE599',
+                            400: '#F5D061',
+                            500: '#D4AF37',
+                            600: '#B08D22',
+                            700: '#8A6B11',
+                        }
+                    },
+                    boxShadow: {
+                        'gold': '0 0 25px rgba(212, 175, 55, 0.22)',
+                        'gold-strong': '0 0 35px rgba(212, 175, 55, 0.45)',
+                        'royal': '0 10px 30px -10px rgba(0, 0, 0, 0.7)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Royal Blue & Gold Styling */
+        :root {
+            --bg-deep: #070D1F;
+            --bg-card: #0C1633;
+            --bg-elevated: #13224D;
+            --gold-main: #D4AF37;
+            --gold-bright: #F5D061;
+            --gold-dim: #997A15;
+            --board-light: #E8DEC8;
+            --board-dark: #253B6E;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(27, 49, 110, 0.35) 0%, transparent 55%),
+                linear-gradient(180deg, #070D1F 0%, #050914 100%);
+            color: #F3F4F6;
+            font-family: 'Vazirmatn', 'Noto Sans Arabic', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Luxury Gold Metallic Gradient Text & Borders */
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #FBE599 0%, #D4AF37 50%, #F5D061 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-btn-gradient {
+            background: linear-gradient(135deg, #F5D061 0%, #D4AF37 55%, #B08D22 100%);
+            color: #070D1F;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gold-btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+            filter: brightness(1.06);
+        }
+
+        .gold-btn-gradient:active {
+            transform: translateY(0);
+        }
+
+        .glass-panel {
+            background: rgba(12, 22, 51, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card-hover:hover {
+            border-color: rgba(245, 208, 97, 0.65);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.18);
+        }
+
+        /* Matchmaking Radar Animations */
+        @keyframes radarSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.85); opacity: 0.75; }
+            70% { transform: scale(1.45); opacity: 0; }
+            100% { transform: scale(1.45); opacity: 0; }
+        }
+
+        .radar-sweep {
+            background: conic-gradient(from 0deg, rgba(212, 175, 55, 0.45) 0deg, rgba(212, 175, 55, 0.05) 70deg, transparent 90deg);
+            animation: radarSpin 2.2s linear infinite;
+        }
+
+        .pulse-ring {
+            animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        /* Chessboard & Pieces Styling */
+        .chess-board-wrapper {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            max-width: min(82vw, 540px);
+            margin: 0 auto;
+            border: 3px solid #D4AF37;
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 175, 55, 0.25);
+            overflow: hidden;
+            position: relative;
+            user-select: none;
+        }
+
+        @media (min-width: 1024px) {
+            .chess-board-wrapper {
+                max-width: min(68vh, 560px);
+            }
+        }
+
+        .chess-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            height: 100%;
+            direction: ltr; /* Chess coordinates always follow standard LTR files a-h */
+        }
+
+        .chess-square {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+        }
+
+        .sq-light {
+            background-color: #E6DCC8;
+        }
+
+        .sq-dark {
+            background-color: #213766;
+        }
+
+        /* Square Highlights */
+        .sq-selected {
+            background-color: rgba(245, 208, 97, 0.75) !important;
+        }
+
+        .sq-last-move-light {
+            background-color: #D8C784 !important;
+        }
+
+        .sq-last-move-dark {
+            background-color: #465B7A !important;
+        }
+
+        /* Premove Highlight (Distinct Crimson-Amber Translucent Tint) */
+        .sq-premove {
+            background-color: rgba(220, 38, 38, 0.52) !important;
+            box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.85);
+        }
+
+        /* King in Check Glow */
+        .sq-check {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.95) 0%, rgba(185, 28, 28, 0.75) 65%, transparent 100%) !important;
+        }
+
+        /* Legal Move Indicators */
+        .legal-dot {
+            width: 28%;
+            height: 28%;
+            border-radius: 50%;
+            background-color: rgba(12, 22, 51, 0.32);
+            pointer-events: none;
+        }
+
+        .sq-dark .legal-dot {
+            background-color: rgba(245, 208, 97, 0.42);
+        }
+
+        .legal-capture-ring {
+            position: absolute;
+            inset: 7%;
+            border-radius: 50%;
+            border: 4px solid rgba(212, 175, 55, 0.75);
+            pointer-events: none;
+        }
+
+        /* Premove Preview Dot */
+        .premove-dot {
+            width: 26%;
+            height: 26%;
+            border-radius: 50%;
+            background-color: rgba(239, 68, 68, 0.55);
+            border: 2px solid rgba(251, 191, 36, 0.8);
+            pointer-events: none;
+        }
+
+        .chess-piece {
+            width: 84%;
+            height: 84%;
+            z-index: 10;
+            cursor: grab;
+            transition: transform 0.12s ease;
+            filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+        }
+
+        .chess-piece:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .coord-label {
+            position: absolute;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+            pointer-events: none;
+            font-family: sans-serif;
+        }
+
+        .coord-rank {
+            top: 3px;
+            left: 4px;
+        }
+
+        .coord-file {
+            bottom: 3px;
+            right: 4px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070D1F;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1B316E;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-gold-500 selection:text-royal-950">
+
+    <!-- ==================== TOP NAVBAR ==================== -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-gold-500/25">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo & Emblem -->
+            <div onclick="switchView('hub')" class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-royal-700 to-royal-950 border border-gold-500/60 flex items-center justify-center shadow-gold group-hover:scale-105 transition-transform">
+                    <!-- Custom Kurdish Crown & Knight SVG Emblem -->
+                    <svg class="w-6 h-6 sm:w-7 sm:h-7 text-gold-400" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 25H26V28H6V25Z" fill="url(#goldGrad)"/>
+                        <path d="M8 23L6 11L12 15L16 7L20 15L26 11L24 23H8Z" fill="url(#goldGrad)" stroke="#FBE599" stroke-width="1.2" stroke-linejoin="round"/>
+                        <circle cx="16" cy="4.5" r="1.8" fill="#FBE599"/>
+                        <circle cx="6" cy="9" r="1.4" fill="#F5D061"/>
+                        <circle cx="26" cy="9" r="1.4" fill="#F5D061"/>
+                        <defs>
+                            <linearGradient id="goldGrad" x1="6" y1="7" x2="26" y2="28" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#FBE599"/>
+                                <stop offset="0.5" stop-color="#D4AF37"/>
+                                <stop offset="1" stop-color="#997A15"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xl sm:text-2xl font-black tracking-tight gold-text-gradient">YariKurdi</span>
+                        <span class="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-gold-500/15 text-gold-400 border border-gold-500/30">PRO</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">مەیدانی یارییە کوردییەکان</p>
+                </div>
+            </div>
+
+            <!-- Center Navigation Tabs -->
+            <nav class="flex items-center bg-royal-950/80 p-1 rounded-xl border border-gold-500/20">
+                <button id="nav-hub-btn" onclick="switchView('hub')" class="px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-royal-950 shadow-md">
+                    ناوەندی یارییەکان
+                </button>
+                <button id="nav-chess-btn" onclick="switchView('chess')" class="px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-gold-400 flex items-center gap-1.5">
+                    <span>شەتڕەنجی خێرا</span>
+                    <span id="active-match-dot" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                </button>
+            </nav>
+
+            <!-- Player Profile Badge & Sound Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Sound Toggle -->
+                <button id="sound-toggle-btn" onclick="toggleSound()" title="دەنگ" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-royal-800/90 border border-gold-500/25 hover:border-gold-400 flex items-center justify-center text-gold-400 transition-colors">
+                    <svg id="sound-icon-on" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                    </svg>
+                    <svg id="sound-icon-off" class="w-5 h-5 hidden text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                    </svg>
+                </button>
+
+                <!-- User Profile Pill -->
+                <div class="flex items-center gap-2.5 bg-royal-800/90 border border-gold-500/30 rounded-xl px-2.5 sm:px-3.5 py-1.5">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-gold-600 to-gold-300 text-royal-950 font-black flex items-center justify-center text-sm">
+                            ک
+                        </div>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-royal-900"></span>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs sm:text-sm font-bold text-white leading-tight">کوردستان_پڕۆ</div>
+                        <div class="flex items-center gap-1 text-[11px] font-bold text-gold-400">
+                            <span>★</span>
+                            <span id="user-elo-display">1850</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================== VIEW 1: GAME HUB (HOME) ==================== -->
+    <main id="view-hub" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10">
+        
+        <!-- Hero Banner -->
+        <section class="relative overflow-hidden rounded-3xl glass-panel border border-gold-500/35 p-6 sm:p-10 lg:p-12 shadow-royal">
+            <!-- Decorative Glows -->
+            <div class="absolute -top-24 -left-24 w-72 h-72 bg-gold-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-royal-600/30 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+                <div class="space-y-4 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/15 border border-gold-500/35 text-gold-300 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>یەکەمین پلاتفۆرمی یارییە کێبڕکێکارە کوردییەکان</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                        بەخێربێیت بۆ مەیدانی شاهانەی <span class="gold-text-gradient">YariKurdi</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        لەگەڵ یاریزانانی کوردستان لە هەموو جیهانەوە کێبڕکێ بکە! سیستەمی دۆزینەوەی خۆکاری یاریزان (Auto Matchmaking) و جوڵەی پێشوەختە (Premove) بۆ خێراترین ئەزموونی یاریکردن.
+                    </p>
+                    <div class="pt-2 flex flex-wrap items-center gap-3 sm:gap-4">
+                        <button onclick="openMatchmakingModal()" class="gold-btn-gradient px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-sm sm:text-base flex items-center gap-2.5 shadow-gold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>یاری خێرا دەستپێبکە</span>
+                        </button>
+                        <div class="flex items-center gap-2 px-4 py-3 rounded-xl bg-royal-950/70 border border-gold-500/20 text-xs sm:text-sm text-slate-300">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            <span><strong id="online-players-count" class="text-gold-400 font-extrabold">428</strong> یاریزان ئێستا لەسەر هێڵن</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Decorative Chess Crown Card -->
+                <div class="hidden md:flex flex-col items-center justify-center bg-royal-950/75 border border-gold-500/30 rounded-2xl p-6 min-w-[260px] shadow-gold">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-gold-400/20 to-gold-600/10 border border-gold-400/40 flex items-center justify-center mb-3">
+                        <svg class="w-12 h-12 text-gold-400" viewBox="0 0 45 45" fill="currentColor">
+                            <path d="M 22.5,11.63 L 22.5,6 M 20,8 L 25,8 M 22.5,25 C 22.5,25 27,17.5 25.5,14.5 C 25.5,14.5 24.5,12 22.5,12 C 20.5,12 19.5,14.5 19.5,14.5 C 18,17.5 22.5,25 22.5,25 M 11.5,37 C 17,40.5 27,40.5 32.5,37 L 32.5,30 C 32.5,30 41.5,25.5 38.5,19.5 C 34.5,13 25,16 22.5,23.5 L 22.5,27 L 22.5,23.5 C 19,16 9.5,13 6.5,19.5 C 3.5,25.5 11.5,29.5 11.5,29.5 L 11.5,37 z" stroke="#FBE599" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gold-300 font-bold uppercase tracking-wider">خولی هەفتانەی کوردستان</span>
+                    <span class="text-lg font-black text-white mt-1">شەتڕەنجی بلیتز (Blitz)</span>
+                    <span class="text-xs text-slate-400 mt-1">خەڵاتی نازناوی شاهانە</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Title -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+                    <span class="w-1.5 h-7 rounded-full bg-gold-500 inline-block"></span>
+                    <span>یارییە بەردەستەکان</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">کاتی یاری هەڵبژێرە و ڕاستەوخۆ بچۆ ناو کێبڕکێوە</p>
+            </div>
+        </div>
+
+        <!-- Game Hub Grid -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- FEATURED ACTIVE CARD: FAST CHESS -->
+            <div class="lg:col-span-7 glass-panel glass-card-hover rounded-3xl p-6 sm:p-8 border-2 border-gold-500/45 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-400 to-transparent"></div>
+                
+                <div>
+                    <!-- Header Badges -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span>چالاکە • ٢٤٦ یاریزان</span>
+                            </span>
+                            <span class="px-2.5 py-1 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-300 text-xs font-bold">
+                                پشتگیری Premove
+                            </span>
+                        </div>
+                        <span class="text-xs font-bold text-slate-400">Blitz & Bullet</span>
+                    </div>
+
+                    <!-- Game Title & Icon -->
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-royal-700 to-royal-950 border border-gold-400/50 flex items-center justify-center shrink-0 shadow-gold">
+                            <svg class="w-10 h-10 text-gold-400" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 22H5v-2h14v2M17.16 8.26A8.94 8.94 0 0 0 18 5c0-1.1-.9-2-2-2h-1V2h-2v1h-2V2H9v1H8c-1.1 0-2 .9-2 2 0 1.15.31 2.24.84 3.26C5.69 9.4 5 11.12 5 13c0 2.97 1.86 5.5 4.5 6.5V20h5v-.5c2.64-1 4.5-3.53 4.5-6.5 0-1.88-.69-3.6-1.84-4.74Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl font-black text-white">شەتڕەنجی خێرا</h3>
+                            <p class="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">
+                                شەتڕەنجی ئۆنلاین بە سیستەمی گەڕانی خۆکار، کاتژمێری پێشبڕکێ، و تایبەتمەندی پریموڤ (Premove) بۆ جوڵەی بێ دواکەوتن.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Time Control Selector Pills -->
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gold-300 mb-2.5">کاتی یاری هەڵبژێرە (Time Control):</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="time-control-pills">
+                            <button type="button" onclick="selectTimeControl('1+0', 60, 0, 'Bullet')" data-tc="1+0" class="tc-pill py-2.5 px-3 rounded-xl border border-gold-500/25 bg-royal-950/80 hover:border-gold-400 text-center transition-all">
+                                <div class="text-base font-black text-white" dir="ltr">1 + 0</div>
+                                <div class="text-[11px] text-slate-400">بۆلێت (خێراترین)</div>
+                            </button>
+                            <button type="button" onclick="selectTimeControl('3+0', 180, 0, 'Blitz')" data-tc="3+0" class="tc-pill py-2.5 px-3 rounded-xl border-2 border-gold-400 bg-gold-500/20 text-center transition-all shadow-gold">
+                                <div class="text-base font-black text-gold-300" dir="ltr">3 + 0</div>
+                                <div class="text-[11px] text-gold-200">بلیتز (باوترین)</div>
+                            </button>
+                            <button type="button" onclick="selectTimeControl('3+2', 180, 2, 'Blitz')" data-tc="3+2" class="tc-pill py-2.5 px-3 rounded-xl border border-gold-500/25 bg-royal-950/80 hover:border-gold-400 text-center transition-all">
+                                <div class="text-base font-black text-white" dir="ltr">3 + 2</div>
+                                <div class="text-[11px] text-slate-400">بلیتز + ٢ چرکە</div>
+                            </button>
+                            <button type="button" onclick="selectTimeControl('5+0', 300, 0, 'Blitz')" data-tc="5+0" class="tc-pill py-2.5 px-3 rounded-xl border border-gold-500/25 bg-royal-950/80 hover:border-gold-400 text-center transition-all">
+                                <div class="text-base font-black text-white" dir="ltr">5 + 0</div>
+                                <div class="text-[11px] text-slate-400">بلیتز ٥ خولەک</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Color Preference Selector -->
+                    <div class="mb-6 flex flex-wrap items-center justify-between gap-3 bg-royal-950/60 p-3 rounded-xl border border-gold-500/15">
+                        <span class="text-xs font-bold text-slate-300">ڕەنگی پارچەکان:</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="selectColorPref('random')" data-color="random" class="color-pref-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gold-500 text-royal-950">هەڕەمەکی</button>
+                            <button type="button" onclick="selectColorPref('w')" data-color="w" class="color-pref-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-royal-800 text-slate-300 hover:text-white">سپی ♔</button>
+                            <button type="button" onclick="selectColorPref('b')" data-color="b" class="color-pref-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-royal-800 text-slate-300 hover:text-white">ڕەش ♚</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Launch Auto Matchmaking Button -->
+                <button onclick="openMatchmakingModal()" class="w-full gold-btn-gradient py-4 rounded-2xl font-black text-base sm:text-lg flex items-center justify-center gap-3 shadow-gold">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <span>دۆزینەوەی یاریزان</span>
+                </button>
+            </div>
+
+            <!-- UPCOMING GAMES COLUMN -->
+            <div class="lg:col-span-5 flex flex-col gap-4 justify-between">
+                
+                <!-- Coming Soon 1: Dominoes -->
+                <div class="glass-panel rounded-2xl p-5 border border-gold-500/20 flex items-center justify-between gap-4 opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-royal-800 border border-gold-500/25 flex items-center justify-center text-2xl shrink-0">
+                            🁣
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-extrabold text-white">دۆمینە</h3>
+                                <span class="px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[11px] font-bold">بەم زووانە</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">دۆمینەی کوردی ١٠١ و کلاسیک بە شێوازی دوو کەسی و چوار کەسی.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon 2: Backgammon -->
+                <div class="glass-panel rounded-2xl p-5 border border-gold-500/20 flex items-center justify-between gap-4 opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-royal-800 border border-gold-500/25 flex items-center justify-center text-2xl shrink-0">
+                            🎲
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-extrabold text-white">تاوڵە</h3>
+                                <span class="px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[11px] font-bold">بەم زووانە</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">تاوڵەی ڕەسەنی ڕۆژهەڵاتی بە زاری دادپەروەر و دیزاینی شاهانە.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon 3: Kurdish Trivia -->
+                <div class="glass-panel rounded-2xl p-5 border border-gold-500/20 flex items-center justify-between gap-4 opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-royal-800 border border-gold-500/25 flex items-center justify-center text-2xl shrink-0">
+                            🧠
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-extrabold text-white">پرسیار و وەڵام</h3>
+                                <span class="px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[11px] font-bold">بەم زووانە</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">کێبڕکێی زانیاری گشتی، مێژوو، ئەدەب و وەرزشی کوردستان.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== VIEW 2: FAST CHESS ARENA ==================== -->
+    <main id="view-chess" class="hidden flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            
+            <!-- LEFT / MAIN COLUMN: CHESSBOARD & PLAYER BARS -->
+            <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-3">
+                
+                <!-- TOP PLAYER BAR (OPPONENT) -->
+                <div id="top-player-bar" class="glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between border border-gold-500/25">
+                    <div class="flex items-center gap-3">
+                        <div id="top-player-avatar" class="w-10 h-10 rounded-xl bg-royal-700 border border-gold-400/50 flex items-center justify-center font-black text-gold-300 text-base">
+                            ئـ
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span id="top-player-name" class="font-extrabold text-sm sm:text-base text-white">ئارام کوردی</span>
+                                <span id="top-player-elo" class="text-xs font-bold px-2 py-0.5 rounded bg-royal-950 text-gold-400 border border-gold-500/25">1865</span>
+                                <span id="ai-thinking-badge" class="hidden text-[11px] text-gold-300 animate-pulse font-semibold">بیر دەکاتەوە...</span>
+                            </div>
+                            <!-- Captured Pieces & Material Advantage -->
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <div id="top-captured-pieces" class="flex items-center -space-x-1 space-x-reverse text-xs"></div>
+                                <span id="top-material-diff" class="text-xs font-extrabold text-gold-400"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opponent Clock -->
+                    <div id="top-clock-box" class="px-3.5 py-2 rounded-xl bg-royal-950 border border-gold-500/30 font-mono text-lg sm:text-2xl font-black text-slate-300 tracking-wider min-w-[92px] text-center" dir="ltr">
+                        03:00
+                    </div>
+                </div>
+
+                <!-- CHESSBOARD CONTAINER -->
+                <div class="relative flex flex-col items-center">
+                    <!-- Premove Active Banner -->
+                    <div id="premove-banner" class="hidden mb-2 w-full max-w-[560px] bg-gradient-to-r from-red-950/90 via-amber-950/90 to-red-950/90 border border-amber-400/60 rounded-xl px-3.5 py-1.5 flex items-center justify-between text-xs shadow-lg">
+                        <div class="flex items-center gap-2 text-amber-200 font-bold">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                            <span>پریموڤ ئامادەیە (Premove): <strong id="premove-notation-label" class="text-white font-mono" dir="ltr">Nf3</strong></span>
+                        </div>
+                        <button onclick="clearPremove()" class="px-2.5 py-0.5 rounded-lg bg-red-500/30 hover:bg-red-500/50 text-amber-100 font-bold border border-amber-400/40 transition-colors">
+                            هەڵوەشاندنەوە (Esc)
+                        </button>
+                    </div>
+
+                    <div class="chess-board-wrapper">
+                        <div id="chess-board" class="chess-grid"></div>
+
+                        <!-- Pawn Promotion Modal Overlay -->
+                        <div id="promotion-modal" class="hidden absolute inset-0 z-30 bg-royal-950/85 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                            <p class="text-gold-300 font-extrabold text-base mb-4">پارچەیەک بۆ بەرزکردنەوەی سەرباز هەڵبژێرە:</p>
+                            <div id="promotion-choices" class="flex items-center gap-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM PLAYER BAR (USER) -->
+                <div id="bottom-player-bar" class="glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between border border-gold-500/35">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold-600 to-gold-300 flex items-center justify-center font-black text-royal-950 text-base">
+                            ک
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-sm sm:text-base text-white">کوردستان_پڕۆ (تۆ)</span>
+                                <span id="bottom-player-elo" class="text-xs font-bold px-2 py-0.5 rounded bg-royal-950 text-gold-400 border border-gold-500/25">1850</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <div id="bottom-captured-pieces" class="flex items-center -space-x-1 space-x-reverse text-xs"></div>
+                                <span id="bottom-material-diff" class="text-xs font-extrabold text-gold-400"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Clock -->
+                    <div id="bottom-clock-box" class="px-3.5 py-2 rounded-xl bg-royal-950 border border-gold-400 font-mono text-lg sm:text-2xl font-black text-gold-300 tracking-wider min-w-[92px] text-center shadow-gold" dir="ltr">
+                        03:00
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDEBAR: GAME INFO, MOVE HISTORY & CONTROLS -->
+            <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-4">
+                
+                <!-- Match Status & Time Control Card -->
+                <div class="glass-panel rounded-2xl p-4 border border-gold-500/25">
+                    <div class="flex items-center justify-between border-b border-gold-500/15 pb-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-gold-400"></span>
+                            <span class="font-extrabold text-sm text-white">شەتڕەنجی خێرا</span>
+                        </div>
+                        <span id="arena-tc-badge" class="px-2.5 py-1 rounded-lg bg-gold-500/15 text-gold-300 text-xs font-black border border-gold-500/30" dir="ltr">3 + 0 Blitz</span>
+                    </div>
+
+                    <div id="game-status-text" class="text-center py-2 px-3 rounded-xl bg-royal-950/75 border border-gold-500/20 text-xs sm:text-sm font-bold text-gold-300">
+                        نۆرەی تۆیە — جوڵەیەک بکە
+                    </div>
+                </div>
+
+                <!-- Move History Panel -->
+                <div class="glass-panel rounded-2xl p-4 border border-gold-500/25 flex flex-col h-[250px] sm:h-[300px]">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-xs font-extrabold text-gold-300">تۆماری جوڵەکان (Move History)</span>
+                        <span id="move-count-badge" class="text-[11px] text-slate-400">0 جوڵە</span>
+                    </div>
+                    <div id="move-history-list" class="flex-1 overflow-y-auto bg-royal-950/70 rounded-xl p-2.5 border border-gold-500/15 space-y-1 text-xs font-mono" dir="ltr">
+                        <div class="text-slate-500 text-center py-8 font-sans" dir="rtl">هێشتا هیچ جوڵەیەک نەکراوە...</div>
+                    </div>
+                </div>
+
+                <!-- Premove Quick Guide Tip -->
+                <div class="bg-royal-800/60 border border-gold-500/20 rounded-2xl p-3.5 text-xs text-slate-300 leading-relaxed">
+                    <strong class="text-gold-400">تایبەتمەندی پریموڤ (Premove):</strong> لە کاتی نۆرەی بەرامبەردا دەتوانیت جوڵەی داهاتووت ئامادە بکەیت؛ هەر کە بەرامبەر جوڵەی کرد، جوڵەکەت بە ٠.٠ چرکە جێبەجێ دەبێت! بۆ هەڵوەشاندنەوە کلیک لە ڕاست بکە یان <kbd class="px-1.5 py-0.5 bg-royal-950 rounded text-gold-300">Esc</kbd> دابگرە.
+                </div>
+
+                <!-- Action Controls -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="flipBoard()" class="py-2.5 px-3 rounded-xl bg-royal-800 hover:bg-royal-700 border border-gold-500/25 text-xs font-bold text-slate-200 flex items-center justify-center gap-2 transition-colors">
+                        <svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                        </svg>
+                        <span>سووڕاندنی تەختە</span>
+                    </button>
+
+                    <button onclick="offerDraw()" class="py-2.5 px-3 rounded-xl bg-royal-800 hover:bg-royal-700 border border-gold-500/25 text-xs font-bold text-slate-200 flex items-center justify-center gap-2 transition-colors">
+                        <span>½ پێشنیاری یەکسانی</span>
+                    </button>
+
+                    <button onclick="resignGame()" class="py-2.5 px-3 rounded-xl bg-red-950/60 hover:bg-red-900/70 border border-red-500/30 text-xs font-bold text-red-300 flex items-center justify-center gap-2 transition-colors">
+                        <span>🏳️ خۆبەدەستەوەدان</span>
+                    </button>
+
+                    <button onclick="openMatchmakingModal()" class="py-2.5 px-3 rounded-xl gold-btn-gradient text-xs font-extrabold flex items-center justify-center gap-1.5">
+                        <span>⚡ یارییەکی نوێ</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== MODAL 1: AUTO MATCHMAKING RADAR ==================== -->
+    <div id="matchmaking-modal" class="hidden fixed inset-0 z-50 bg-royal-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel border-2 border-gold-500/50 rounded-3xl max-w-md w-full p-6 sm:p-8 text-center relative overflow-hidden shadow-gold-strong">
+            
+            <h3 class="text-xl sm:text-2xl font-black gold-text-gradient mb-1">گەڕان بەدوای یاریزاندا</h3>
+            <p class="text-xs sm:text-sm text-slate-300 mb-6">سیستەمی گەڕانی خۆکاری YariKurdi</p>
+
+            <!-- Animated Royal Blue & Gold Radar -->
+            <div class="relative w-44 h-44 mx-auto mb-6 flex items-center justify-center">
+                <!-- Pulse Rings -->
+                <div class="absolute inset-0 rounded-full border border-gold-400/40 pulse-ring"></div>
+                <div class="absolute inset-4 rounded-full border border-gold-500/30"></div>
+                <div class="absolute inset-10 rounded-full border border-gold-500/20"></div>
+                
+                <!-- Radar Sweep -->
+                <div class="absolute inset-1 rounded-full radar-sweep"></div>
+
+                <!-- Center Emblem -->
+                <div class="relative z-10 w-16 h-16 rounded-full bg-royal-900 border-2 border-gold-400 flex flex-col items-center justify-center shadow-gold">
+                    <span id="mm-timer" class="font-mono text-base font-black text-gold-300" dir="ltr">00:00</span>
+                    <span class="text-[9px] text-slate-400">چرکە</span>
+                </div>
+            </div>
+
+            <!-- Search Telemetry Info -->
+            <div id="mm-searching-state" class="space-y-3 mb-6">
+                <div class="flex items-center justify-between bg-royal-950/80 px-4 py-2.5 rounded-xl border border-gold-500/20 text-xs">
+                    <span class="text-slate-400">جۆری یاری:</span>
+                    <span id="mm-tc-label" class="font-extrabold text-gold-300" dir="ltr">3 + 0 Blitz</span>
+                </div>
+                <div class="flex items-center justify-between bg-royal-950/80 px-4 py-2.5 rounded-xl border border-gold-500/20 text-xs">
+                    <span class="text-slate-400">مەودای ئاست (Elo Range):</span>
+                    <span id="mm-elo-range" class="font-extrabold text-emerald-400" dir="ltr">1800 - 1900 (±50)</span>
+                </div>
+                <p id="mm-status-msg" class="text-xs text-gold-200 animate-pulse">دەگەڕێت بۆ یاریزانێکی گونجاو لە کوردستان...</p>
+            </div>
+
+            <!-- Opponent Found Preview (Revealed right before entering board) -->
+            <div id="mm-found-state" class="hidden space-y-3 mb-6 bg-emerald-950/40 border border-emerald-400/40 rounded-2xl p-4">
+                <div class="text-xs font-extrabold text-emerald-400">✓ یاریزان دۆزرایەوە!</div>
+                <div class="flex items-center justify-center gap-3">
+                    <div id="mm-opp-avatar" class="w-12 h-12 rounded-xl bg-royal-800 border border-gold-400 flex items-center justify-center font-black text-lg text-gold-300">س</div>
+                    <div class="text-right">
+                        <div id="mm-opp-name" class="font-black text-base text-white">سۆران گەرمیانی</div>
+                        <div class="text-xs text-gold-400 font-bold">ئاست (Elo): <span id="mm-opp-elo">1872</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="mm-cancel-btn" onclick="cancelMatchmaking()" class="w-full py-3 rounded-xl bg-royal-800 hover:bg-red-950/80 border border-gold-500/25 hover:border-red-400/50 text-sm font-bold text-slate-200 hover:text-red-200 transition-all">
+                هەڵوەشاندنەوە
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 2: POST-GAME SUMMARY ==================== -->
+    <div id="gameover-modal" class="hidden fixed inset-0 z-50 bg-royal-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel border-2 border-gold-400 rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-gold-strong relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-gold-600 via-gold-300 to-gold-600"></div>
+            
+            <div id="go-icon" class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gold-500/20 border border-gold-400 flex items-center justify-center text-3xl">
+                🏆
+            </div>
+            
+            <h3 id="go-title" class="text-2xl sm:text-3xl font-black text-white mb-1">سەرکەوتن!</h3>
+            <p id="go-reason" class="text-sm text-gold-300 font-bold mb-6">بە کش و مات (Checkmate) یارییەکەت بردەوە</p>
+
+            <!-- Elo Rating Change Card -->
+            <div class="bg-royal-950/90 border border-gold-500/30 rounded-2xl p-4 mb-6 flex items-center justify-around">
+                <div>
+                    <div class="text-xs text-slate-400">ئاستی نوێ (Elo)</div>
+                    <div id="go-new-elo" class="text-2xl font-black text-white mt-0.5">1862</div>
+                </div>
+                <div class="h-10 w-px bg-gold-500/20"></div>
+                <div>
+                    <div class="text-xs text-slate-400">گۆڕانکاری</div>
+                    <div id="go-elo-delta" class="text-2xl font-black text-emerald-400 mt-0.5" dir="ltr">+12</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="closeGameOverAndFindNew()" class="flex-1 gold-btn-gradient py-3.5 rounded-xl font-black text-sm shadow-gold">
+                    ⚡ یارییەکی نوێ
+                </button>
+                <button onclick="closeGameOverModal()" class="flex-1 py-3.5 rounded-xl bg-royal-800 hover:bg-royal-700 border border-gold-500/30 text-sm font-bold text-slate-200">
+                    بینینی تەختە
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner (Non-intrusive replacement for alert) -->
+    <div id="toast-banner" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-3 rounded-2xl bg-royal-800 border border-gold-400 text-gold-200 text-xs sm:text-sm font-bold shadow-gold-strong transition-all">
+        پەیام
+    </div>
+
+    <!-- ==================== JAVASCRIPT: SOUND, MATCHMAKING, FULL CHESS ENGINE & PREMOVE ==================== -->
+    <script>
+        /* ============================================================================
+           1. WEB AUDIO API SOUND ENGINE (Zero external URLs required)
+        ============================================================================ */
+        const SoundFX = {
+            enabled: true,
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+            playTone(freq, type, duration, vol = 0.15, slideFreq = null) {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+                if (slideFreq) {
+                    osc.frequency.exponentialRampToValueAtTime(slideFreq, now + duration);
+                }
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            },
+            move() {
+                this.playTone(260, 'triangle', 0.08, 0.18, 140);
+            },
+            capture() {
+                this.playTone(180, 'sawtooth', 0.11, 0.22, 85);
+            },
+            premove() {
+                this.playTone(520, 'sine', 0.07, 0.14, 680);
+            },
+            check() {
+                this.playTone(580, 'square', 0.12, 0.14, 440);
+                setTimeout(() => this.playTone(440, 'square', 0.14, 0.14), 90);
+            },
+            matchFound() {
+                this.playTone(440, 'triangle', 0.14, 0.18);
+                setTimeout(() => this.playTone(554.37, 'triangle', 0.14, 0.18), 110);
+                setTimeout(() => this.playTone(659.25, 'triangle', 0.28, 0.22), 220);
+            },
+            gameEnd(win) {
+                if (win) {
+                    this.playTone(523.25, 'triangle', 0.15, 0.2);
+                    setTimeout(() => this.playTone(659.25, 'triangle', 0.15, 0.2), 130);
+                    setTimeout(() => this.playTone(783.99, 'triangle', 0.35, 0.25), 260);
+                } else {
+                    this.playTone(349.23, 'sawtooth', 0.2, 0.15);
+                    setTimeout(() => this.playTone(293.66, 'sawtooth', 0.35, 0.15), 180);
+                }
+            }
+        };
+
+        function toggleSound() {
+            SoundFX.enabled = !SoundFX.enabled;
+            document.getElementById('sound-icon-on').classList.toggle('hidden', !SoundFX.enabled);
+            document.getElementById('sound-icon-off').classList.toggle('hidden', SoundFX.enabled);
+            showToast(SoundFX.enabled ? 'دەنگی یاری چالاک کرا' : 'دەنگی یاری بێدەنگ کرا');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-banner');
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(window._toastTimeout);
+            window._toastTimeout = setTimeout(() => toast.classList.add('hidden'), 2800);
+        }
+
+        /* ============================================================================
+           2. HIGH-CONTRAST CUSTOM SVG CHESS PIECES
+        ============================================================================ */
+        const PIECE_SVGS = {
+            wK: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6M20 8h5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#FFFDF7" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#FFFDF7"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/></g></svg>`,
+            wQ: `<svg viewBox="0 0 45 45"><g fill="#FFFDF7" fill-rule="evenodd" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0" fill="none"/></g></svg>`,
+            wR: `<svg viewBox="0 0 45 45"><g fill="#FFFDF7" fill-rule="evenodd" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9v3zM12 36v-4h21v4H12zM11 14V9h4v2h5V9h5v2h5V9h4v5" stroke-linecap="butt"/><path d="M34 14l-3 3H14l-3-3"/><path d="M31 17v12.5H14V17" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M31 29.5l1.5 2.5h-20l1.5-2.5"/><path d="M11 14h23" fill="none" stroke-linejoin="miter"/></g></svg>`,
+            wB: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><g fill="#FFFDF7" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.35.49-2.32.47-3-.5 1.35-1.46 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke-linejoin="miter"/></g></svg>`,
+            wN: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" fill="#FFFDF7"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" fill="#FFFDF7"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" fill="#111827"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" fill="#111827"/></g></svg>`,
+            wP: `<svg viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#FFFDF7" stroke="#111827" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+            bK: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#111827" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#111827"/><path d="M20 8h5" stroke-linejoin="miter"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" stroke="#F5D061"/></g></svg>`,
+            bQ: `<svg viewBox="0 0 45 45"><g fill="#111827" fill-rule="evenodd" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><g stroke="none"><circle cx="6" cy="12" r="2.75" fill="#D4AF37"/><circle cx="14" cy="9" r="2.75" fill="#D4AF37"/><circle cx="22.5" cy="8" r="2.75" fill="#D4AF37"/><circle cx="31" cy="9" r="2.75" fill="#D4AF37"/><circle cx="39" cy="12" r="2.75" fill="#D4AF37"/></g><path d="M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11 38.5a35 35 1 0 0 23 0" fill="none" stroke-linecap="butt"/><path d="M11 29a35 35 1 0 1 23 0M12.5 31.5h20M11.5 34.5a35 35 1 0 0 22 0" fill="none" stroke="#F5D061"/></g></svg>`,
+            bR: `<svg viewBox="0 0 45 45"><g fill="#111827" fill-rule="evenodd" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9v3zM12.5 32l1.5-2.5h17l1.5 2.5h-20zM12 36v-4h21v4H12z" stroke-linecap="butt"/><path d="M14 29.5v-13h17v13H14z" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z" stroke-linecap="butt"/><path d="M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23" fill="none" stroke="#F5D061" stroke-width="1" stroke-linejoin="miter"/></g></svg>`,
+            bB: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><g fill="#111827" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.35.49-2.32.47-3-.5 1.35-1.46 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke="#F5D061" stroke-linejoin="miter"/></g></svg>`,
+            bN: `<svg viewBox="0 0 45 45"><g fill="none" fill-rule="evenodd" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" fill="#111827"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" fill="#111827"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" fill="#F5D061" stroke="#F5D061"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" fill="#F5D061" stroke="#F5D061"/></g></svg>`,
+            bP: `<svg viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#111827" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
+        /* ============================================================================
+           3. PLATFORM STATE & AUTO MATCHMAKING SYSTEM
+        ============================================================================ */
+        const PlatformState = {
+            userName: 'کوردستان_پڕۆ',
+            userElo: 1850,
+            selectedTC: { label: '3+0', baseSeconds: 180, increment: 0, category: 'Blitz' },
+            colorPref: 'random',
+            opponent: { name: 'ئارام کوردی', elo: 1865, avatar: 'ئـ' },
+            mmInterval: null,
+            mmTimeout: null,
+            mmSeconds: 0
+        };
+
+        const KURDISH_OPPONENTS = [
+            { name: 'ئارام کوردی', elo: 1865, avatar: 'ئـ' },
+            { name: 'سۆران گەرمیانی', elo: 1820, avatar: 'س' },
+            { name: 'هێمن سلێمانی', elo: 1910, avatar: 'هـ' },
+            { name: 'چیا هەولێری', elo: 1795, avatar: 'چ' },
+            { name: 'ڕێباز بادینی', elo: 1880, avatar: 'ڕ' },
+            { name: 'دڵشاد کەرکوکی', elo: 1840, avatar: 'د' },
+            { name: 'شێرکۆ هەڵەبجەیی', elo: 1935, avatar: 'ش' },
+            { name: 'بەڵێن سۆرانی', elo: 1775, avatar: 'ب' }
+        ];
+
+        function switchView(view) {
+            const hubView = document.getElementById('view-hub');
+            const chessView = document.getElementById('view-chess');
+            const hubBtn = document.getElementById('nav-hub-btn');
+            const chessBtn = document.getElementById('nav-chess-btn');
+
+            if (view === 'hub') {
+                hubView.classList.remove('hidden');
+                chessView.classList.add('hidden');
+                hubBtn.className = 'px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-royal-950 shadow-md';
+                chessBtn.className = 'px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-gold-400 flex items-center gap-1.5';
+            } else {
+                hubView.classList.add('hidden');
+                chessView.classList.remove('hidden');
+                chessBtn.className = 'px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-royal-950 shadow-md flex items-center gap-1.5';
+                hubBtn.className = 'px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-gold-400';
+                renderBoard();
+            }
+        }
+
+        function selectTimeControl(label, baseSeconds, increment, category) {
+            PlatformState.selectedTC = { label, baseSeconds, increment, category };
+            document.querySelectorAll('.tc-pill').forEach(btn => {
+                const isSelected = btn.dataset.tc === label;
+                if (isSelected) {
+                    btn.className = 'tc-pill py-2.5 px-3 rounded-xl border-2 border-gold-400 bg-gold-500/20 text-center transition-all shadow-gold';
+                    btn.children[0].className = 'text-base font-black text-gold-300';
+                    btn.children[1].className = 'text-[11px] text-gold-200';
+                } else {
+                    btn.className = 'tc-pill py-2.5 px-3 rounded-xl border border-gold-500/25 bg-royal-950/80 hover:border-gold-400 text-center transition-all';
+                    btn.children[0].className = 'text-base font-black text-white';
+                    btn.children[1].className = 'text-[11px] text-slate-400';
+                }
+            });
+        }
+
+        function selectColorPref(color) {
+            PlatformState.colorPref = color;
+            document.querySelectorAll('.color-pref-btn').forEach(btn => {
+                if (btn.dataset.color === color) {
+                    btn.className = 'color-pref-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gold-500 text-royal-950';
+                } else {
+                    btn.className = 'color-pref-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-royal-800 text-slate-300 hover:text-white';
+                }
+            });
+        }
+
+        function openMatchmakingModal() {
+            SoundFX.init();
+            const modal = document.getElementById('matchmaking-modal');
+            const searchingState = document.getElementById('mm-searching-state');
+            const foundState = document.getElementById('mm-found-state');
+            const cancelBtn = document.getElementById('mm-cancel-btn');
+
+            modal.classList.remove('hidden');
+            searchingState.classList.remove('hidden');
+            foundState.classList.add('hidden');
+            cancelBtn.classList.remove('hidden');
+
+            PlatformState.mmSeconds = 0;
+            document.getElementById('mm-timer').textContent = '00:00';
+            document.getElementById('mm-tc-label').textContent = `${PlatformState.selectedTC.label.replace('+', ' + ')} ${PlatformState.selectedTC.category}`;
+            document.getElementById('mm-elo-range').textContent = `${PlatformState.userElo - 50} - ${PlatformState.userElo + 50} (±50)`;
+            document.getElementById('mm-status-msg').textContent = 'دەگەڕێت بۆ یاریزانێکی گونجاو لە کوردستان...';
+
+            clearInterval(PlatformState.mmInterval);
+            clearTimeout(PlatformState.mmTimeout);
+
+            PlatformState.mmInterval = setInterval(() => {
+                PlatformState.mmSeconds++;
+                const mins = String(Math.floor(PlatformState.mmSeconds / 60)).padStart(2, '0');
+                const secs = String(PlatformState.mmSeconds % 60).padStart(2, '0');
+                document.getElementById('mm-timer').textContent = `${mins}:${secs}`;
+
+                if (PlatformState.mmSeconds === 1) {
+                    document.getElementById('mm-elo-range').textContent = `${PlatformState.userElo - 100} - ${PlatformState.userElo + 100} (±100)`;
+                } else if (PlatformState.mmSeconds >= 2) {
+                    document.getElementById('mm-elo-range').textContent = `${PlatformState.userElo - 150} - ${PlatformState.userElo + 150} (±150)`;
+                }
+            }, 1000);
+
+            // Realistic 2.3 - 3.3s matchmaking duration
+            const matchDelay = 2300 + Math.floor(Math.random() * 1000);
+            PlatformState.mmTimeout = setTimeout(() => {
+                clearInterval(PlatformState.mmInterval);
+                const opp = KURDISH_OPPONENTS[Math.floor(Math.random() * KURDISH_OPPONENTS.length)];
+                PlatformState.opponent = opp;
+
+                document.getElementById('mm-opp-avatar').textContent = opp.avatar;
+                document.getElementById('mm-opp-name').textContent = opp.name;
+                document.getElementById('mm-opp-elo').textContent = opp.elo;
+
+                searchingState.classList.add('hidden');
+                foundState.classList.remove('hidden');
+                cancelBtn.classList.add('hidden');
+                SoundFX.matchFound();
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    startNewChessMatch();
+                }, 950);
+            }, matchDelay);
+        }
+
+        function cancelMatchmaking() {
+            clearInterval(PlatformState.mmInterval);
+            clearTimeout(PlatformState.mmTimeout);
+            document.getElementById('matchmaking-modal').classList.add('hidden');
+        }
+
+        /* ============================================================================
+           4. COMPLETE CHESS ENGINE + AI + PREMOVE SYSTEM
+        ============================================================================ */
+        const PIECE_VALUES = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0 };
+        const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        const ChessGame = {
+            board: [], // 8x8 array; row 0 = rank 8 (Black back rank), row 7 = rank 1 (White back rank)
+            turn: 'w',
+            playerColor: 'w',
+            flipped: false,
+            castling: { wK: true, wQ: true, bK: true, bQ: true },
+            enPassant: null, // { r, c } target square behind double-pushed pawn
+            halfMoveClock: 0,
+            positionHistory: {},
+            moveHistory: [],
+            lastMove: null, // { from: {r,c}, to: {r,c} }
+            selectedSq: null, // { r, c }
+            legalMovesForSelected: [],
+            premove: null, // { from: {r,c}, to: {r,c}, promotion: 'Q' }
+            premovePreviewSq: null, // { r, c } when user clicks own piece during opponent turn
+            pendingPromotion: null, // { from, to, isPremove }
+            whiteTime: 180,
+            blackTime: 180,
+            increment: 0,
+            clockInterval: null,
+            aiTimeout: null,
+            gameOver: false
+        };
+
+        function initBoardPosition() {
+            ChessGame.board = [
+                ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+                ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+                ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']
+            ];
+            ChessGame.turn = 'w';
+            ChessGame.castling = { wK: true, wQ: true, bK: true, bQ: true };
+            ChessGame.enPassant = null;
+            ChessGame.halfMoveClock = 0;
+            ChessGame.positionHistory = {};
+            ChessGame.moveHistory = [];
+            ChessGame.lastMove = null;
+            ChessGame.selectedSq = null;
+            ChessGame.legalMovesForSelected = [];
+            ChessGame.premove = null;
+            ChessGame.premovePreviewSq = null;
+            ChessGame.pendingPromotion = null;
+            ChessGame.gameOver = false;
+            recordPositionHash();
+        }
+
+        function startNewChessMatch() {
+            clearInterval(ChessGame.clockInterval);
+            clearTimeout(ChessGame.aiTimeout);
+            document.getElementById('gameover-modal').classList.add('hidden');
+            document.getElementById('promotion-modal').classList.add('hidden');
+            document.getElementById('premove-banner').classList.add('hidden');
+
+            initBoardPosition();
+
+            // Assign Player Color
+            if (PlatformState.colorPref === 'random') {
+                ChessGame.playerColor = Math.random() < 0.5 ? 'w' : 'b';
+            } else {
+                ChessGame.playerColor = PlatformState.colorPref;
+            }
+            ChessGame.flipped = (ChessGame.playerColor === 'b');
+
+            // Setup Clocks
+            ChessGame.whiteTime = PlatformState.selectedTC.baseSeconds;
+            ChessGame.blackTime = PlatformState.selectedTC.baseSeconds;
+            ChessGame.increment = PlatformState.selectedTC.increment;
+
+            // Update Arena UI Labels
+            document.getElementById('top-player-name').textContent = PlatformState.opponent.name;
+            document.getElementById('top-player-elo').textContent = PlatformState.opponent.elo;
+            document.getElementById('top-player-avatar').textContent = PlatformState.opponent.avatar;
+            document.getElementById('bottom-player-elo').textContent = PlatformState.userElo;
+            document.getElementById('arena-tc-badge').textContent = `${PlatformState.selectedTC.label.replace('+', ' + ')} ${PlatformState.selectedTC.category}`;
+            document.getElementById('active-match-dot').classList.remove('hidden');
+
+            switchView('chess');
+            updateClocksDisplay();
+            updateStatusText();
+            renderMoveHistory();
+            updateCapturedMaterial();
+            renderBoard();
+
+            // Start Live Countdown Clocks
+            ChessGame.clockInterval = setInterval(tickClocks, 100);
+
+            // If AI is White, trigger first AI move
+            if (ChessGame.turn !== ChessGame.playerColor) {
+                scheduleAIMove();
+            }
+        }
+
+        function tickClocks() {
+            if (ChessGame.gameOver) return;
+            if (ChessGame.turn === 'w') {
+                ChessGame.whiteTime = Math.max(0, ChessGame.whiteTime - 0.1);
+                if (ChessGame.whiteTime <= 0) {
+                    endGame(ChessGame.playerColor === 'b', 'کاتی سپییەکان تەواو بوو (Timeout)');
+                }
+            } else {
+                ChessGame.blackTime = Math.max(0, ChessGame.blackTime - 0.1);
+                if (ChessGame.blackTime <= 0) {
+                    endGame(ChessGame.playerColor === 'w', 'کاتی ڕەشەکان تەواو بوو (Timeout)');
+                }
+            }
+            updateClocksDisplay();
+        }
+
+        function formatClock(seconds) {
+            const totalSecs = Math.ceil(seconds);
+            const m = Math.floor(totalSecs / 60);
+            const s = totalSecs % 60;
+            if (seconds < 10 && seconds > 0) {
+                const tenths = Math.floor((seconds % 1) * 10);
+                return `00:0${Math.floor(seconds)}.${tenths}`;
+            }
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updateClocksDisplay() {
+            const topTime = ChessGame.playerColor === 'w' ? ChessGame.blackTime : ChessGame.whiteTime;
+            const bottomTime = ChessGame.playerColor === 'w' ? ChessGame.whiteTime : ChessGame.blackTime;
+
+            const topBox = document.getElementById('top-clock-box');
+            const bottomBox = document.getElementById('bottom-clock-box');
+
+            topBox.textContent = formatClock(topTime);
+            bottomBox.textContent = formatClock(bottomTime);
+
+            const isUserTurn = (ChessGame.turn === ChessGame.playerColor);
+            if (isUserTurn) {
+                bottomBox.className = `px-3.5 py-2 rounded-xl bg-royal-950 border-2 ${bottomTime < 15 ? 'border-red-500 text-red-400 animate-pulse' : 'border-gold-400 text-gold-300 shadow-gold'} font-mono text-lg sm:text-2xl font-black tracking-wider min-w-[92px] text-center`;
+                topBox.className = 'px-3.5 py-2 rounded-xl bg-royal-950 border border-gold-500/20 font-mono text-lg sm:text-2xl font-black text-slate-400 tracking-wider min-w-[92px] text-center';
+            } else {
+                topBox.className = `px-3.5 py-2 rounded-xl bg-royal-950 border-2 ${topTime < 15 ? 'border-red-500 text-red-400 animate-pulse' : 'border-gold-400 text-gold-300 shadow-gold'} font-mono text-lg sm:text-2xl font-black tracking-wider min-w-[92px] text-center`;
+                bottomBox.className = 'px-3.5 py-2 rounded-xl bg-royal-950 border border-gold-500/20 font-mono text-lg sm:text-2xl font-black text-slate-400 tracking-wider min-w-[92px] text-center';
+            }
+        }
+
+        function flipBoard() {
+            ChessGame.flipped = !ChessGame.flipped;
+            renderBoard();
+        }
+
+        /* ============================================================================
+           5. CHESS RULES & LEGAL MOVE GENERATOR
+        ============================================================================ */
+        function inBounds(r, c) {
+            return r >= 0 && r < 8 && c >= 0 && c < 8;
+        }
+
+        function cloneBoard(board) {
+            return board.map(row => [...row]);
+        }
+
+        function findKing(board, color) {
+            const kingCode = color + 'K';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (board[r][c] === kingCode) return { r, c };
+                }
+            }
+            return null;
+        }
+
+        function isSquareAttacked(board, targetR, targetC, byColor) {
+            // 1. Pawn attacks
+            const pawnDir = byColor === 'w' ? 1 : -1; // White pawns attack upward (r-1), so look at targetR + 1
+            for (const dc of [-1, 1]) {
+                const pr = targetR + pawnDir;
+                const pc = targetC + dc;
+                if (inBounds(pr, pc) && board[pr][pc] === byColor + 'P') return true;
+            }
+
+            // 2. Knight attacks
+            const knightOffsets = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+            for (const [dr, dc] of knightOffsets) {
+                const nr = targetR + dr, nc = targetC + dc;
+                if (inBounds(nr, nc) && board[nr][nc] === byColor + 'N') return true;
+            }
+
+            // 3. King attacks
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    const kr = targetR + dr, kc = targetC + dc;
+                    if (inBounds(kr, kc) && board[kr][kc] === byColor + 'K') return true;
+                }
+            }
+
+            // 4. Rook / Queen orthogonal rays
+            const orthoDirs = [[-1,0],[1,0],[0,-1],[0,1]];
+            for (const [dr, dc] of orthoDirs) {
+                let r = targetR + dr, c = targetC + dc;
+                while (inBounds(r, c)) {
+                    const p = board[r][c];
+                    if (p) {
+                        if (p === byColor + 'R' || p === byColor + 'Q') return true;
+                        break;
+                    }
+                    r += dr; c += dc;
+                }
+            }
+
+            // 5. Bishop / Queen diagonal rays
+            const diagDirs = [[-1,-1],[-1,1],[1,-1],[1,1]];
+            for (const [dr, dc] of diagDirs) {
+                let r = targetR + dr, c = targetC + dc;
+                while (inBounds(r, c)) {
+                    const p = board[r][c];
+                    if (p) {
+                        if (p === byColor + 'B' || p === byColor + 'Q') return true;
+                        break;
+                    }
+                    r += dr; c += dc;
+                }
+            }
+
+            return false;
+        }
+
+        function isInCheck(board, color) {
+            const king = findKing(board, color);
+            if (!king) return false;
+            const oppColor = color === 'w' ? 'b' : 'w';
+            return isSquareAttacked(board, king.r, king.c, oppColor);
+        }
+
+        function generatePseudoMoves(board, color, castling, enPassant) {
+            const moves = [];
+            const oppColor = color === 'w' ? 'b' : 'w';
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const piece = board[r][c];
+                    if (!piece || piece[0] !== color) continue;
+                    const type = piece[1];
+
+                    if (type === 'P') {
+                        const dir = color === 'w' ? -1 : 1;
+                        const startRow = color === 'w' ? 6 : 1;
+                        const promoRow = color === 'w' ? 0 : 7;
+
+                        // Forward 1
+                        if (inBounds(r + dir, c) && !board[r + dir][c]) {
+                            if (r + dir === promoRow) {
+                                ['Q', 'R', 'B', 'N'].forEach(promo => moves.push({ from: {r, c}, to: {r: r+dir, c}, promotion: promo }));
+                            } else {
+                                moves.push({ from: {r, c}, to: {r: r+dir, c} });
+                                // Forward 2
+                                if (r === startRow && !board[r + 2 * dir][c]) {
+                                    moves.push({ from: {r, c}, to: {r: r + 2 * dir, c}, isDoublePawn: true });
+                                }
+                            }
+                        }
+
+                        // Captures & En Passant
+                        for (const dc of [-1, 1]) {
+                            const nr = r + dir, nc = c + dc;
+                            if (!inBounds(nr, nc)) continue;
+                            const target = board[nr][nc];
+                            if (target && target[0] === oppColor) {
+                                if (nr === promoRow) {
+                                    ['Q', 'R', 'B', 'N'].forEach(promo => moves.push({ from: {r, c}, to: {r: nr, c: nc}, promotion: promo }));
+                                } else {
+                                    moves.push({ from: {r, c}, to: {r: nr, c: nc} });
+                                }
+                            } else if (enPassant && enPassant.r === nr && enPassant.c === nc) {
+                                moves.push({ from: {r, c}, to: {r: nr, c: nc}, isEnPassant: true });
+                            }
+                        }
+                    } else if (type === 'N') {
+                        const offsets = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+                        for (const [dr, dc] of offsets) {
+                            const nr = r + dr, nc = c + dc;
+                            if (inBounds(nr, nc) && (!board[nr][nc] || board[nr][nc][0] === oppColor)) {
+                                moves.push({ from: {r, c}, to: {r: nr, c: nc} });
+                            }
+                        }
+                    } else if (type === 'B' || type === 'R' || type === 'Q') {
+                        const dirs = [];
+                        if (type === 'R' || type === 'Q') dirs.push([-1,0],[1,0],[0,-1],[0,1]);
+                        if (type === 'B' || type === 'Q') dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);
+                        for (const [dr, dc] of dirs) {
+                            let nr = r + dr, nc = c + dc;
+                            while (inBounds(nr, nc)) {
+                                if (!board[nr][nc]) {
+                                    moves.push({ from: {r, c}, to: {r: nr, c: nc} });
+                                } else {
+                                    if (board[nr][nc][0] === oppColor) {
+                                        moves.push({ from: {r, c}, to: {r: nr, c: nc} });
+                                    }
+                                    break;
+                                }
+                                nr += dr; nc += dc;
+                            }
+                        }
+                    } else if (type === 'K') {
+                        for (let dr = -1; dr <= 1; dr++) {
+                            for (let dc = -1; dc <= 1; dc++) {
+                                if (dr === 0 && dc === 0) continue;
+                                const nr = r + dr, nc = c + dc;
+                                if (inBounds(nr, nc) && (!board[nr][nc] || board[nr][nc][0] === oppColor)) {
+                                    moves.push({ from: {r, c}, to: {r: nr, c: nc} });
+                                }
+                            }
+                        }
+
+                        // Castling
+                        const homeRow = color === 'w' ? 7 : 0;
+                        if (r === homeRow && c === 4 && !isSquareAttacked(board, homeRow, 4, oppColor)) {
+                            // Kingside
+                            if (castling[color + 'K'] && !board[homeRow][5] && !board[homeRow][6] && board[homeRow][7] === color + 'R') {
+                                if (!isSquareAttacked(board, homeRow, 5, oppColor) && !isSquareAttacked(board, homeRow, 6, oppColor)) {
+                                    moves.push({ from: {r, c}, to: {r: homeRow, c: 6}, isCastle: 'K' });
+                                }
+                            }
+                            // Queenside
+                            if (castling[color + 'Q'] && !board[homeRow][3] && !board[homeRow][2] && !board[homeRow][1] && board[homeRow][0] === color + 'R') {
+                                if (!isSquareAttacked(board, homeRow, 3, oppColor) && !isSquareAttacked(board, homeRow, 2, oppColor)) {
+                                    moves.push({ from: {r, c}, to: {r: homeRow, c: 2}, isCastle: 'Q' });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
+
+        function simulateMoveOnBoard(board, move) {
+            const nextBoard = cloneBoard(board);
+            const piece = nextBoard[move.from.r][move.from.c];
+            nextBoard[move.from.r][move.from.c] = null;
+
+            if (move.isEnPassant) {
+                nextBoard[move.from.r][move.to.c] = null;
+            }
+            if (move.isCastle === 'K') {
+                nextBoard[move.from.r][5] = nextBoard[move.from.r][7];
+                nextBoard[move.from.r][7] = null;
+            } else if (move.isCastle === 'Q') {
+                nextBoard[move.from.r][3] = nextBoard[move.from.r][0];
+                nextBoard[move.from.r][0] = null;
+            }
+
+            nextBoard[move.to.r][move.to.c] = move.promotion ? (piece[0] + move.promotion) : piece;
+            return nextBoard;
+        }
+
+        function getLegalMoves(color) {
+            const pseudo = generatePseudoMoves(ChessGame.board, color, ChessGame.castling, ChessGame.enPassant);
+            return pseudo.filter(m => {
+                const afterBoard = simulateMoveOnBoard(ChessGame.board, m);
+                return !isInCheck(afterBoard, color);
+            });
+        }
+
+        // Generate valid premove target squares (any square the piece could ever legally move to on an empty/enemy-filled board)
+        function getPremoveCandidateSquares(r, c) {
+            const piece = ChessGame.board[r][c];
+            if (!piece || piece[0] !== ChessGame.playerColor) return [];
+            const type = piece[1];
+            const color = piece[0];
+            const targets = [];
+
+            if (type === 'P') {
+                const dir = color === 'w' ? -1 : 1;
+                const startRow = color === 'w' ? 6 : 1;
+                if (inBounds(r + dir, c)) targets.push({ r: r + dir, c });
+                if (r === startRow && inBounds(r + 2 * dir, c)) targets.push({ r: r + 2 * dir, c });
+                if (inBounds(r + dir, c - 1)) targets.push({ r: r + dir, c: c - 1 });
+                if (inBounds(r + dir, c + 1)) targets.push({ r: r + dir, c: c + 1 });
+            } else if (type === 'N') {
+                [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dr, dc]) => {
+                    if (inBounds(r + dr, c + dc)) targets.push({ r: r + dr, c: c + dc });
+                });
+            } else if (type === 'K') {
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        if ((dr !== 0 || dc !== 0) && inBounds(r + dr, c + dc)) targets.push({ r: r + dr, c: c + dc });
+                    }
+                }
+                const homeRow = color === 'w' ? 7 : 0;
+                if (r === homeRow && c === 4) {
+                    targets.push({ r: homeRow, c: 6 }, { r: homeRow, c: 2 });
+                }
+            } else {
+                const dirs = [];
+                if (type === 'R' || type === 'Q') dirs.push([-1,0],[1,0],[0,-1],[0,1]);
+                if (type === 'B' || type === 'Q') dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);
+                dirs.forEach(([dr, dc]) => {
+                    let nr = r + dr, nc = c + dc;
+                    while (inBounds(nr, nc)) {
+                        targets.push({ r: nr, c: nc });
+                        nr += dr; nc += dc;
+                    }
+                });
+            }
+            return targets;
+        }
+
+        function squareToAlgebraic(r, c) {
+            return `${FILES[c]}${8 - r}`;
+        }
+
+        function formatSAN(move, piece, captured, isCheck, isMate) {
+            if (move.isCastle === 'K') return isMate ? 'O-O#' : (isCheck ? 'O-O+' : 'O-O');
+            if (move.isCastle === 'Q') return isMate ? 'O-O-O#' : (isCheck ? 'O-O-O+' : 'O-O-O');
+
+            const type = piece[1];
+            const dest = squareToAlgebraic(move.to.r, move.to.c);
+            let san = '';
+
+            if (type === 'P') {
+                if (captured || move.isEnPassant) {
+                    san += FILES[move.from.c] + 'x';
+                }
+                san += dest;
+                if (move.promotion) san += '=' + move.promotion;
+            } else {
+                san += type;
+                if (captured) san += 'x';
+                san += dest;
+            }
+
+            if (isMate) san += '#';
+            else if (isCheck) san += '+';
+            return san;
+        }
+
+        function recordPositionHash() {
+            const hash = ChessGame.board.map(r => r.map(c => c || '.').join('')).join('/') + '_' + ChessGame.turn;
+            ChessGame.positionHistory[hash] = (ChessGame.positionHistory[hash] || 0) + 1;
+            return ChessGame.positionHistory[hash];
+        }
+
+        function executeMove(move, isPremoveExecution = false) {
+            const piece = ChessGame.board[move.from.r][move.from.c];
+            const captured = ChessGame.board[move.to.r][move.to.c];
+            const color = piece[0];
+            const oppColor = color === 'w' ? 'b' : 'w';
+
+            // Apply board transformation
+            ChessGame.board = simulateMoveOnBoard(ChessGame.board, move);
+
+            // Update Castling Rights
+            if (piece === 'wK') { ChessGame.castling.wK = false; ChessGame.castling.wQ = false; }
+            if (piece === 'bK') { ChessGame.castling.bK = false; ChessGame.castling.bQ = false; }
+            if (move.from.r === 7 && move.from.c === 0) ChessGame.castling.wQ = false;
+            if (move.from.r === 7 && move.from.c === 7) ChessGame.castling.wK = false;
+            if (move.from.r === 0 && move.from.c === 0) ChessGame.castling.bQ = false;
+            if (move.from.r === 0 && move.from.c === 7) ChessGame.castling.bK = false;
+            if (move.to.r === 7 && move.to.c === 0) ChessGame.castling.wQ = false;
+            if (move.to.r === 7 && move.to.c === 7) ChessGame.castling.wK = false;
+            if (move.to.r === 0 && move.to.c === 0) ChessGame.castling.bQ = false;
+            if (move.to.r === 0 && move.to.c === 7) ChessGame.castling.bK = false;
+
+            // Update En Passant square
+            if (move.isDoublePawn) {
+                ChessGame.enPassant = { r: (move.from.r + move.to.r) / 2, c: move.from.c };
+            } else {
+                ChessGame.enPassant = null;
+            }
+
+            // Half-move clock
+            if (piece[1] === 'P' || captured || move.isEnPassant) {
+                ChessGame.halfMoveClock = 0;
+            } else {
+                ChessGame.halfMoveClock++;
+            }
+
+            // Add time increment to the player who just moved
+            if (ChessGame.moveHistory.length > 0 && ChessGame.increment > 0) {
+                if (color === 'w') ChessGame.whiteTime += ChessGame.increment;
+                else ChessGame.blackTime += ChessGame.increment;
+            }
+
+            // Switch turn
+            ChessGame.turn = oppColor;
+            ChessGame.lastMove = { from: move.from, to: move.to };
+            ChessGame.selectedSq = null;
+            ChessGame.legalMovesForSelected = [];
+
+            // Check game termination conditions
+            const oppLegalMoves = getLegalMoves(oppColor);
+            const oppInCheck = isInCheck(ChessGame.board, oppColor);
+            const isMate = oppLegalMoves.length === 0 && oppInCheck;
+            const isStalemate = oppLegalMoves.length === 0 && !oppInCheck;
+            const repCount = recordPositionHash();
+
+            const san = formatSAN(move, piece, captured, oppInCheck, isMate);
+            ChessGame.moveHistory.push({ san, color });
+
+            // Play crisp audio feedback
+            if (oppInCheck) SoundFX.check();
+            else if (captured || move.isEnPassant) SoundFX.capture();
+            else SoundFX.move();
+
+            renderMoveHistory();
+            updateCapturedMaterial();
+            updateClocksDisplay();
+            renderBoard();
+
+            if (isMate) {
+                endGame(color === ChessGame.playerColor, 'بە کش و مات (Checkmate) کۆتایی هات');
+                return;
+            }
+            if (isStalemate) {
+                endGame('draw', 'یەکسانی بەهۆی نەمانی جوڵە (Stalemate)');
+                return;
+            }
+            if (repCount >= 3) {
+                endGame('draw', 'یەکسانی بەهۆی دووبارەبوونەوەی سێ جارەی دۆخەکە');
+                return;
+            }
+            if (isInsufficientMaterial()) {
+                endGame('draw', 'یەکسانی بەهۆی کەمی پارچەکانەوە');
+                return;
+            }
+
+            updateStatusText();
+
+            // CHECK IF IT IS NOW PLAYER'S TURN AND A PREMOVE IS QUEUED!
+            if (ChessGame.turn === ChessGame.playerColor) {
+                if (ChessGame.premove) {
+                    const pm = ChessGame.premove;
+                    clearPremove();
+                    const matchingLegal = oppLegalMoves.find(m =>
+                        m.from.r === pm.from.r &&
+                        m.from.c === pm.from.c &&
+                        m.to.r === pm.to.r &&
+                        m.to.c === pm.to.c &&
+                        (!m.promotion || m.promotion === (pm.promotion || 'Q'))
+                    );
+
+                    if (matchingLegal) {
+                        // Execute premove instantaneously (0.0s delay)
+                        executeMove(matchingLegal, true);
+                        return;
+                    } else {
+                        showToast('پریموڤ هەڵوەشایەوە چونکە جوڵەکە یاسایی نەبوو');
+                    }
+                }
+            } else {
+                // Schedule AI opponent move
+                scheduleAIMove();
+            }
+        }
+
+        function isInsufficientMaterial() {
+            const pieces = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (ChessGame.board[r][c]) pieces.push(ChessGame.board[r][c]);
+                }
+            }
+            if (pieces.length === 2) return true; // K vs K
+            if (pieces.length === 3) {
+                return pieces.some(p => p[1] === 'B' || p[1] === 'N'); // K+B vs K or K+N vs K
+            }
+            return false;
+        }
+
+        /* ============================================================================
+           6. PREMOVE MANAGEMENT & USER INTERACTION (CLICK + DRAG & DROP)
+        ============================================================================ */
+        function setPremove(from, to, promotion = 'Q') {
+            ChessGame.premove = { from, to, promotion };
+            ChessGame.premovePreviewSq = null;
+            const piece = ChessGame.board[from.r][from.c];
+            const prefix = piece && piece[1] !== 'P' ? piece[1] : '';
+            const label = `${prefix}${squareToAlgebraic(to.r, to.c)}`;
+            document.getElementById('premove-notation-label').textContent = label;
+            document.getElementById('premove-banner').classList.remove('hidden');
+            SoundFX.premove();
+            renderBoard();
+        }
+
+        function clearPremove() {
+            ChessGame.premove = null;
+            ChessGame.premovePreviewSq = null;
+            document.getElementById('premove-banner').classList.add('hidden');
+            renderBoard();
+        }
+
+        // Keyboard Escape cancels queued premove
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && (ChessGame.premove || ChessGame.premovePreviewSq)) {
+                clearPremove();
+            }
+        });
+
+        function handleSquareClick(r, c) {
+            if (ChessGame.gameOver || ChessGame.pendingPromotion) return;
+            SoundFX.init();
+
+            const clickedPiece = ChessGame.board[r][c];
+            const isUserTurn = (ChessGame.turn === ChessGame.playerColor);
+
+            // CASE A: IT IS USER'S TURN (Normal Legal Move)
+            if (isUserTurn) {
+                // Check if clicking a legal destination for already selected piece
+                if (ChessGame.selectedSq) {
+                    const matchingMoves = ChessGame.legalMovesForSelected.filter(m => m.to.r === r && m.to.c === c);
+                    if (matchingMoves.length > 0) {
+                        if (matchingMoves[0].promotion) {
+                            openPromotionModal(matchingMoves[0].from, matchingMoves[0].to, false);
+                        } else {
+                            executeMove(matchingMoves[0]);
+                        }
+                        return;
+                    }
+                }
+
+                // Select own piece
+                if (clickedPiece && clickedPiece[0] === ChessGame.playerColor) {
+                    ChessGame.selectedSq = { r, c };
+                    ChessGame.legalMovesForSelected = getLegalMoves(ChessGame.playerColor).filter(m => m.from.r === r && m.from.c === c);
+                } else {
+                    ChessGame.selectedSq = null;
+                    ChessGame.legalMovesForSelected = [];
+                }
+                renderBoard();
+                return;
+            }
+
+            // CASE B: IT IS OPPONENT'S TURN (Queue Premove!)
+            if (!isUserTurn) {
+                if (ChessGame.premovePreviewSq) {
+                    const from = ChessGame.premovePreviewSq;
+                    if (from.r === r && from.c === c) {
+                        ChessGame.premovePreviewSq = null;
+                        renderBoard();
+                        return;
+                    }
+                    const candidates = getPremoveCandidateSquares(from.r, from.c);
+                    const isValidCandidate = candidates.some(sq => sq.r === r && sq.c === c);
+                    if (isValidCandidate) {
+                        const movingPiece = ChessGame.board[from.r][from.c];
+                        const promoRow = ChessGame.playerColor === 'w' ? 0 : 7;
+                        if (movingPiece && movingPiece[1] === 'P' && r === promoRow) {
+                            openPromotionModal(from, { r, c }, true);
+                        } else {
+                            setPremove(from, { r, c });
+                        }
+                        return;
+                    }
+                }
+
+                // Select own piece to initiate a premove
+                if (clickedPiece && clickedPiece[0] === ChessGame.playerColor) {
+                    ChessGame.premovePreviewSq = { r, c };
+                    renderBoard();
+                } else {
+                    clearPremove();
+                }
+            }
+        }
+
+        function openPromotionModal(from, to, isPremove) {
+            ChessGame.pendingPromotion = { from, to, isPremove };
+            const modal = document.getElementById('promotion-modal');
+            const choicesDiv = document.getElementById('promotion-choices');
+            choicesDiv.innerHTML = '';
+
+            ['Q', 'R', 'B', 'N'].forEach(promoType => {
+                const btn = document.createElement('button');
+                btn.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-royal-800 hover:bg-gold-500/30 border-2 border-gold-400 p-2 transition-transform hover:scale-110';
+                btn.innerHTML = PIECE_SVGS[ChessGame.playerColor + promoType];
+                btn.onclick = () => {
+                    modal.classList.add('hidden');
+                    const pending = ChessGame.pendingPromotion;
+                    ChessGame.pendingPromotion = null;
+                    if (pending.isPremove) {
+                        setPremove(pending.from, pending.to, promoType);
+                    } else {
+                        const legal = getLegalMoves(ChessGame.playerColor).find(m =>
+                            m.from.r === pending.from.r && m.from.c === pending.from.c &&
+                            m.to.r === pending.to.r && m.to.c === pending.to.c &&
+                            m.promotion === promoType
+                        );
+                        if (legal) executeMove(legal);
+                    }
+                };
+                choicesDiv.appendChild(btn);
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        /* ============================================================================
+           7. REALISTIC ELO-CALIBRATED AI OPPONENT
+        ============================================================================ */
+        const PIECE_SQUARE_TABLES = {
+            P: [
+                [0,  0,  0,  0,  0,  0,  0,  0],
+                [50, 50, 50, 50, 50, 50, 50, 50],
+                [10, 10, 20, 30, 30, 20, 10, 10],
+                [5,  5, 10, 25, 25, 10,  5,  5],
+                [0,  0,  0, 20, 20,  0,  0,  0],
+                [5, -5,-10,  0,  0,-10, -5,  5],
+                [5, 10, 10,-20,-20, 10, 10,  5],
+                [0,  0,  0,  0,  0,  0,  0,  0]
+            ],
+            N: [
+                [-50,-40,-30,-30,-30,-30,-40,-50],
+                [-40,-20,  0,  0,  0,  0,-20,-40],
+                [-30,  0, 10, 15, 15, 10,  0,-30],
+                [-30,  5, 15, 20, 20, 15,  5,-30],
+                [-30,  0, 15, 20, 20, 15,  0,-30],
+                [-30,  5, 10, 15, 15, 10,  5,-30],
+                [-40,-20,  0,  5,  5,  0,-20,-40],
+                [-50,-40,-30,-30,-30,-30,-40,-50]
+            ],
+            B: [
+                [-20,-10,-10,-10,-10,-10,-10,-20],
+                [-10,  0,  0,  0,  0,  0,  0,-10],
+                [-10,  0,  5, 10, 10,  5,  0,-10],
+                [-10,  5,  5, 10, 10,  5,  5,-10],
+                [-10,  0, 10, 10, 10, 10,  0,-10],
+                [-10, 10, 10, 10, 10, 10, 10,-10],
+                [-10,  5,  0,  0,  0,  0,  5,-10],
+                [-20,-10,-10,-10,-10,-10,-10,-20]
+            ]
+        };
+
+        function evaluateBoard(board) {
+            let score = 0;
+            const baseVals = { P: 100, N: 320, B: 330, R: 500, Q: 900, K: 20000 };
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const p = board[r][c];
+                    if (!p) continue;
+                    const color = p[0];
+                    const type = p[1];
+                    let val = baseVals[type];
+                    const pstRow = color === 'w' ? r : (7 - r);
+                    if (PIECE_SQUARE_TABLES[type]) {
+                        val += PIECE_SQUARE_TABLES[type][pstRow][c];
+                    }
+                    score += (color === 'w' ? val : -val);
+                }
+            }
+            return score;
+        }
+
+        function minimax(board, depth, alpha, beta, maximizingWhite, castling, enPassant) {
+            if (depth === 0) return evaluateBoard(board);
+            const color = maximizingWhite ? 'w' : 'b';
+            const pseudo = generatePseudoMoves(board, color, castling, enPassant);
+            const legal = pseudo.filter(m => !isInCheck(simulateMoveOnBoard(board, m), color));
+
+            if (legal.length === 0) {
+                if (isInCheck(board, color)) return maximizingWhite ? (-99999 - depth) : (99999 + depth);
+                return 0; // Stalemate
+            }
+
+            // Simple move ordering: captures first
+            legal.sort((a, b) => (board[b.to.r][b.to.c] ? 1 : 0) - (board[a.to.r][a.to.c] ? 1 : 0));
+
+            if (maximizingWhite) {
+                let maxEval = -Infinity;
+                for (const m of legal) {
+                    const nextB = simulateMoveOnBoard(board, m);
+                    const ev = minimax(nextB, depth - 1, alpha, beta, false, castling, null);
+                    maxEval = Math.max(maxEval, ev);
+                    alpha = Math.max(alpha, ev);
+                    if (beta <= alpha) break;
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (const m of legal) {
+                    const nextB = simulateMoveOnBoard(board, m);
+                    const ev = minimax(nextB, depth - 1, alpha, beta, true, castling, null);
+                    minEval = Math.min(minEval, ev);
+                    beta = Math.min(beta, ev);
+                    if (beta <= alpha) break;
+                }
+                return minEval;
+            }
+        }
+
+        function scheduleAIMove() {
+            if (ChessGame.gameOver) return;
+            document.getElementById('ai-thinking-badge').classList.remove('hidden');
+
+            // Realistic human-like blitz thinking delay (750ms - 1850ms) so player can queue premoves!
+            const thinkTime = PlatformState.selectedTC.baseSeconds <= 60
+                ? (550 + Math.random() * 650)
+                : (950 + Math.random() * 1100);
+
+            ChessGame.aiTimeout = setTimeout(() => {
+                document.getElementById('ai-thinking-badge').classList.add('hidden');
+                if (ChessGame.gameOver || ChessGame.turn === ChessGame.playerColor) return;
+
+                const aiColor = ChessGame.turn;
+                const legal = getLegalMoves(aiColor);
+                if (legal.length === 0) return;
+
+                const maximizing = (aiColor === 'w');
+                let bestMoves = [];
+                let bestScore = maximizing ? -Infinity : Infinity;
+
+                for (const m of legal) {
+                    const nextB = simulateMoveOnBoard(ChessGame.board, m);
+                    const score = minimax(nextB, 1, -Infinity, Infinity, !maximizing, ChessGame.castling, null);
+                    // Add tiny human variance calibrated to Elo
+                    const jitter = (Math.random() - 0.5) * 18;
+                    const adjScore = score + jitter;
+
+                    if (maximizing ? adjScore > bestScore : adjScore < bestScore) {
+                        bestScore = adjScore;
+                        bestMoves = [m];
+                    }
+                }
+
+                const chosen = bestMoves[0] || legal[0];
+                executeMove(chosen);
+            }, thinkTime);
+        }
+
+        /* ============================================================================
+           8. BOARD RENDERING, DRAG & DROP, AND UI UPDATES
+        ============================================================================ */
+        let draggedFrom = null;
+
+        function renderBoard() {
+            const boardEl = document.getElementById('chess-board');
+            boardEl.innerHTML = '';
+
+            const kingInCheckColor = isInCheck(ChessGame.board, ChessGame.turn) ? ChessGame.turn : null;
+            const kingInCheckSq = kingInCheckColor ? findKing(ChessGame.board, kingInCheckColor) : null;
+
+            const premoveCandidates = ChessGame.premovePreviewSq
+                ? getPremoveCandidateSquares(ChessGame.premovePreviewSq.r, ChessGame.premovePreviewSq.c)
+                : [];
+
+            for (let visualR = 0; visualR < 8; visualR++) {
+                for (let visualC = 0; visualC < 8; visualC++) {
+                    const r = ChessGame.flipped ? (7 - visualR) : visualR;
+                    const c = ChessGame.flipped ? (7 - visualC) : visualC;
+
+                    const sq = document.createElement('div');
+                    const isLight = (r + c) % 2 === 0;
+                    sq.className = `chess-square ${isLight ? 'sq-light' : 'sq-dark'}`;
+
+                    // Last Move Highlight
+                    if (ChessGame.lastMove &&
+                        ((ChessGame.lastMove.from.r === r && ChessGame.lastMove.from.c === c) ||
+                         (ChessGame.lastMove.to.r === r && ChessGame.lastMove.to.c === c))) {
+                        sq.classList.add(isLight ? 'sq-last-move-light' : 'sq-last-move-dark');
+                    }
+
+                    // Active Selection Highlight
+                    if ((ChessGame.selectedSq && ChessGame.selectedSq.r === r && ChessGame.selectedSq.c === c) ||
+                        (ChessGame.premovePreviewSq && ChessGame.premovePreviewSq.r === r && ChessGame.premovePreviewSq.c === c)) {
+                        sq.classList.add('sq-selected');
+                    }
+
+                    // Queued Premove Highlight
+                    if (ChessGame.premove &&
+                        ((ChessGame.premove.from.r === r && ChessGame.premove.from.c === c) ||
+                         (ChessGame.premove.to.r === r && ChessGame.premove.to.c === c))) {
+                        sq.classList.add('sq-premove');
+                    }
+
+                    // King in Check Highlight
+                    if (kingInCheckSq && kingInCheckSq.r === r && kingInCheckSq.c === c) {
+                        sq.classList.add('sq-check');
+                    }
+
+                    // Rank & File Coordinate Labels
+                    if (visualC === 0) {
+                        const rankLabel = document.createElement('span');
+                        rankLabel.className = `coord-label coord-rank ${isLight ? 'text-[#213766]' : 'text-[#E6DCC8]'}`;
+                        rankLabel.textContent = 8 - r;
+                        sq.appendChild(rankLabel);
+                    }
+                    if (visualR === 7) {
+                        const fileLabel = document.createElement('span');
+                        fileLabel.className = `coord-label coord-file ${isLight ? 'text-[#213766]' : 'text-[#E6DCC8]'}`;
+                        fileLabel.textContent = FILES[c];
+                        sq.appendChild(fileLabel);
+                    }
+
+                    // Render Piece
+                    const piece = ChessGame.board[r][c];
+                    if (piece) {
+                        const pieceEl = document.createElement('div');
+                        pieceEl.className = 'chess-piece';
+                        pieceEl.innerHTML = PIECE_SVGS[piece];
+
+                        if (piece[0] === ChessGame.playerColor && !ChessGame.gameOver) {
+                            pieceEl.draggable = true;
+                            pieceEl.addEventListener('dragstart', (e) => {
+                                draggedFrom = { r, c };
+                                if (ChessGame.turn === ChessGame.playerColor) {
+                                    ChessGame.selectedSq = { r, c };
+                                    ChessGame.legalMovesForSelected = getLegalMoves(ChessGame.playerColor).filter(m => m.from.r === r && m.from.c === c);
+                                } else {
+                                    ChessGame.premovePreviewSq = { r, c };
+                                }
+                                e.dataTransfer.setData('text/plain', `${r},${c}`);
+                            });
+                        }
+                        sq.appendChild(pieceEl);
+                    }
+
+                    // Legal Move Dots / Capture Rings
+                    const isLegalDest = ChessGame.legalMovesForSelected.some(m => m.to.r === r && m.to.c === c);
+                    if (isLegalDest) {
+                        const indicator = document.createElement('div');
+                        indicator.className = piece ? 'legal-capture-ring' : 'legal-dot';
+                        sq.appendChild(indicator);
+                    }
+
+                    // Premove Candidate Dots
+                    const isPremoveDest = premoveCandidates.some(m => m.r === r && m.c === c);
+                    if (isPremoveDest) {
+                        const pmDot = document.createElement('div');
+                        pmDot.className = 'premove-dot';
+                        sq.appendChild(pmDot);
+                    }
+
+                    // Click & Right-Click (cancel premove) & Drop handlers
+                    sq.addEventListener('click', () => handleSquareClick(r, c));
+                    sq.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        if (ChessGame.premove || ChessGame.premovePreviewSq) {
+                            clearPremove();
+                            showToast('پریموڤ هەڵوەشێنرایەوە');
+                        }
+                    });
+                    sq.addEventListener('dragover', (e) => e.preventDefault());
+                    sq.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        if (draggedFrom && (draggedFrom.r !== r || draggedFrom.c !== c)) {
+                            handleSquareClick(r, c);
+                        }
+                        draggedFrom = null;
+                    });
+
+                    boardEl.appendChild(sq);
+                }
+            }
+        }
+
+        function renderMoveHistory() {
+            const listEl = document.getElementById('move-history-list');
+            const badgeEl = document.getElementById('move-count-badge');
+            badgeEl.textContent = `${ChessGame.moveHistory.length} جوڵە`;
+
+            if (ChessGame.moveHistory.length === 0) {
+                listEl.innerHTML = `<div class="text-slate-500 text-center py-8 font-sans" dir="rtl">هێشتا هیچ جوڵەیەک نەکراوە...</div>`;
+                return;
+            }
+
+            let html = '';
+            for (let i = 0; i < ChessGame.moveHistory.length; i += 2) {
+                const moveNum = Math.floor(i / 2) + 1;
+                const wMove = ChessGame.moveHistory[i]?.san || '';
+                const bMove = ChessGame.moveHistory[i + 1]?.san || '';
+                html += `
+                    <div class="grid grid-cols-12 items-center px-2 py-1 rounded hover:bg-royal-800/70">
+                        <span class="col-span-2 text-slate-500 font-bold">${moveNum}.</span>
+                        <span class="col-span-5 text-white font-bold">${wMove}</span>
+                        <span class="col-span-5 text-gold-300 font-bold">${bMove}</span>
+                    </div>
+                `;
+            }
+            listEl.innerHTML = html;
+            listEl.scrollTop = listEl.scrollHeight;
+        }
+
+        function updateCapturedMaterial() {
+            const initial = { P: 8, N: 2, B: 2, R: 2, Q: 1 };
+            const currentW = { P: 0, N: 0, B: 0, R: 0, Q: 0 };
+            const currentB = { P: 0, N: 0, B: 0, R: 0, Q: 0 };
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const p = ChessGame.board[r][c];
+                    if (!p || p[1] === 'K') continue;
+                    if (p[0] === 'w') currentW[p[1]]++;
+                    else currentB[p[1]]++;
+                }
+            }
+
+            let wScore = 0, bScore = 0;
+            const capturedByW = [], capturedByB = [];
+
+            ['Q', 'R', 'B', 'N', 'P'].forEach(type => {
+                wScore += currentW[type] * PIECE_VALUES[type];
+                bScore += currentB[type] * PIECE_VALUES[type];
+                const lostB = initial[type] - currentB[type];
+                const lostW = initial[type] - currentW[type];
+                for (let i = 0; i < lostB; i++) capturedByW.push('b' + type);
+                for (let i = 0; i < lostW; i++) capturedByB.push('w' + type);
+            });
+
+            const userIsWhite = ChessGame.playerColor === 'w';
+            const topCaptured = userIsWhite ? capturedByB : capturedByW;
+            const bottomCaptured = userIsWhite ? capturedByW : capturedByB;
+
+            const topDiff = userIsWhite ? (bScore - wScore) : (wScore - bScore);
+            const bottomDiff = userIsWhite ? (wScore - bScore) : (bScore - wScore);
+
+            document.getElementById('top-captured-pieces').innerHTML = topCaptured.map(p => `<span class="w-4 h-4 inline-block">${PIECE_SVGS[p]}</span>`).join('');
+            document.getElementById('bottom-captured-pieces').innerHTML = bottomCaptured.map(p => `<span class="w-4 h-4 inline-block">${PIECE_SVGS[p]}</span>`).join('');
+
+            document.getElementById('top-material-diff').textContent = topDiff > 0 ? `+${topDiff}` : '';
+            document.getElementById('bottom-material-diff').textContent = bottomDiff > 0 ? `+${bottomDiff}` : '';
+        }
+
+        function updateStatusText() {
+            const el = document.getElementById('game-status-text');
+            if (ChessGame.gameOver) return;
+            if (ChessGame.turn === ChessGame.playerColor) {
+                el.textContent = isInCheck(ChessGame.board, ChessGame.playerColor)
+                    ? '⚠️ پاشاکەت لە ژێر کش دایە (Check)!'
+                    : 'نۆرەی تۆیە — جوڵەیەک بکە';
+                el.className = 'text-center py-2 px-3 rounded-xl bg-gold-500/15 border border-gold-400/50 text-xs sm:text-sm font-extrabold text-gold-300';
+            } else {
+                el.textContent = 'نۆرەی بەرامبەرە — دەتوانیت پریموڤ (Premove) ئامادە بکەیت';
+                el.className = 'text-center py-2 px-3 rounded-xl bg-royal-950/75 border border-gold-500/20 text-xs sm:text-sm font-bold text-slate-300';
+            }
+        }
+
+        /* ============================================================================
+           9. DRAW OFFER, RESIGNATION, AND POST-GAME SUMMARY
+        ============================================================================ */
+        function offerDraw() {
+            if (ChessGame.gameOver) return;
+            if (ChessGame.moveHistory.length < 4) {
+                showToast('پێشنیاری یەکسانی دوای جوڵەی دووەم بەردەست دەبێت');
+                return;
+            }
+            const evalScore = evaluateBoard(ChessGame.board);
+            const aiAdvantage = ChessGame.playerColor === 'w' ? -evalScore : evalScore;
+            if (aiAdvantage <= 80) {
+                endGame('draw', 'هەردوو یاریزان ڕازی بوون بە یەکسانی (Draw)');
+            } else {
+                showToast(`${PlatformState.opponent.name} پێشنیاری یەکسانی ڕەتکردەوە`);
+            }
+        }
+
+        function resignGame() {
+            if (ChessGame.gameOver) return;
+            endGame(false, 'تۆ خۆت بەدەستەوە دا (Resignation)');
+        }
+
+        function endGame(result, reasonText) {
+            if (ChessGame.gameOver) return;
+            ChessGame.gameOver = true;
+            clearInterval(ChessGame.clockInterval);
+            clearTimeout(ChessGame.aiTimeout);
+            clearPremove();
+            document.getElementById('ai-thinking-badge').classList.add('hidden');
+            document.getElementById('active-match-dot').classList.add('hidden');
+
+            let delta = 0;
+            const titleEl = document.getElementById('go-title');
+            const iconEl = document.getElementById('go-icon');
+            const deltaEl = document.getElementById('go-elo-delta');
+
+            if (result === true) {
+                delta = 12;
+                titleEl.textContent = 'سەرکەوتنی شاهانە!';
+                titleEl.className = 'text-2xl sm:text-3xl font-black gold-text-gradient mb-1';
+                iconEl.textContent = '🏆';
+                deltaEl.textContent = `+${delta}`;
+                deltaEl.className = 'text-2xl font-black text-emerald-400 mt-0.5';
+                SoundFX.gameEnd(true);
+            } else if (result === false) {
+                delta = -11;
+                titleEl.textContent = 'شکست لە یارییەکەدا';
+                titleEl.className = 'text-2xl sm:text-3xl font-black text-red-400 mb-1';
+                iconEl.textContent = '⚔️';
+                deltaEl.textContent = `${delta}`;
+                deltaEl.className = 'text-2xl font-black text-red-400 mt-0.5';
+                SoundFX.gameEnd(false);
+            } else {
+                delta = 1;
+                titleEl.textContent = 'یارییەکە یەکسان بوو';
+                titleEl.className = 'text-2xl sm:text-3xl font-black text-gold-300 mb-1';
+                iconEl.textContent = '🤝';
+                deltaEl.textContent = `+${delta}`;
+                deltaEl.className = 'text-2xl font-black text-gold-300 mt-0.5';
+                SoundFX.gameEnd(true);
+            }
+
+            PlatformState.userElo += delta;
+            document.getElementById('user-elo-display').textContent = PlatformState.userElo;
+            document.getElementById('bottom-player-elo').textContent = PlatformState.userElo;
+            document.getElementById('go-new-elo').textContent = PlatformState.userElo;
+            document.getElementById('go-reason').textContent = reasonText;
+
+            const statusEl = document.getElementById('game-status-text');
+            statusEl.textContent = reasonText;
+
+            setTimeout(() => {
+                document.getElementById('gameover-modal').classList.remove('hidden');
+            }, 450);
+        }
+
+        function closeGameOverModal() {
+            document.getElementById('gameover-modal').classList.add('hidden');
+        }
+
+        function closeGameOverAndFindNew() {
+            closeGameOverModal();
+            openMatchmakingModal();
+        }
+
+        // Initialize default board state on load so direct tab switching works cleanly
+        window.addEventListener('DOMContentLoaded', () => {
+            initBoardPosition();
+            renderBoard();
+        });
+    </script>
+</body>
+</html>
