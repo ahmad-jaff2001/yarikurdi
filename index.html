@@ -10,7 +10,7 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <style>
     :root {
       --bg-deep: #050b18;
@@ -152,7 +152,17 @@
         <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition">چوونەژوورەوە</button>
         <button id="tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">دروستکردنی ئەکاونت</button>
       </div>
+<!-- Google Sign-In Button -->
+      <button type="button" onclick="signInWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs flex items-center justify-center gap-2.5 shadow-lg transition">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google" />
+        <span>چوونەژوورەوە بە ئەکاونتی Google (Gmail)</span>
+      </button>
 
+      <div class="relative flex py-1 items-center">
+        <div class="flex-grow border-t border-yellow-500/20"></div>
+        <span class="flex-shrink mx-3 text-[11px] text-slate-400">یان بە ئەکاونتی تایبەت</span>
+        <div class="flex-grow border-t border-yellow-500/20"></div>
+      </div>
       <div id="authErrorBox" class="hidden p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs text-center font-bold"></div>
 
       <!-- Login Form -->
@@ -225,7 +235,16 @@
         <div class="bg-[#081124] p-3 rounded-xl border border-yellow-500/20 flex items-center justify-between text-xs">
           <span class="text-slate-400">ناوی بەکارهێنەر (Username):</span>
           <span id="editUsernameReadonly" class="font-mono font-bold text-yellow-300">---</span>
-        </div>
+        </div><!-- Level & XP Progress Box -->
+       <div class="bg-[#081124] p-3.5 rounded-2xl border border-yellow-500/20 space-y-2">
+         <div class="flex items-center justify-between text-xs font-bold">
+           <span id="profileLevelTitle" class="text-yellow-300">Lvl 1 • سەرەتایی</span>
+           <span id="profileXpText" class="text-slate-400 font-mono text-[11px]">0 / 25 XP</span>
+         </div>
+         <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+           <div id="profileXpBar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-300 transition-all duration-500" style="width: 0%"></div>
+         </div>
+       </div>
 
         <div class="grid grid-cols-2 gap-2 pt-1">
           <button type="submit" class="gold-btn py-2.5 rounded-xl text-xs">پاشەکەوتکردن ✓</button>
@@ -244,7 +263,8 @@
           <div class="flex items-center gap-2">
             <span class="text-xl font-extrabold gold-text tracking-wide">YariKurdi</span>
             <span class="text-[10px] px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 font-bold">PRO</span>
-          </div>
+          <span id="headerLevelBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-300 border border-slate-500/30">Lvl 1 • سەرەتایی</span>
+        </div>
           <p class="text-[11px] text-slate-400">مەیدانی یارییە کوردییەکان</p>
         </div>
       </div>
@@ -637,9 +657,51 @@
   </div>
 
 <script>
-  const firebaseConfig = { databaseURL: "https://yarikurdi-dc836-default-rtdb.europe-west1.firebasedatabase.app" };
+ const firebaseConfig = {
+    apiKey: "AIzaSyDdqs1jA9TOwO1QGxzru9YXCMWVAEP-u0E",
+    authDomain: "yarikurdi-dc836.firebaseapp.com",
+    databaseURL: "https://yarikurdi-dc836-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "yarikurdi-dc836",
+    storageBucket: "yarikurdi-dc836.firebasestorage.app",
+    messagingSenderId: "1098103715400",
+    appId: "1:1098103715400:web:cffd2b6c3a5401c4624a7d"
+  };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+  const auth = firebase.auth();
+
+  function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => {
+        const user = result.user;
+        const uid = 'g_' + user.uid;
+        db.ref('players/' + uid).once('value', snap => {
+          if (snap.exists()) {
+            completeAuthSession(uid, snap.val());
+          } else {
+            const emailPrefix = (user.email || 'user').split('@')[0].replace(/[^a-z0-9_]/gi, '').toLowerCase();
+            const newProfile = {
+              username: emailPrefix + '_' + uid.slice(-4),
+              name: user.displayName || emailPrefix,
+              email: user.email || '',
+              password: '',
+              avatar: user.photoURL || '',
+              elo: { ...DEFAULT_ELOS },
+              wins: { ...DEFAULT_STATS },
+              games: { ...DEFAULT_STATS },
+              createdAt: Date.now()
+            };
+            db.ref('players/' + uid).set(newProfile).then(() => {
+              completeAuthSession(uid, newProfile);
+            });
+          }
+        });
+      })
+      .catch(err => {
+        showAuthError("هەڵە لە چوونەژوورەوەی Google: " + err.message);
+      });
+  }
 
   // ==================== ACCOUNT, AUTH & AVATAR ENGINE ====================
   let playerId = localStorage.getItem('yk_auth_uid') || null;
@@ -650,7 +712,77 @@
 
   const DEFAULT_ELOS = { chess: 1200, domino: 1200, konkan: 1200, backgammon: 1200, dama: 1200, deza: 1200 };
   const DEFAULT_STATS = { chess: 0, domino: 0, konkan: 0, backgammon: 0, dama: 0, deza: 0 };
+// ==================== LEVEL & XP ENGINE (2-YEAR CURVE TO LVL 100) ====================
+  function getLevelInfo(totalXp = 0) {
+    let xp = Math.max(0, Number(totalXp) || 0);
+    let level = 1;
+    while (level < 100) {
+      let req = level * level * 25;
+      if (xp >= req) {
+        xp -= req;
+        level++;
+      } else {
+        break;
+      }
+    }
+    let nextReq = level < 100 ? (level * level * 25) : 0;
+    let percent = level >= 100 ? 100 : Math.min(100, Math.round((xp / nextReq) * 100));
 
+    let title = 'سەرەتایی';
+    let badgeClass = 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    if (level >= 100) {
+      title = 'ئەفسانەی YariKurdi 👑';
+      badgeClass = 'bg-gradient-to-r from-red-600/30 to-yellow-500/30 text-yellow-300 border-yellow-400 shadow-md';
+    } else if (level >= 75) {
+      title = 'مامۆستا';
+      badgeClass = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+    } else if (level >= 50) {
+      title = 'پێشەنگ';
+      badgeClass = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+    } else if (level >= 25) {
+      title = 'شارەزا';
+      badgeClass = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+    } else if (level >= 10) {
+      title = 'جەنگاوەر';
+      badgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+    }
+
+    return { level, currentXp: xp, nextReq, percent, title, badgeClass, isMax: level >= 100 };
+  }
+
+  function awardGameXp(resultType) {
+    if (!playerId || playerId.startsWith('guest_')) return 0;
+    const gain = resultType === 'win' ? 50 : (resultType === 'draw' ? 25 : 15);
+    const oldInfo = getLevelInfo(playerProfile.xp || 0);
+    const newTotalXp = (playerProfile.xp || 0) + gain;
+    playerProfile.xp = newTotalXp;
+    const newInfo = getLevelInfo(newTotalXp);
+
+    db.ref('players/' + playerId + '/xp').set(newTotalXp);
+    updateLevelUI();
+
+    if (newInfo.level > oldInfo.level) {
+      setTimeout(() => {
+        alert(`🎉 پیرۆزە! ئاستت بەرزبووەوە بۆ Level ${newInfo.level} (${newInfo.title})!`);
+      }, 600);
+    }
+    return gain;
+  }
+
+  function updateLevelUI() {
+    const info = getLevelInfo(playerProfile.xp || 0);
+    const headerBadge = document.getElementById('headerLevelBadge');
+    if (headerBadge) {
+      headerBadge.textContent = `Lvl ${info.level} • ${info.title}`;
+      headerBadge.className = `text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${info.badgeClass}`;
+    }
+    const pTitle = document.getElementById('profileLevelTitle');
+    const pText = document.getElementById('profileXpText');
+    const pBar = document.getElementById('profileXpBar');
+    if (pTitle) pTitle.textContent = `Lvl ${info.level} • ${info.title}`;
+    if (pText) pText.textContent = info.isMax ? 'MAX LEVEL (100)' : `${info.currentXp.toLocaleString()} / ${info.nextReq.toLocaleString()} XP`;
+    if (pBar) pBar.style.width = info.percent + '%';
+  }
   let playerProfile = {
     username: '',
     name: '',
@@ -658,7 +790,8 @@
     avatar: '',
     elo: { ...DEFAULT_ELOS },
     wins: { ...DEFAULT_STATS },
-    games: { ...DEFAULT_STATS }
+    games: { ...DEFAULT_STATS },
+    xp: 0
   };
 
   let allPlayersCache = {}, onlineUsersMap = {};
@@ -716,7 +849,7 @@
   function renderAvatarContent(elId, avatarUrl, fallbackLetter) {
     const el = document.getElementById(elId);
     if (!el) return;
-    if (avatarUrl && avatarUrl.startsWith('data:image')) {
+    if (avatarUrl && (avatarUrl.startsWith('data:image') || avatarUrl.startsWith('http'))) {
       el.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover" />`;
     } else {
       el.textContent = (fallbackLetter || 'ی').charAt(0);
@@ -724,7 +857,7 @@
   }
 
   function getAvatarBadgeHTML(avatarUrl, name, sizeClass = 'w-9 h-9') {
-    if (avatarUrl && avatarUrl.startsWith('data:image')) {
+    if (avatarUrl && (avatarUrl.startsWith('data:image') || avatarUrl.startsWith('http'))) {
       return `<div class="${sizeClass} rounded-xl overflow-hidden border border-yellow-500/40 shrink-0"><img src="${avatarUrl}" class="w-full h-full object-cover" /></div>`;
     }
     return `<div class="${sizeClass} rounded-xl bg-[#16274b] text-yellow-300 font-extrabold flex items-center justify-center text-sm shrink-0">${(name || 'ی').charAt(0)}</div>`;
@@ -798,6 +931,7 @@
 
     document.getElementById('authModal').classList.add('hidden');
     updateProfileUI();
+    updateLevelUI();
     initRealtimeListenersAfterLogin();
   }
 
@@ -807,6 +941,7 @@
     document.getElementById('editNewPassword').value = '';
     document.getElementById('editUsernameReadonly').textContent = playerProfile.username;
     renderAvatarContent('editAvatarPreview', playerProfile.avatar, playerProfile.name);
+    updateLevelUI();
     document.getElementById('editProfileModal').classList.remove('hidden');
   }
 
@@ -1446,6 +1581,7 @@
     if (domIsOnline) {
       document.getElementById('eloChangeBox').classList.remove('hidden');
       const res = calculateAndSaveElo('domino', domOppInfo.elo, iWon ? 1 : 0);
+      awardGameXp(iWon ? 'win' : 'loss');
       document.getElementById('eloChangeText').textContent = `${res.oldElo} ➔ ${res.newElo} (${res.delta >= 0 ? '+' : ''}${res.delta})`;
     } else {
       document.getElementById('eloChangeBox').classList.add('hidden');
@@ -1494,6 +1630,7 @@
     if (resultScore === 1) playerProfile.wins[gameKey] = (playerProfile.wins[gameKey] || 0) + 1;
     db.ref('players/' + playerId).update({ elo: playerProfile.elo, wins: playerProfile.wins, games: playerProfile.games });
     updateProfileUI();
+    awardGameXp(resultScore === 1 ? 'win' : (resultScore === 0.5 ? 'draw' : 'loss'));
     return { oldElo, newElo, delta };
   }
 
@@ -1726,39 +1863,52 @@
     });
   }
 
-  function renderBoard() {
-    const boardEl = document.getElementById('chessBoard'); boardEl.innerHTML = '';
-    for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) {
-      const r = myColor === 'w' ? i : 7 - i, c = myColor === 'w' ? j : 7 - j;
-      const sq = document.createElement('div');
-      sq.className = `sq ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
-      if (selectedSq && selectedSq.r === r && selectedSq.c === c) sq.classList.add('selected');
-      if (legalMoves.some(m => m.toR === r && m.toC === c)) { const m = document.createElement('div'); m.className = board[r][c] ? 'legal-ring' : 'legal-dot'; sq.appendChild(m); }
-      const p = board[r][c];
-      if (p) { const img = document.createElement('img'); img.src = PIECE_SVGS[p]; img.className = 'piece'; sq.appendChild(img); }
-      boardEl.appendChild(sq);
+ function renderBoard() {
+    const boardEl = document.getElementById('chessBoard');
+    boardEl.innerHTML = '';
+    const kingInCheckPos = isKingInCheck(turn) ? findKing(turn) : null;
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const r = myColor === 'w' ? i : 7 - i;
+        const c = myColor === 'w' ? j : 7 - j;
+        const sq = document.createElement('div');
+        sq.className = `sq ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+        if (selectedSq && selectedSq.r === r && selectedSq.c === c) sq.classList.add('selected');
+        if (lastMove && ((lastMove.fromR === r && lastMove.fromC === c) || (lastMove.toR === r && lastMove.toC === c))) {
+          sq.classList.add('last-move');
+        }
+        if (kingInCheckPos && kingInCheckPos.r === r && kingInCheckPos.c === c) {
+          sq.classList.add('in-check');
+        }
+        if (legalMoves.some(m => m.toR === r && m.toC === c)) {
+          const m = document.createElement('div');
+          m.className = board[r][c] ? 'legal-ring' : 'legal-dot';
+          sq.appendChild(m);
+        }
+        const p = board[r][c];
+        if (p) {
+          const img = document.createElement('img');
+          img.src = PIECE_SVGS[p];
+          img.className = 'piece';
+          sq.appendChild(img);
+        }
+        boardEl.appendChild(sq);
+      }
     }
-    document.getElementById('turnIndicator').textContent = turn === 'w' ? 'نۆرەی سپییە' : 'نۆرەی ڕەشە';
+
+    const baseTurnText = turn === 'w' ? 'نۆرەی سپییە' : 'نۆرەی ڕەشە';
+    const turnEl = document.getElementById('turnIndicator');
+    if (kingInCheckPos) {
+      turnEl.textContent = `⚠️ کش! (${baseTurnText})`;
+      turnEl.className = 'text-xs font-extrabold text-red-400 animate-pulse';
+    } else {
+      turnEl.textContent = baseTurnText;
+      turnEl.className = 'text-xs font-bold text-yellow-300';
+    }
     drawArrows();
   }
-
-  function executeMove(fromR, fromC, toR, toC, isRemote) {
-    const piece = board[fromR][fromC]; if (!piece) return;
-    const color = piece[0], type = piece[1];
-    board[toR][toC] = (type === 'P' && (toR === 0 || toR === 7)) ? color + 'Q' : piece;
-    board[fromR][fromC] = null;
-    lastMove = { fromR, fromC, toR, toC, moveNum: moveList.length + 1 };
-    selectedSq = null; legalMoves = []; turn = color === 'w' ? 'b' : 'w';
-    moveList.push(`${fromR}${fromC}-${toR}${toC}`);
-    playChessSound('move'); renderBoard();
-    if (isOnlineGame && !isRemote && roomRef) roomRef.child('lastMove').set({ by: myColor, fromR, fromC, toR, toC, moveNum: moveList.length });
-    if (getAllLegalMoves(turn).length === 0) { endGame(turn !== myColor, 'کۆتایی یاری!'); return; }
-    if (!isOnlineGame && turn !== myColor && gameActive) setTimeout(() => {
-      const mvs = getAllLegalMoves(turn);
-      if (mvs.length > 0) { const rm = mvs[Math.floor(Math.random() * mvs.length)]; executeMove(rm.fromR, rm.fromC, rm.toR, rm.toC, false); }
-    }, 350);
-  }
-
+  
   function findKing(color) { for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (board[r][c] === color + 'K') return { r, c }; return null; }
   function isSquareAttacked(r, c, byColor) { for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { const p = board[i][j]; if (p && p[0] === byColor && getPseudoMoves(i, j, true).some(m => m.toR === r && m.toC === c)) return true; } return false; }
   function isKingInCheck(color) { const k = findKing(color); return k ? isSquareAttacked(k.r, k.c, color === 'w' ? 'b' : 'w') : false; }
