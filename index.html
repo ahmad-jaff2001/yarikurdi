@@ -278,16 +278,84 @@
       min-height: 54vh !important;
       max-height: 62vh !important;
     }
-    /* Clean In-Game View */
-    body.in-game-mode { padding-bottom: 16px !important; }
-    body.in-game-mode .floating-bottom-dock { display: none !important; }
-    body.in-game-mode header { position: relative !important; }
-    
+    /* Chess.com Pro Layout (Full Screen Fit, Zero Scroll) */
+    body.in-game-mode {
+      padding-bottom: 0 !important;
+      overflow-x: hidden;
+    }
+    body.in-game-mode header,
+    body.in-game-mode .floating-bottom-dock {
+      display: none !important;
+    }
+
+    .chesscom-arena {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      min-height: 100vh;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .chesscom-arena {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        gap: 10px;
+      }
+    }
+    .chesscom-board-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .chesscom-player-strip {
+      width: min(92vw, 76vh, 620px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1930;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 12px;
+      padding: 8px 14px;
+    }
     #chessBoard {
-      width: min(88vw, 54vh, 440px) !important;
-      height: min(88vw, 54vh, 440px) !important;
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
       aspect-ratio: 1 / 1 !important;
-      margin: 0 auto !important;
+      margin: 0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75) !important;
+    }
+    .chesscom-sidebar {
+      height: min(86vh, 710px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #0b1528;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+    }
+    #boardWrapper {
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
+    }
+    #activeGameArea > div:last-child {
+      width: 100% !important;
+      max-width: 360px !important;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+      
     }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
@@ -605,10 +673,9 @@
       <button onclick="cancelMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40">هەڵوەشاندنەوە</button>
     </div>
 
-    <div id="activeGameArea" class="hidden flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6">
-      <div class="flex flex-col items-center gap-3">
-        <div class="w-full max-w-[480px] royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
+   <div id="activeGameArea" class="hidden chesscom-arena">
+      <div class="chesscom-board-col">
+<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center font-bold text-white overflow-hidden" id="oppAvatar">ب</div>
             <div>
               <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="oppName">بەرامبەر</span><span id="oppEloBadge" class="text-[11px] text-yellow-400">(1200)</span><button id="inGameAddFriendBtn" onclick="sendFriendRequestFromGame()" class="hidden text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">+ هاوڕێیەتی</button></div>
@@ -622,8 +689,7 @@
           <canvas id="arrowCanvas" width="480" height="480"></canvas>
         </div>
 
-        <div class="w-full max-w-[480px] royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
+<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-lg bg-yellow-500 text-[#050b18] flex items-center justify-center font-extrabold overflow-hidden" id="selfAvatar">ی</div>
             <div>
               <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="selfName">یاریزانی کورد</span><span id="selfEloBadge" class="text-[11px] text-yellow-400">(1200)</span></div>
