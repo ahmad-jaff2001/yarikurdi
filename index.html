@@ -182,6 +182,83 @@
       border: 2.5px solid #10b981 !important;
       animation: voicePulse 1.1s infinite;
     }
+    /* Modern App UI: 3-Column Visual Cards & Floating Bottom Dock */
+    body { padding-bottom: 92px; }
+    .pito-game-card {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .pito-game-card:hover, .pito-game-card:active {
+      transform: translateY(-4px) scale(1.02);
+      border-color: #f3cf65;
+      box-shadow: 0 14px 30px rgba(243, 207, 101, 0.28);
+    }
+    .pito-game-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .pito-game-card:hover img { transform: scale(1.07); }
+    .pito-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4, 9, 20, 0.94) 8%, rgba(4, 9, 20, 0.25) 52%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .pito-card-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+      line-height: 1.2;
+    }
+    .floating-bottom-dock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      padding: 7px 14px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(243, 207, 101, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 45;
+    }
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      color: #334155;
+      font-size: 19px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dock-item.active {
+      background: linear-gradient(135deg, #d4af37, #b48811);
+      color: #050b18;
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.55);
+    }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
@@ -365,92 +442,97 @@
     </div>
   </div>
 
-  <!-- VIEW 1: HUB -->
-  <main id="view-hub" class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-    <section class="royal-card rounded-3xl p-6 md:p-10 relative overflow-hidden">
-      <div class="max-w-2xl space-y-4 relative z-10">
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="onlineCountText">١ یاریزان ئێستا لە سەرهێڵن</span>
-        </span>
-        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
-          بەخێربێیت بۆ مەیدانی شاهانەی <span class="gold-text">YariKurdi</span>
-        </h1>
-        <p class="text-slate-300 text-sm md:text-base leading-relaxed">پلاتفۆرمی یارییە کوردییە ڕەسەنەکان بە سیستەمی ئەکاونت، وێنەی پرۆفایل، چاتی ڕاستەوخۆ و ڕیزبەندی Elo!</p>
-        <div class="flex flex-wrap gap-3 pt-2">
-          <button onclick="switchView('chess')" class="gold-btn px-5 py-3 rounded-xl text-sm flex items-center gap-2"><span>♔</span> یاری شەتڕەنج</button>
-          <button onclick="switchView('domino')" class="gold-btn px-5 py-3 rounded-xl text-sm flex items-center gap-2"><span>🁣</span> یاری دۆمینەی کوردی</button>
-          <button onclick="openEditProfileModal()" class="px-5 py-3 rounded-xl text-sm font-bold bg-[#132347] border border-yellow-500/30 text-yellow-300 hover:bg-yellow-500/10 transition flex items-center gap-2"><span>📸</span> پرۆفایل و وێنەکەم</button>
+  <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
+  <section id="view-hub" class="max-w-3xl mx-auto px-3.5 py-4 space-y-4">
+    <!-- Top Support & Social Banner -->
+    <div class="rounded-2xl bg-gradient-to-l from-[#10254d] via-[#17366e] to-[#0d1c3a] border border-yellow-500/35 p-3.5 flex items-center justify-between gap-3 shadow-lg">
+      <div class="space-y-0.5">
+        <div class="text-sm font-black text-white flex items-center gap-1.5">پشتگیریمان بکە <span class="text-base">👑</span></div>
+        <p class="text-[11px] text-slate-300">تا زیاتر بۆ کوردستان و یارییە کوردییەکان بکەین</p>
+      </div>
+      <button onclick="switchView('rooms')" class="gold-btn px-4 py-2 rounded-full text-xs whitespace-nowrap shadow-md">🎙️ دیوەخان</button>
+    </div>
+
+    <!-- Tournament Banner -->
+    <div class="rounded-2xl bg-gradient-to-r from-[#09152b] to-[#1a2f59] border border-amber-400/35 p-3 flex items-center justify-between gap-2 shadow-md">
+      <button onclick="switchView('chess')" class="gold-btn px-4 py-1.5 rounded-xl text-xs whitespace-nowrap">بەشدار دەبم</button>
+      <div class="text-left flex items-center gap-2">
+        <div>
+          <div class="text-xs font-extrabold text-yellow-300">پاڵەوانێتی شاهانەی شەتڕەنج</div>
+          <div class="text-[10px] text-slate-300">ڕیزبەندی Elo و کێبڕکێی ڕاستەوخۆ</div>
+        </div>
+        <span class="text-2xl">🏆</span>
+      </div>
+    </div>
+
+    <!-- Season Pass Progress Banner -->
+    <div class="rounded-2xl bg-gradient-to-r from-[#071224] via-[#132952] to-[#0a1936] border border-yellow-500/30 p-3 space-y-2 shadow-md">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 font-extrabold">👑 ڕێگای YariKurdi • وەرزی ١</span>
+        <span id="hubSeasonLevelTag" class="text-[11px] font-extrabold text-emerald-400">ئاستی 1</span>
+      </div>
+      <div class="w-full h-3 rounded-full bg-[#050b18] border border-yellow-500/25 overflow-hidden p-0.5">
+        <div id="hubSeasonBar" class="h-full rounded-full bg-gradient-to-l from-yellow-300 via-amber-400 to-yellow-600 transition-all duration-500" style="width: 35%"></div>
+      </div>
+    </div>
+
+    <!-- 3-Column Visual Game Cards Grid -->
+    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
+      <!-- 1. Chess -->
+      <div onclick="switchView('chess')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=500&q=80" alt="شەتڕەنج" />
+        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">شەتڕەنج</span>
         </div>
       </div>
-    </section>
 
-    <section class="space-y-4">
-      <div class="flex items-center justify-between"><h2 class="text-xl font-extrabold border-r-4 border-yellow-400 pr-3">یارییە کوردییەکانی پلاتفۆرم</h2></div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-emerald-500/30">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">♔</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">چالاکە • ئۆنلاین</span></div>
-            <h3 class="text-lg font-extrabold text-white">١. شەتڕەنجی خێرا</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">ڕاکێشانی پارچە، چاتی ناو یاری، پریموڤ، کێشانی سەهم، و ڕیزبەندی Elo.</p>
-          </div>
-          <button onclick="switchView('chess')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو یاری</button>
-        </div>
-
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-emerald-500/30">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🁣</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">چالاکە • ئۆنلاین</span></div>
-            <h3 class="text-lg font-extrabold text-white">٢. دۆمینەی کوردی (١٠١)</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">داشی عاجی و زێڕین، دەنگی دانان، ڕاکێشان لە بازاڕ، یاسای بلۆکبوون و ڕیزبەندی Elo.</p>
-          </div>
-          <button onclick="switchView('domino')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو مێزی دۆمینە</button>
-        </div>
-
-      <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-emerald-500/30">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🃏</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">چالاکە • ئۆنلاین</span></div>
-            <h3 class="text-lg font-extrabold text-white">٣. کۆنکانی شاهانە</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">مێزی VIP، ڕیزکردنی کارت، هەڵگرتنەوە بە مەرج، سێت و ڕیز، و ڕیزبەندی Elo.</p>
-          </div>
-          <button onclick="switchView('konkan')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو مێزی کۆنکان</button>
-        </div>
-<div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-amber-400/40">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🎙️</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">چالاکە • دەنگی ڕاستەوخۆ</span></div>
-            <h3 class="text-lg font-extrabold text-white">دیوەخان و ژوورەکان (Live Mic)</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">ژووری تایبەت یان گشتی دروست بکە، مایک بکەرەوە و لەگەڵ هاوڕێکانت قسە بکە و یاری بکە.</p>
-          </div>
-          <button onclick="switchView('rooms')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو ژوورەکان</button>
-        </div>
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 opacity-85">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🎲</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 font-bold">داهاتوو</span></div>
-            <h3 class="text-lg font-extrabold text-white">٤. تاوڵەی مەیدانی</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">تەختەی دار و سەدەف بە زاری ڕاستەقینە و یاساکانی لێدان و کۆکردنەوە.</p>
-          </div>
-          <button onclick="switchView('leaderboard', 'backgammon')" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#16274b] text-yellow-300 border border-yellow-500/20">ڕیزبەندی تاوڵە</button>
-        </div>
-
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 opacity-85">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🔴</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 font-bold">داهاتوو</span></div>
-            <h3 class="text-lg font-extrabold text-white">٥. دامەی کوردی</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">یاری دامەی ڕەسەن بە خواردنی زۆرەملێ و گەیشتن بە خانەی دامە.</p>
-          </div>
-          <button onclick="switchView('leaderboard', 'dama')" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#16274b] text-yellow-300 border border-yellow-500/20">ڕیزبەندی دامە</button>
-        </div>
-
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 opacity-85">
-          <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">⭕</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 font-bold">داهاتوو</span></div>
-            <h3 class="text-lg font-extrabold text-white">٦. دێزە (سێ بە سێ)</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">یارییە مێژووییەکەی کوردەواری بە سیستەمی ڕیزکردنی سێ داش و لابردن.</p>
-          </div>
-          <button onclick="switchView('leaderboard', 'deza')" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#16274b] text-yellow-300 border border-yellow-500/20">ڕیزبەندی دێزە</button>
+      <!-- 2. Konkan -->
+      <div onclick="switchView('konkan')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1541278107931-e006523892df?auto=format&fit=crop&w=500&q=80" alt="کۆنکان" />
+        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">کۆنکان</span>
         </div>
       </div>
-    </section>
-  </main>
+
+      <!-- 3. Domino -->
+      <div onclick="switchView('domino')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=500&q=80" alt="دۆمینە" />
+        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">دۆمینە</span>
+        </div>
+      </div>
+
+      <!-- 4. Voice Rooms / Live Mic -->
+      <div onclick="switchView('rooms')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=500&q=80" alt="دیوەخان" />
+        <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-[#050b18] text-[9px] font-black">LIVE</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">دیوەخان 🎙️</span>
+        </div>
+      </div>
+
+      <!-- 5. Backgammon -->
+      <div onclick="switchView('leaderboard', 'backgammon')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1632501641765-e568d28b0015?auto=format&fit=crop&w=500&q=80" alt="تاوڵە" />
+        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white/80">♡</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">تاوڵە</span>
+        </div>
+      </div>
+
+      <!-- 6. Dama -->
+      <div onclick="switchView('leaderboard', 'dama')" class="pito-game-card">
+        <img src="https://images.unsplash.com/photo-1606503153255-59d8b8b82176?auto=format&fit=crop&w=500&q=80" alt="دامە" />
+        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white/80">♡</span>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">دامە</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- VIEW 2: CHESS -->
   <section id="view-chess" class="hidden max-w-6xl mx-auto px-4 py-6">
@@ -1303,6 +1385,9 @@
     document.getElementById('view-' + view).classList.remove('hidden');
     const activeNav = document.getElementById('nav-' + view);
     if (activeNav) { activeNav.classList.add('bg-yellow-500', 'text-[#050b18]'); activeNav.classList.remove('text-slate-300'); }
+    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+    const activeDock = document.getElementById('dock-' + (view === 'chess' || view === 'domino' || view === 'konkan' ? 'hub' : view));
+    if (activeDock) activeDock.classList.add('active');
     if (view === 'leaderboard') loadLeaderboard(subTab);
     else if (view === 'friends') renderFriendsList();
     else if (view === 'rooms') loadActiveVoiceRooms();
@@ -3091,5 +3176,13 @@ function makeBotMove() {
     document.getElementById('chessSetupPanel').classList.remove('hidden');
   }
 </script>
+<!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
+  <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
+    <button id="dock-hub" onclick="switchView('hub')" class="dock-item active" title="یارییەکان">🎮</button>
+    <button id="dock-rooms" onclick="switchView('rooms')" class="dock-item" title="دیوەخان و مایک">🎙️</button>
+    <button id="dock-friends" onclick="switchView('friends')" class="dock-item" title="چات و هاوڕێیان">💬</button>
+    <button id="dock-leaderboard" onclick="switchView('leaderboard')" class="dock-item" title="ڕیزبەندی">🏆</button>
+    <button id="dock-profile" onclick="openEditProfileModal()" class="dock-item" title="پڕۆفایل">👤</button>
+  </nav>
 </body>
 </html>
