@@ -1930,7 +1930,7 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
             moveNum: currentMoveNum
         });
     }
-    }
+    
 
     // Check Checkmate / Stalemate
     let hasAnyLegalMove = false;
@@ -1977,7 +1977,7 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
             if (typeof makeBotMove === 'function') makeBotMove();
         }, 350);
     }
-
+}
 
 function makeBotMove() {
     if (!gameActive || isOnlineGame || turn === myColor) return;
