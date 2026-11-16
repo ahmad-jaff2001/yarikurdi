@@ -128,7 +128,50 @@
 
     @keyframes pulseRing { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2.1); opacity: 0; } }
     .radar-ring { animation: pulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
-
+/* Konkan Royal Cards & Table */
+    .konkan-card {
+      width: 68px;
+      height: 100px;
+      background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: -3px 6px 14px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px 6px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .konkan-card:hover { transform: translateY(-10px) scale(1.04); z-index: 20; }
+    .konkan-card.selected {
+      transform: translateY(-18px) scale(1.07);
+      border: 3px solid #f3cf65;
+      box-shadow: 0 0 22px rgba(243, 207, 101, 0.85);
+      z-index: 25;
+    }
+    .konkan-card-sm { width: 46px; height: 68px; padding: 3px 4px; border-radius: 7px; cursor: default; }
+    .konkan-card-sm:hover { transform: none; }
+    .konkan-back {
+      width: 44px; height: 64px;
+      background: repeating-linear-gradient(45deg, #10254d, #10254d 5px, #17346b 5px, #17346b 10px);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .meld-group {
+      background: rgba(5, 11, 24, 0.45);
+      border: 1.5px dashed rgba(243, 207, 101, 0.45);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .meld-group:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
@@ -273,6 +316,7 @@
         <button id="nav-hub" onclick="switchView('hub')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-500 text-[#050b18] transition">ناوەندی یارییەکان</button>
         <button id="nav-chess" onclick="switchView('chess')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">♔ شەتڕەنج</button>
         <button id="nav-domino" onclick="switchView('domino')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">🁣 دۆمینە</button>
+        <button id="nav-konkan" onclick="switchView('konkan')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">🃏 کۆنکان</button>
         <button id="nav-friends" onclick="switchView('friends')" class="relative px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1">
           <span>👥</span> هاوڕێ و چات
           <span id="friendBadgeCount" class="hidden px-1.5 py-0.2 rounded-full bg-red-500 text-white text-[10px] font-extrabold">0</span>
@@ -351,13 +395,13 @@
           <button onclick="switchView('domino')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو مێزی دۆمینە</button>
         </div>
 
-        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 opacity-85">
+      <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-emerald-500/30">
           <div class="space-y-2">
-            <div class="flex items-center justify-between"><span class="text-3xl">🃏</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 font-bold">داهاتوو</span></div>
+            <div class="flex items-center justify-between"><span class="text-3xl">🃏</span><span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">چالاکە • ئۆنلاین</span></div>
             <h3 class="text-lg font-extrabold text-white">٣. کۆنکانی شاهانە</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">ڕیزکردنی کارتەکان، کێشان و فڕێدان، و داگرتنی کۆنکان.</p>
+            <p class="text-xs text-slate-400 leading-relaxed">مێزی VIP، ڕیزکردنی کارت، هەڵگرتنەوە بە مەرج، سێت و ڕیز، و ڕیزبەندی Elo.</p>
           </div>
-          <button onclick="switchView('leaderboard', 'konkan')" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#16274b] text-yellow-300 border border-yellow-500/20">ڕیزبەندی کۆنکان</button>
+          <button onclick="switchView('konkan')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ناو مێزی کۆنکان</button>
         </div>
 
         <div class="royal-card rounded-2xl p-5 flex flex-col justify-between space-y-4 opacity-85">
@@ -567,7 +611,122 @@
       </div>
     </div>
   </section>
+<!-- VIEW 3.5: KONKAN ARENA -->
+  <section id="view-konkan" class="hidden max-w-6xl mx-auto px-4 py-6">
+    <!-- Setup Panel -->
+    <div id="konkanSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
+      <div class="text-center space-y-1">
+        <div class="text-4xl mb-1">🃏</div>
+        <h2 class="text-2xl font-extrabold gold-text">مەیدانی کۆنکانی شاهانە</h2>
+        <p class="text-xs text-slate-400">یەکەم یاریزان هەموو کارتەکانی دەستی دابگرێت یان فڕێ بدات براوەیە</p>
+      </div>
 
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-300">شێوازی دابەشکردن:</label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)" class="py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400 transition">١٠ کارتی (کلاسیک)</button>
+          <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)" class="py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] text-slate-300 border border-yellow-500/25 transition">٨ کارتی (خێرا)</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-[#091326] border border-emerald-500/30 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-extrabold text-emerald-400">🌐 کۆنکانی ئۆنلاین (Elo)</span>
+          <span class="text-[11px] text-yellow-300 font-bold">خاڵی تۆ: <span id="konkanMyEloLabel">1200</span></span>
+        </div>
+        <button onclick="startKonkanOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕان بەدوای یاریزاندا</button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-[#091326] border border-yellow-500/20 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-extrabold text-yellow-300">🤖 یاریکردن لەگەڵ بۆتی زیرەک</span>
+        </div>
+        <button onclick="startKonkanBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#16274b] text-white border border-yellow-500/30 hover:border-yellow-400 transition">دەستپێکردن</button>
+      </div>
+    </div>
+
+    <!-- Searching Panel -->
+    <div id="konkanSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-6">
+      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border-2 border-yellow-400 radar-ring"></div>
+        <div class="w-16 h-16 rounded-full bg-yellow-500/20 border border-yellow-400 flex items-center justify-center text-3xl">🃏</div>
+      </div>
+      <h3 class="text-lg font-extrabold text-yellow-300">چاوەڕێی یاریزانی کۆنکانین...</h3>
+      <button onclick="cancelKonkanMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">هەڵوەشاندنەوە</button>
+    </div>
+
+    <!-- Active VIP Table -->
+    <div id="konkanActiveArea" class="hidden space-y-4">
+      <!-- Top Opponent Bar -->
+      <div class="royal-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div id="konkOppAvatar" class="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center font-extrabold text-white overflow-hidden">ب</div>
+          <div>
+            <div class="text-xs font-extrabold text-white flex items-center gap-1.5">
+              <span id="konkOppName">بەرامبەر</span>
+              <span id="konkOppElo" class="text-[11px] text-yellow-400">(1200)</span>
+            </div>
+            <div id="konkOppCardsBack" class="flex -space-x-3 space-x-reverse mt-1"></div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <span id="konkTurnBanner" class="inline-block px-5 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-400/50 text-xs font-extrabold text-yellow-300">نۆرەی تۆیە کارتێک ڕابکێشە</span>
+          <div id="konkActionLog" class="text-[11px] text-slate-300 mt-1">دەستپێکی یاری</div>
+        </div>
+
+        <button onclick="exitKonkanGame()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">دەرچوون</button>
+      </div>
+
+      <!-- Green Velvet Table -->
+      <div class="domino-table rounded-3xl p-4 md:p-6 min-h-[300px] flex flex-col justify-between gap-4 relative">
+        <!-- Deck & Discard Pile Center -->
+        <div class="flex items-center justify-center gap-8 py-2" style="direction: ltr;">
+          <!-- Closed Deck -->
+          <div onclick="konkanDrawFromDeck()" class="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div id="konkDeckBox" class="w-20 h-28 rounded-xl bg-gradient-to-br from-[#10254d] to-[#071229] border-2 border-yellow-400 shadow-2xl flex flex-col items-center justify-center group-hover:scale-105 transition">
+              <span class="text-2xl">👑</span>
+              <span id="konkDeckCount" class="text-xs font-extrabold text-yellow-300 mt-1">31</span>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-200">ڕاکێشان (Deck)</span>
+          </div>
+
+          <!-- Open Discard Pile -->
+          <div onclick="konkanTakeDiscard()" class="flex flex-col items-center gap-1.5 cursor-pointer group">
+            <div id="konkDiscardSlot" class="w-20 h-28 rounded-xl border-2 border-dashed border-yellow-400/50 flex items-center justify-center bg-black/25 group-hover:scale-105 transition">
+              <span class="text-xs text-slate-400">بەتاڵ</span>
+            </div>
+            <span class="text-[11px] font-bold text-yellow-300">هەڵگرتنەوە (Discard)</span>
+          </div>
+        </div>
+
+        <!-- Melds Area on Table -->
+        <div class="space-y-2 border-t border-white/10 pt-3">
+          <div class="flex items-center justify-between text-[11px] text-emerald-200/80">
+            <span>کارتە داگیراوەکانی سەر مێز (بۆ زیادکردنی کارت کلیک لە سێتێک بکە):</span>
+            <span id="konkMeldsCount">٠ سێت</span>
+          </div>
+          <div id="konkTableMelds" class="flex flex-wrap items-center justify-center gap-3 min-h-[76px]" style="direction: ltr;">
+            <span class="text-xs text-emerald-200/50">هێشتا هیچ سێتێک دانەگیراوە...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Hand & Controls -->
+      <div class="royal-card rounded-2xl p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-extrabold text-yellow-300">🖐️ کارتەکانی دەستت (<span id="konkMyCount">10</span>):</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="konkanSortHand('rank')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#15284d] text-slate-200 border border-yellow-500/25 hover:border-yellow-400">ڕیزکردن بە ژمارە 🔢</button>
+            <button onclick="konkanSortHand('suit')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#15284d] text-slate-200 border border-yellow-500/25 hover:border-yellow-400">ڕیزکردن بە جۆر ♠♥</button>
+            <button id="konkMeldBtn" onclick="konkanLayDownMeld()" class="gold-btn px-4 py-1.5 rounded-xl text-xs">⬇️ داگرتنی سێت (Meld)</button>
+            <button id="konkDiscardBtn" onclick="konkanDiscardSelected()" class="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-red-500/80 hover:bg-red-500 text-white shadow-lg transition">🗑️ فڕێدانی ١ کارت</button>
+          </div>
+        </div>
+        <div id="konkMyHandContainer" class="flex flex-wrap items-center justify-center gap-1.5 py-2 min-h-[115px]" style="direction: ltr;"></div>
+      </div>
+    </div>
+  </section>
   <!-- VIEW 4: FRIENDS -->
   <section id="view-friends" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -931,6 +1090,8 @@
 
     document.getElementById('authModal').classList.add('hidden');
     updateProfileUI();
+    const kLbl = document.getElementById('konkanMyEloLabel');
+    if (kLbl) kLbl.textContent = playerProfile.elo.konkan || 1200;
     updateLevelUI();
     initRealtimeListenersAfterLogin();
   }
@@ -1056,7 +1217,7 @@
   }
 
   function switchView(view, subTab = 'chess') {
-    ['hub', 'chess', 'domino', 'friends', 'leaderboard'].forEach(v => {
+   ['hub', 'chess', 'domino', 'konkan', 'friends', 'leaderboard'].forEach(v => {
       document.getElementById('view-' + v).classList.add('hidden');
       const nav = document.getElementById('nav-' + v);
       if (nav) { nav.classList.remove('bg-yellow-500', 'text-[#050b18]'); nav.classList.add('text-slate-300'); }
@@ -1590,7 +1751,469 @@
     document.getElementById('dominoSetupPanel').classList.remove('hidden');
     modal.classList.remove('hidden');
   }
+// ==================== KONKAN ENGINE (ROYAL RULES) ====================
+  let konkCardsPerPlayer = 10, konkIsOnline = false, konkRoomRef = null, konkQueueRef = null;
+  let konkMyRole = 'p1', konkState = null, konkSelectedIds = [], konkOppInfo = { id: null, name: 'بۆتی کۆنکان', elo: 1250, avatar: '' };
 
+  function selectKonkanCardsCount(cnt) {
+    konkCardsPerPlayer = cnt;
+    const b10 = document.getElementById('konk-mode-10'), b8 = document.getElementById('konk-mode-8');
+    if (cnt === 10) {
+      b10.className = 'py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400 transition';
+      b8.className = 'py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] text-slate-300 border border-yellow-500/25 transition';
+    } else {
+      b8.className = 'py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400 transition';
+      b10.className = 'py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] text-slate-300 border border-yellow-500/25 transition';
+    }
+  }
+
+  function createKonkanDeck() {
+    const suits = ['S', 'H', 'D', 'C'];
+    const deck = [];
+    for (const s of suits) {
+      for (let r = 1; r <= 13; r++) {
+        deck.push({ id: `${r}${s}`, r, s });
+      }
+    }
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
+  }
+
+  function initNewKonkanGame(cardsCount = 10) {
+    const deck = createKonkanDeck();
+    const p1Hand = deck.splice(0, cardsCount);
+    const p2Hand = deck.splice(0, cardsCount);
+    const discard = [deck.pop()];
+    return {
+      cardsCount,
+      deck,
+      discard,
+      p1Hand,
+      p2Hand,
+      melds: [],
+      turn: 'p1',
+      phase: 'draw',
+      mustMeldCardId: null,
+      log: 'یاری دەستی پێکرد! کارتێک ڕابکێشە یان هەڵبگرەوە',
+      winner: null
+    };
+  }
+
+  function startKonkanBotGame() {
+    konkIsOnline = false; konkMyRole = 'p1'; konkSelectedIds = [];
+    konkOppInfo = { id: null, name: 'بۆتی کۆنکانی شاهانە', elo: 1300, avatar: '' };
+    konkState = initNewKonkanGame(konkCardsPerPlayer);
+    document.getElementById('konkanSetupPanel').classList.add('hidden');
+    document.getElementById('konkanActiveArea').classList.remove('hidden');
+    document.getElementById('konkOppName').textContent = konkOppInfo.name;
+    document.getElementById('konkOppAvatar').textContent = '🤖';
+    document.getElementById('konkOppElo').textContent = `(${konkOppInfo.elo})`;
+    renderKonkanTable();
+  }
+
+  function startKonkanOnlineMatchmaking() {
+    document.getElementById('konkanSetupPanel').classList.add('hidden');
+    document.getElementById('konkanSearchingPanel').classList.remove('hidden');
+    const qBase = db.ref('konkanQueue_' + konkCardsPerPlayer);
+    konkQueueRef = qBase.child(playerId);
+    konkQueueRef.onDisconnect().remove();
+
+    qBase.once('value', snap => {
+      let opp = null;
+      snap.forEach(c => { if (c.key !== playerId && !c.val().roomId) opp = { id: c.key, ...c.val() }; });
+      if (opp) {
+        const rId = 'konk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        const st = initNewKonkanGame(konkCardsPerPlayer);
+        db.ref('konkanRooms/' + rId).set({
+          p1: { id: opp.id, name: opp.name, elo: opp.elo, avatar: opp.avatar || '' },
+          p2: { id: playerId, name: playerName, elo: playerProfile.elo.konkan || 1200, avatar: playerAvatarData },
+          state: st
+        });
+        qBase.child(opp.id).update({ roomId: rId });
+        joinKonkanOnlineRoom(rId, 'p2', { id: opp.id, name: opp.name, elo: opp.elo, avatar: opp.avatar || '' });
+      } else {
+        konkQueueRef.set({ name: playerName, elo: playerProfile.elo.konkan || 1200, avatar: playerAvatarData, roomId: null, ts: firebase.database.ServerValue.TIMESTAMP });
+        konkQueueRef.on('value', qSnap => {
+          const val = qSnap.val();
+          if (val && val.roomId) {
+            const rId = val.roomId; konkQueueRef.off(); konkQueueRef.remove();
+            db.ref('konkanRooms/' + rId).once('value', rSnap => {
+              const rData = rSnap.val();
+              if (rData) joinKonkanOnlineRoom(rId, 'p1', { id: rData.p2.id, name: rData.p2.name, elo: rData.p2.elo, avatar: rData.p2.avatar || '' });
+            });
+          }
+        });
+      }
+    });
+  }
+
+  function cancelKonkanMatchmaking() {
+    if (konkQueueRef) { konkQueueRef.off(); konkQueueRef.remove(); konkQueueRef = null; }
+    document.getElementById('konkanSearchingPanel').classList.add('hidden');
+    document.getElementById('konkanSetupPanel').classList.remove('hidden');
+  }
+
+  function joinKonkanOnlineRoom(rId, role, opp) {
+    document.getElementById('konkanSearchingPanel').classList.add('hidden');
+    document.getElementById('konkanActiveArea').classList.remove('hidden');
+    konkIsOnline = true; konkMyRole = role; konkOppInfo = opp; konkSelectedIds = [];
+    document.getElementById('konkOppName').textContent = opp.name;
+    renderAvatarContent('konkOppAvatar', opp.avatar, opp.name);
+    document.getElementById('konkOppElo').textContent = `(${opp.elo})`;
+
+    konkRoomRef = db.ref('konkanRooms/' + rId);
+    konkRoomRef.on('value', snap => {
+      const data = snap.val();
+      if (!data || !data.state) return;
+      konkState = {
+        ...data.state,
+        deck: data.state.deck || [],
+        discard: data.state.discard || [],
+        p1Hand: data.state.p1Hand || [],
+        p2Hand: data.state.p2Hand || [],
+        melds: data.state.melds || []
+      };
+      renderKonkanTable();
+      if (konkState.winner) {
+        const iWon = konkState.winner === konkMyRole;
+        finishKonkanMatch(iWon, iWon ? 'کۆنکان! یارییەکەت بردەوە 🏆' : 'بەرامبەر کۆنکانی کرد!');
+      }
+    });
+  }
+
+  function exitKonkanGame() {
+    if (konkRoomRef) { konkRoomRef.off(); konkRoomRef = null; }
+    konkState = null; konkSelectedIds = [];
+    document.getElementById('konkanActiveArea').classList.add('hidden');
+    document.getElementById('konkanSetupPanel').classList.remove('hidden');
+  }
+
+  function validateKonkanMeld(cards) {
+    if (!cards || cards.length < 3) return null;
+    if (cards.length <= 4) {
+      const sameRank = cards.every(c => c.r === cards[0].r);
+      const uniqueSuits = new Set(cards.map(c => c.s)).size === cards.length;
+      if (sameRank && uniqueSuits) return { type: 'set', cards: [...cards] };
+    }
+    const sameSuit = cards.every(c => c.s === cards[0].s);
+    if (sameSuit) {
+      const sorted = [...cards].sort((a, b) => a.r - b.r);
+      let isSeq = true;
+      for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i].r !== sorted[i - 1].r + 1) { isSeq = false; break; }
+      }
+      if (isSeq) return { type: 'run', cards: sorted };
+      const hasAce = sorted.some(c => c.r === 1);
+      if (hasAce) {
+        const highSorted = cards.map(c => ({ ...c, sortR: c.r === 1 ? 14 : c.r })).sort((a, b) => a.sortR - b.sortR);
+        let isHighSeq = true;
+        for (let i = 1; i < highSorted.length; i++) {
+          if (highSorted[i].sortR !== highSorted[i - 1].sortR + 1) { isHighSeq = false; break; }
+        }
+        if (isHighSeq) return { type: 'run', cards: highSorted.map(({ r, s, id }) => ({ r, s, id })) };
+      }
+    }
+    return null;
+  }
+
+  function renderKonkanCardHTML(card, isSmall = false, isSelected = false, onclickAttr = '') {
+    const suitIcons = { S: '♠', H: '♥', D: '♦', C: '♣' };
+    const rankLabels = { 1: 'A', 11: 'J', 12: 'Q', 13: 'K' };
+    const isRed = card.s === 'H' || card.s === 'D';
+    const colorCls = isRed ? 'text-red-600' : 'text-slate-900';
+    const rTxt = rankLabels[card.r] || card.r;
+    const sTxt = suitIcons[card.s];
+    const sizeCls = isSmall ? 'konkan-card konkan-card-sm' : 'konkan-card';
+    const selCls = isSelected ? 'selected' : '';
+    return `<div ${onclickAttr} class="${sizeCls} ${selCls} ${colorCls} select-none">
+      <div class="text-left leading-none font-extrabold ${isSmall ? 'text-[11px]' : 'text-sm'}">${rTxt}<span class="block ${isSmall ? 'text-[10px]' : 'text-xs'}">${sTxt}</span></div>
+      <div class="text-center ${isSmall ? 'text-base' : 'text-2xl'} leading-none">${sTxt}</div>
+      <div class="text-right leading-none font-extrabold ${isSmall ? 'text-[11px]' : 'text-sm'} rotate-180">${rTxt}</div>
+    </div>`;
+  }
+
+  function renderKonkanTable() {
+    if (!konkState) return;
+    const myHand = konkMyRole === 'p1' ? konkState.p1Hand : konkState.p2Hand;
+    const oppHand = konkMyRole === 'p1' ? konkState.p2Hand : konkState.p1Hand;
+    const isMyTurn = konkState.turn === konkMyRole;
+
+    document.getElementById('konkDeckCount').textContent = konkState.deck.length;
+    document.getElementById('konkMyCount').textContent = myHand.length;
+    document.getElementById('konkActionLog').textContent = konkState.log || '';
+    document.getElementById('konkOppCardsBack').innerHTML = oppHand.map(() => `<div class="konkan-back"></div>`).join('');
+
+    const banner = document.getElementById('konkTurnBanner');
+    if (isMyTurn) {
+      banner.textContent = konkState.phase === 'draw' ? '🟢 نۆرەی تۆیە: کارتێک ڕابکێشە یان هەڵبگرەوە' : '🟡 سێت دابگرە یان کارتێک فڕێ بدە';
+    } else {
+      banner.textContent = '⏳ چاوەڕێی جوڵەی بەرامبەرین...';
+    }
+
+    const discardSlot = document.getElementById('konkDiscardSlot');
+    if (konkState.discard.length > 0) {
+      const topCard = konkState.discard[konkState.discard.length - 1];
+      discardSlot.innerHTML = renderKonkanCardHTML(topCard, false, false);
+    } else {
+      discardSlot.innerHTML = '<span class="text-xs text-slate-400">بەتاڵ</span>';
+    }
+
+    const meldsBox = document.getElementById('konkTableMelds');
+    document.getElementById('konkMeldsCount').textContent = `${konkState.melds.length} سێت`;
+    if (konkState.melds.length === 0) {
+      meldsBox.innerHTML = '<span class="text-xs text-emerald-200/50">هێشتا هیچ سێتێک دانەگیراوە...</span>';
+    } else {
+      meldsBox.innerHTML = konkState.melds.map((m, mIdx) => `
+        <div onclick="konkanLayOffToMeld(${mIdx})" title="کلیک بکە بۆ زیادکردنی کارتی هەڵبژێردراو بۆ ئەم سێتە" class="meld-group">
+          ${m.cards.map(c => renderKonkanCardHTML(c, true, false)).join('')}
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('konkMyHandContainer').innerHTML = myHand.map(c => {
+      const isSel = konkSelectedIds.includes(c.id);
+      return renderKonkanCardHTML(c, false, isSel, `onclick="toggleKonkanCardSelect('${c.id}')"`);
+    }).join('');
+  }
+
+  function toggleKonkanCardSelect(cardId) {
+    if (konkSelectedIds.includes(cardId)) konkSelectedIds = konkSelectedIds.filter(id => id !== cardId);
+    else konkSelectedIds.push(cardId);
+    playChessSound('move');
+    renderKonkanTable();
+  }
+
+  function konkanSortHand(mode) {
+    if (!konkState) return;
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    if (mode === 'rank') {
+      konkState[key].sort((a, b) => a.r - b.r || a.s.localeCompare(b.s));
+    } else {
+      konkState[key].sort((a, b) => a.s.localeCompare(b.s) || a.r - b.r);
+    }
+    renderKonkanTable();
+  }
+
+  function konkanDrawFromDeck() {
+    if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'draw') return;
+    if (konkState.deck.length === 0) {
+      if (konkState.discard.length <= 1) { finishKonkanMatch(true, 'کارتەکان تەواو بوون و یاری یەکسان بوو!'); return; }
+      const top = konkState.discard.pop();
+      konkState.deck = konkState.discard.sort(() => Math.random() - 0.5);
+      konkState.discard = [top];
+    }
+    const card = konkState.deck.pop();
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    konkState[key].push(card);
+    konkState.phase = 'play';
+    konkState.mustMeldCardId = null;
+    konkState.log = `${playerName} کارتێکی لە Deck ڕاکێشا`;
+    playChessSound('move');
+    syncOrRenderKonkan();
+  }
+
+  function konkanTakeDiscard() {
+    if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'draw') return;
+    if (konkState.discard.length === 0) return;
+    const topCard = konkState.discard[konkState.discard.length - 1];
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    const testHand = [...konkState[key], topCard];
+
+    let canUse = false;
+    for (let i = 0; i < testHand.length; i++) {
+      for (let j = i + 1; j < testHand.length; j++) {
+        for (let k = j + 1; k < testHand.length; k++) {
+          const trio = [testHand[i], testHand[j], testHand[k]];
+          if (trio.some(c => c.id === topCard.id) && validateKonkanMeld(trio)) { canUse = true; break; }
+        }
+        if (canUse) break;
+      }
+      if (canUse) break;
+    }
+    if (!canUse) {
+      for (const m of konkState.melds) {
+        if (validateKonkanMeld([...m.cards, topCard])) { canUse = true; break; }
+      }
+    }
+    if (!canUse) {
+      alert("بەپێی یاسای کۆنکان، تەنها کاتێک دەتوانیت کارتی فڕێدراو هەڵبگریتەوە کە یەکسەر سێتێکی پێ دابگریت!");
+      return;
+    }
+
+    konkState.discard.pop();
+    konkState[key].push(topCard);
+    konkState.phase = 'play';
+    konkState.mustMeldCardId = topCard.id;
+    konkSelectedIds = [topCard.id];
+    konkState.log = `${playerName} کارتی فڕێدراوی هەڵگرتەوە (پێویستە دایبگرێت)`;
+    playChessSound('capture');
+    syncOrRenderKonkan();
+  }
+
+  function konkanLayDownMeld() {
+    if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    const chosenCards = konkState[key].filter(c => konkSelectedIds.includes(c.id));
+    const validMeld = validateKonkanMeld(chosenCards);
+    if (!validMeld) {
+      alert("کارتە هەڵبژێردراوەکان سێت (٣-٤ هاوژمارە) یان ڕیز (٣+ یەک جۆر بە دوای یەکدا) نین!");
+      return;
+    }
+
+    konkState[key] = konkState[key].filter(c => !konkSelectedIds.includes(c.id));
+    konkState.melds.push(validMeld);
+    if (konkState.mustMeldCardId && konkSelectedIds.includes(konkState.mustMeldCardId)) {
+      konkState.mustMeldCardId = null;
+    }
+    konkSelectedIds = [];
+    konkState.log = `${playerName} سێتێکی داگرتە سەر مێز!`;
+    playChessSound('domino');
+
+    if (konkState[key].length === 0) {
+      konkState.winner = konkMyRole;
+      syncOrRenderKonkan();
+      if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! هەموو کارتەکانت داگرت 🏆');
+      return;
+    }
+    syncOrRenderKonkan();
+  }
+
+  function konkanLayOffToMeld(meldIdx) {
+    if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
+    if (konkSelectedIds.length !== 1) { alert("تەنها ١ کارت هەڵبژێرە بۆ زیادکردن بۆ سەر ئەم سێتە"); return; }
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    const card = konkState[key].find(c => c.id === konkSelectedIds[0]);
+    const targetMeld = konkState.melds[meldIdx];
+    const updated = validateKonkanMeld([...targetMeld.cards, card]);
+    if (!updated) { alert("ئەم کارتە ناگونجێت لەگەڵ ئەم سێتە!"); return; }
+
+    konkState.melds[meldIdx] = updated;
+    konkState[key] = konkState[key].filter(c => c.id !== card.id);
+    if (konkState.mustMeldCardId === card.id) konkState.mustMeldCardId = null;
+    konkSelectedIds = [];
+    konkState.log = `${playerName} کارتێکی خستە سەر سێتێکی سەر مێز`;
+    playChessSound('domino');
+
+    if (konkState[key].length === 0) {
+      konkState.winner = konkMyRole;
+      syncOrRenderKonkan();
+      if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! هەموو کارتەکانت تەواو کرد 🏆');
+      return;
+    }
+    syncOrRenderKonkan();
+  }
+
+  function konkanDiscardSelected() {
+    if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
+    if (konkState.mustMeldCardId) {
+      alert("تۆ کارتی فڕێدراوت هەڵگرتووەتەوە؛ دەبێت سەرەتا سێتەکەی پێ دابگریت!");
+      return;
+    }
+    if (konkSelectedIds.length !== 1) {
+      alert("تەنها ١ کارت دیاری بکە بۆ فڕێدان!");
+      return;
+    }
+    const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
+    const oppRole = konkMyRole === 'p1' ? 'p2' : 'p1';
+    const idx = konkState[key].findIndex(c => c.id === konkSelectedIds[0]);
+    if (idx === -1) return;
+
+    const discarded = konkState[key].splice(idx, 1)[0];
+    konkState.discard.push(discarded);
+    konkSelectedIds = [];
+    playChessSound('move');
+
+    if (konkState[key].length === 0) {
+      konkState.winner = konkMyRole;
+      syncOrRenderKonkan();
+      if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! دوایین کارتت فڕێ دا و بردتەوە 🏆');
+      return;
+    }
+
+    konkState.turn = oppRole;
+    konkState.phase = 'draw';
+    konkState.log = `${playerName} کارتێکی فڕێ دا`;
+    syncOrRenderKonkan();
+    if (!konkIsOnline && konkState.turn === 'p2') setTimeout(runKonkanBotTurn, 850);
+  }
+
+  function syncOrRenderKonkan() {
+    if (konkIsOnline && konkRoomRef) konkRoomRef.child('state').set(konkState);
+    else renderKonkanTable();
+  }
+
+  function runKonkanBotTurn() {
+    if (!konkState || konkIsOnline || konkState.turn !== 'p2' || konkState.winner) return;
+    if (konkState.deck.length === 0 && konkState.discard.length > 1) {
+      const top = konkState.discard.pop();
+      konkState.deck = konkState.discard.sort(() => Math.random() - 0.5);
+      konkState.discard = [top];
+    }
+    if (konkState.deck.length > 0) konkState.p2Hand.push(konkState.deck.pop());
+
+    let foundMeld = true;
+    while (foundMeld && konkState.p2Hand.length >= 3) {
+      foundMeld = false;
+      const h = konkState.p2Hand;
+      for (let i = 0; i < h.length && !foundMeld; i++) {
+        for (let j = i + 1; j < h.length && !foundMeld; j++) {
+          for (let k = j + 1; k < h.length && !foundMeld; k++) {
+            const m = validateKonkanMeld([h[i], h[j], h[k]]);
+            if (m) {
+              const ids = new Set([h[i].id, h[j].id, h[k].id]);
+              konkState.p2Hand = konkState.p2Hand.filter(c => !ids.has(c.id));
+              konkState.melds.push(m);
+              foundMeld = true;
+              playChessSound('domino');
+            }
+          }
+        }
+      }
+    }
+
+    if (konkState.p2Hand.length === 0) {
+      konkState.winner = 'p2'; renderKonkanTable();
+      finishKonkanMatch(false, 'بۆت کۆنکانی کرد!');
+      return;
+    }
+
+    konkState.p2Hand.sort((a, b) => b.r - a.r);
+    const botDiscard = konkState.p2Hand.shift();
+    konkState.discard.push(botDiscard);
+    playChessSound('move');
+
+    if (konkState.p2Hand.length === 0) {
+      konkState.winner = 'p2'; renderKonkanTable();
+      finishKonkanMatch(false, 'بۆت دوایین کارتی فڕێ دا و کۆنکانی کرد!');
+      return;
+    }
+
+    konkState.turn = 'p1';
+    konkState.phase = 'draw';
+    konkState.log = 'بۆت کارتێکی فڕێ دا — نۆرەی تۆیە';
+    renderKonkanTable();
+  }
+
+  function finishKonkanMatch(iWon, reason) {
+    if (konkRoomRef) { konkRoomRef.off(); konkRoomRef = null; }
+    playChessSound('end');
+    document.getElementById('modalIcon').textContent = iWon ? '🏆' : '🃏';
+    document.getElementById('modalTitle').textContent = iWon ? 'کۆنکان!' : 'کۆتایی یاری';
+    document.getElementById('modalSubtitle').textContent = reason;
+    if (konkIsOnline) {
+      document.getElementById('eloChangeBox').classList.remove('hidden');
+      const res = calculateAndSaveElo('konkan', konkOppInfo.elo, iWon ? 1 : 0);
+      document.getElementById('eloChangeText').textContent = `${res.oldElo} ➔ ${res.newElo} (${res.delta >= 0 ? '+' : ''}${res.delta})`;
+    } else {
+      document.getElementById('eloChangeBox').classList.add('hidden');
+    }
+    document.getElementById('konkanActiveArea').classList.add('hidden');
+    document.getElementById('konkanSetupPanel').classList.remove('hidden');
+    document.getElementById('gameOverModal').classList.remove('hidden');
+  }
   // ==================== LEADERBOARD ====================
   function loadLeaderboard(gameKey) {
     document.querySelectorAll('.lb-tab').forEach(btn => { btn.classList.remove('bg-yellow-500', 'text-[#050b18]'); btn.classList.add('text-slate-300'); });
@@ -2067,7 +2690,30 @@ function makeBotMove() {
     } else if (type === 'N') {
       [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dr, dc]) => { const nr = r + dr, nc = c + dc; if (inBounds(nr, nc) && (!board[nr][nc] || board[nr][nc][0] !== color)) moves.push({ fromR: r, fromC: c, toR: nr, toC: nc }); });
     } else if (type === 'K') {
-      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { if (dr === 0 && dc === 0) continue; const nr = r + dr, nc = c + dc; if (inBounds(nr, nc) && (!board[nr][nc] || board[nr][nc][0] !== color)) moves.push({ fromR: r, fromC: c, toR: nr, toC: nc }); }
+   for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr, nc = c + dc;
+        if (inBounds(nr, nc) && (!board[nr][nc] || board[nr][nc][0] !== color)) {
+          moves.push({ fromR: r, fromC: c, toR: nr, toC: nc });
+        }
+      }
+      // Castling (قەڵادان)
+      if (!attackOnly && !isKingInCheck(color)) {
+        const opp = color === 'w' ? 'b' : 'w';
+        const row = color === 'w' ? 7 : 0;
+        if (r === row && c === 4) {
+          if (castling[color + 'K'] && board[row][7] === color + 'R' && !board[row][5] && !board[row][6]) {
+            if (!isSquareAttacked(row, 5, opp) && !isSquareAttacked(row, 6, opp)) {
+              moves.push({ fromR: row, fromC: 4, toR: row, toC: 6 });
+            }
+          }
+          if (castling[color + 'Q'] && board[row][0] === color + 'R' && !board[row][1] && !board[row][2] && !board[row][3]) {
+            if (!isSquareAttacked(row, 3, opp) && !isSquareAttacked(row, 2, opp)) {
+              moves.push({ fromR: row, fromC: 4, toR: row, toC: 2 });
+            }
+          }
+        }
+    }
     } else {
       const dirs = []; if (type === 'R' || type === 'Q') dirs.push([-1,0],[1,0],[0,-1],[0,1]); if (type === 'B' || type === 'Q') dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);
       dirs.forEach(([dr, dc]) => { let nr = r + dr, nc = c + dc; while (inBounds(nr, nc)) { if (!board[nr][nc]) moves.push({ fromR: r, fromC: c, toR: nr, toC: nc }); else { if (board[nr][nc][0] !== color) moves.push({ fromR: r, fromC: c, toR: nr, toC: nc }); break; } nr += dr; nc += dc; } });
