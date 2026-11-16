@@ -278,9 +278,16 @@
       min-height: 54vh !important;
       max-height: 62vh !important;
     }
-    #konkanTableArea {
-      min-height: 56vh !important;
-      max-height: 65vh !important;
+    /* Clean In-Game View */
+    body.in-game-mode { padding-bottom: 16px !important; }
+    body.in-game-mode .floating-bottom-dock { display: none !important; }
+    body.in-game-mode header { position: relative !important; }
+    
+    #chessBoard {
+      width: min(88vw, 54vh, 440px) !important;
+      height: min(88vw, 54vh, 440px) !important;
+      aspect-ratio: 1 / 1 !important;
+      margin: 0 auto !important;
     }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
@@ -288,7 +295,7 @@
 </head>
 <body>
 
-  <img id="dragGhost" src="" alt="" />
+  <img id="dragGhost" src="" alt="" style="display:none; pointer-events:none;" />
 
   <!-- ==================== AUTH GATE MODAL (LOGIN / REGISTER) ==================== -->
   <div id="authModal" class="fixed inset-0 bg-[#040914]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
