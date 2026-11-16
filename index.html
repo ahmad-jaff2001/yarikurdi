@@ -357,6 +357,45 @@
       .chesscom-sidebar { height: auto; }
       
     }
+    /* Ludo Pro Board */
+    .ludo-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      grid-template-rows: repeat(15, 1fr);
+      width: min(92vw, 62vh, 520px);
+      height: min(92vw, 62vh, 520px);
+      margin: 0 auto;
+      background: #ffffff;
+      border: 4px solid #f3cf65;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
+    }
+    .ludo-cell {
+      border: 1px solid rgba(15, 23, 42, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ludo-token {
+      width: 76%;
+      height: 76%;
+      border-radius: 9999px;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.45);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .ludo-token:hover { transform: scale(1.18); }
+    .ludo-token.movable {
+      animation: pulseToken 0.8s infinite alternate;
+      box-shadow: 0 0 12px #facc15;
+    }
+    @keyframes pulseToken {
+      from { transform: scale(0.95); }
+      to { transform: scale(1.22); }
+    }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
   </style>
@@ -628,9 +667,54 @@
           <span class="pito-card-title">دامە</span>
         </div>
       </div>
+      <div onclick="switchView('ludo')" class="pito-game-card">
+          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=500&q=80" alt="لودۆ" />
+          <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white">🎲</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">لودۆ</span>
+          </div>
+        </div>
     </div>
   </section>
+<!-- VIEW: LUDO -->
+  <section id="view-ludo" class="hidden max-w-5xl mx-auto px-4 py-4">
+    <div class="mb-3 flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+        <span>↩</span>
+        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+      <span id="ludoTurnBadge" class="px-3.5 py-1.5 rounded-xl bg-[#0d1930] border border-yellow-500/40 text-xs font-extrabold text-yellow-300">نۆرەی تۆیە (سوور 🔴)</span>
+    </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 items-center">
+      <!-- Ludo Board -->
+      <div id="ludoBoard" class="ludo-grid"></div>
+
+      <!-- Dice & Controls Sidebar -->
+      <div class="royal-card rounded-2xl p-4 space-y-4 text-center">
+        <h3 class="text-base font-extrabold gold-text">🎲 مەیدانی لودۆی کوردی</h3>
+        <p id="ludoStatusText" class="text-xs text-slate-300">زار هەڵبدە بۆ دەستپێکردن (بە ٦ دێیتە دەرەوە)</p>
+
+        <div class="flex flex-col items-center gap-3 py-2">
+          <div id="ludoDiceBox" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 text-[#050b18] flex items-center justify-center text-4xl font-black shadow-xl border-2 border-white">🎲</div>
+          <button id="ludoRollBtn" onclick="rollLudoDice()" class="gold-btn w-full py-3 rounded-xl text-sm font-extrabold">هەڵدانی زار 🎲</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-yellow-500/20">
+          <div class="p-2 rounded-xl bg-[#070f20] border border-red-500/30">
+            <div class="font-bold text-red-400">🔴 تۆ (سوور)</div>
+            <div id="ludoRedHome" class="text-slate-300 mt-0.5">گەیشتوو: 0/4</div>
+          </div>
+          <div class="p-2 rounded-xl bg-[#070f20] border border-yellow-500/30">
+            <div class="font-bold text-yellow-400">🟡 بۆت (زەرد)</div>
+            <div id="ludoYellowHome" class="text-slate-300 mt-0.5">گەیشتوو: 0/4</div>
+          </div>
+        </div>
+
+        <button onclick="initLudoGame()" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">🔄 دەستپێکردنەوەی یاری</button>
+      </div>
+    </div>
+  </section>
   <!-- VIEW 2: CHESS -->
   <section id="view-chess" class="hidden max-w-6xl mx-auto px-4 py-6">
     <div class="mb-3 flex items-center justify-between">
@@ -3278,6 +3362,204 @@ function makeBotMove() {
     document.getElementById('activeGameArea').classList.add('hidden');
     document.getElementById('chessSetupPanel').classList.remove('hidden');
   }
+  // ================= LUDO ENGINE =================
+    const LUDO_PATH = [
+      [6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],
+      [1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],
+      [8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],
+      [13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0]
+    ];
+    const RED_HOME_STRETCH = [[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]];
+    const YELLOW_HOME_STRETCH = [[7,13],[7,12],[7,11],[7,10],[7,9],[7,8]];
+    const RED_BASE = [[2,2],[2,3],[3,2],[3,3]];
+    const YELLOW_BASE = [[11,11],[11,12],[12,11],[12,12]];
+    const SAFE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
+
+    let ludoState = {
+      turn: 'red',
+      dice: 0,
+      rolled: false,
+      red: [-1, -1, -1, -1],     // -1 = لە ماڵەوە، 0..50 = ڕێگای گشتی، 51..56 = ڕێڕەوی کۆتایی
+      yellow: [-1, -1, -1, -1]
+    };
+
+    function initLudoGame() {
+      ludoState = { turn: 'red', dice: 0, rolled: false, red: [-1, -1, -1, -1], yellow: [-1, -1, -1, -1] };
+      document.getElementById('ludoDiceBox').textContent = '🎲';
+      document.getElementById('ludoTurnBadge').textContent = 'نۆرەی تۆیە (سوور 🔴)';
+      document.getElementById('ludoStatusText').textContent = 'زار هەڵبدە بۆ دەستپێکردن (بە ٦ دێیتە دەرەوە)';
+      document.getElementById('ludoRollBtn').disabled = false;
+      renderLudoBoard();
+    }
+
+    function getLudoCoord(color, pos, idx) {
+      if (pos === -1) return color === 'red' ? RED_BASE[idx] : YELLOW_BASE[idx];
+      if (pos >= 51) {
+        const stretchIdx = Math.min(pos - 51, 5);
+        return color === 'red' ? RED_HOME_STRETCH[stretchIdx] : YELLOW_HOME_STRETCH[stretchIdx];
+      }
+      const offset = color === 'red' ? 0 : 26;
+      return LUDO_PATH[(pos + offset) % 52];
+    }
+
+    function canMoveLudoToken(color, idx, dice) {
+      const pos = ludoState[color][idx];
+      if (pos === 56) return false;
+      if (pos === -1) return dice === 6;
+      return pos + dice <= 56;
+    }
+
+    function rollLudoDice() {
+      if (ludoState.turn !== 'red' || ludoState.rolled) return;
+      const val = Math.floor(Math.random() * 6) + 1;
+      ludoState.dice = val;
+      ludoState.rolled = true;
+      const faces = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+      document.getElementById('ludoDiceBox').textContent = faces[val];
+
+      const movable = [0,1,2,3].filter(i => canMoveLudoToken('red', i, val));
+      renderLudoBoard();
+
+      if (movable.length === 0) {
+        document.getElementById('ludoStatusText').textContent = `زار (${val}) هات، هیچ جوڵەیەک نییە!`;
+        setTimeout(() => switchLudoTurn('yellow'), 950);
+      } else {
+        document.getElementById('ludoStatusText').textContent = `زار (${val}) هات — کلیک لە یەکێک لە مۆرە سوورەکان بکە`;
+      }
+    }
+
+    function moveLudoToken(color, idx) {
+      if (ludoState.turn !== color || !ludoState.rolled) return;
+      if (!canMoveLudoToken(color, idx, ludoState.dice)) return;
+
+      let pos = ludoState[color][idx];
+      pos = (pos === -1) ? 0 : pos + ludoState.dice;
+      ludoState[color][idx] = pos;
+
+      // لێدانی مۆری بەرامبەر لە خانە نائەمینەکاندا
+      let captured = false;
+      if (pos >= 0 && pos <= 50) {
+        const myGlobal = (pos + (color === 'red' ? 0 : 26)) % 52;
+        if (!SAFE_INDICES.includes(myGlobal)) {
+          const opp = color === 'red' ? 'yellow' : 'red';
+          ludoState[opp].forEach((oPos, oIdx) => {
+            if (oPos >= 0 && oPos <= 50) {
+              const oppGlobal = (oPos + (opp === 'red' ? 0 : 26)) % 52;
+              if (oppGlobal === myGlobal) {
+                ludoState[opp][oIdx] = -1;
+                captured = true;
+              }
+            }
+          });
+        }
+      }
+
+      const bonusRoll = (ludoState.dice === 6 || captured || pos === 56);
+      ludoState.rolled = false;
+      renderLudoBoard();
+
+      if (ludoState[color].filter(p => p === 56).length === 4) {
+        document.getElementById('ludoStatusText').textContent = color === 'red' ? '🏆 پیرۆزە! تۆ یاریی لودۆت بردەوە!' : '🤖 بۆتی YariKurdi یارییەکەی بردەوە!';
+        return;
+      }
+
+      if (bonusRoll) {
+        document.getElementById('ludoStatusText').textContent = '🎉 نۆرەیەکی زیادەت وەرگرت! دووبارە زار هەڵبدە';
+        if (color === 'yellow') setTimeout(playLudoBotTurn, 850);
+      } else {
+        switchLudoTurn(color === 'red' ? 'yellow' : 'red');
+      }
+    }
+
+    function switchLudoTurn(next) {
+      ludoState.turn = next;
+      ludoState.rolled = false;
+      if (next === 'red') {
+        document.getElementById('ludoTurnBadge').textContent = 'نۆرەی تۆیە (سوور 🔴)';
+        document.getElementById('ludoStatusText').textContent = 'نۆرەی تۆیە، زار هەڵبدە';
+        document.getElementById('ludoRollBtn').disabled = false;
+      } else {
+        document.getElementById('ludoTurnBadge').textContent = 'نۆرەی بۆتە (زەرد 🟡)';
+        document.getElementById('ludoRollBtn').disabled = true;
+        setTimeout(playLudoBotTurn, 850);
+      }
+      renderLudoBoard();
+    }
+
+    function playLudoBotTurn() {
+      if (ludoState.turn !== 'yellow') return;
+      const val = Math.floor(Math.random() * 6) + 1;
+      ludoState.dice = val;
+      ludoState.rolled = true;
+      const faces = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+      document.getElementById('ludoDiceBox').textContent = faces[val];
+      document.getElementById('ludoStatusText').textContent = `بۆت زاری (${val}) هێنا...`;
+
+      const movable = [0,1,2,3].filter(i => canMoveLudoToken('yellow', i, val));
+      setTimeout(() => {
+        if (movable.length === 0) {
+          switchLudoTurn('red');
+        } else {
+          // بۆت هەوڵ دەدات مۆرێک بهێنێتە دەرەوە یان پێشەنگ بباتە پێش
+          const chosen = movable.sort((a,b) => ludoState.yellow[b] - ludoState.yellow[a])[0];
+          moveLudoToken('yellow', chosen);
+        }
+      }, 850);
+    }
+
+    function renderLudoBoard() {
+      const board = document.getElementById('ludoBoard');
+      if (!board) return;
+      board.innerHTML = '';
+
+      document.getElementById('ludoRedHome').textContent = `گەیشتوو: ${ludoState.red.filter(p => p === 56).length}/4`;
+      document.getElementById('ludoYellowHome').textContent = `گەیشتوو: ${ludoState.yellow.filter(p => p === 56).length}/4`;
+
+      for (let r = 0; r < 15; r++) {
+        for (let c = 0; c < 15; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'ludo-cell';
+
+          // ڕەنگکردنی ٤ ماڵەکە و ناوەڕاست
+          if (r < 6 && c < 6) cell.style.background = '#dc2626';
+          else if (r < 6 && c > 8) cell.style.background = '#16a34a';
+          else if (r > 8 && c < 6) cell.style.background = '#2563eb';
+          else if (r > 8 && c > 8) cell.style.background = '#eab308';
+          else if (r >= 6 && r <= 8 && c >= 6 && c <= 8) cell.style.background = '#f3cf65';
+          else if (r === 7 && c >= 1 && c <= 5) cell.style.background = '#fca5a5';
+          else if (c === 7 && r >= 1 && r <= 5) cell.style.background = '#86efac';
+          else if (c === 7 && r >= 9 && r <= 13) cell.style.background = '#93c5fd';
+          else if (r === 7 && c >= 9 && c <= 13) cell.style.background = '#fde047';
+          else if (r === 6 && c === 1) cell.style.background = '#dc2626';
+          else if (r === 1 && c === 8) cell.style.background = '#16a34a';
+          else if (r === 8 && c === 13) cell.style.background = '#eab308';
+          else if (r === 13 && c === 6) cell.style.background = '#2563eb';
+
+          // نیشانەی ئەستێرە بۆ خانە ئەمینەکان
+          if ((r===6&&c===1)||(r===1&&c===8)||(r===8&&c===13)||(r===13&&c===6)||(r===2&&c===6)||(r===6&&c===12)||(r===12&&c===8)||(r===8&&c===2)) {
+            cell.innerHTML = '<span style="font-size:10px;opacity:0.65;">⭐</span>';
+          }
+
+          // دانانی مۆرە سوور و زەردەکان
+          ['red', 'yellow'].forEach(color => {
+            ludoState[color].forEach((pos, idx) => {
+              const [tr, tc] = getLudoCoord(color, pos, idx);
+              if (tr === r && tc === c) {
+                const tok = document.createElement('div');
+                const canMove = (color === 'red' && ludoState.turn === 'red' && ludoState.rolled && canMoveLudoToken('red', idx, ludoState.dice));
+                tok.className = 'ludo-token' + (canMove ? ' movable' : '');
+                tok.style.background = color === 'red' ? '#ef4444' : '#facc15';
+                tok.onclick = () => moveLudoToken(color, idx);
+                cell.innerHTML = '';
+                cell.appendChild(tok);
+              }
+            });
+          });
+
+          board.appendChild(cell);
+        }
+      }
+    }
 </script>
 <!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
   <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
