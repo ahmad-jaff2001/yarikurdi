@@ -1815,10 +1815,9 @@
         const sqSize = boardWrapper.getBoundingClientRect().width / 8;
         dragGhost.src = PIECE_SVGS[piece]; dragGhost.style.width = (sqSize * 0.92) + 'px'; dragGhost.style.height = (sqSize * 0.92) + 'px';
         dragGhost.style.left = e.clientX + 'px'; dragGhost.style.top = e.clientY + 'px';
-      } else if (selectedSq) attemptSquareDestination(sq.r, sq.c);
-    }
-  });
-
+    } else if (selectedSq) attemptSquareDestination(sq.r, sq.c);
+}
+});
   window.addEventListener('pointermove', e => {
     if (!isDraggingPiece || !dragFromSq) return;
     if (Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY) > 5 && !hasMovedDuringDrag) { hasMovedDuringDrag = true; dragGhost.style.display = 'block'; }
@@ -1862,7 +1861,121 @@
       ctx.strokeStyle = a.color; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     });
   }
+function executeMove(fromR, fromC, toR, toC, isRemote = false) {
+    if (!gameActive) return;
+    const piece = board[fromR][fromC];
+    if (!piece) return;
+    const targetPiece = board[toR][toC];
+    let isCapture = !!targetPiece;
 
+    // En Passant capture
+    if (piece[1] === 'P' && epTarget && toR === epTarget.r && toC === epTarget.c) {
+        board[fromR][toC] = null;
+        isCapture = true;
+    }
+
+    // Update En Passant target
+    if (piece[1] === 'P' && Math.abs(toR - fromR) === 2) {
+        epTarget = { r: (fromR + toR) / 2, c: fromC };
+    } else {
+        epTarget = null;
+    }
+
+    // Castling rook movement
+    if (piece[1] === 'K' && Math.abs(toC - fromC) === 2) {
+        if (toC === 6) { board[fromR][5] = board[fromR][7]; board[fromR][7] = null; }
+        if (toC === 2) { board[fromR][3] = board[fromR][0]; board[fromR][0] = null; }
+    }
+
+    // Update castling rights
+    if (piece === 'wK') { castling.wK = false; castling.wQ = false; }
+    if (piece === 'bK') { castling.bK = false; castling.bQ = false; }
+    if (fromR === 7 && fromC === 0) castling.wQ = false;
+    if (fromR === 7 && fromC === 7) castling.wK = false;
+    if (fromR === 0 && fromC === 0) castling.bQ = false;
+    if (fromR === 0 && fromC === 7) castling.bK = false;
+
+    // Move piece & Auto-Promote Pawn to Queen
+    board[toR][toC] = piece;
+    board[fromR][fromC] = null;
+    if (piece === 'wP' && toR === 0) board[toR][toC] = 'wQ';
+    if (piece === 'bP' && toR === 7) board[toR][toC] = 'bQ';
+
+    // Increment clock
+    if (!isRemote && turn === 'w') whiteTime += selectedIncrement;
+    if (!isRemote && turn === 'b') blackTime += selectedIncrement;
+
+    movelist.push({ fromR, fromC, toR, toC, piece });
+    lastMove = { fromR, fromC, toR, toC, moveNum: movelist.length };
+    selectedSq = null;
+    legalMoves = [];
+    clearArrows();
+
+    const nextTurn = turn === 'w' ? 'b' : 'w';
+    turn = nextTurn;
+
+    const inCheck = isKingInCheck(turn);
+    if (inCheck) playChessSound('check');
+    else if (isCapture) playChessSound('capture');
+    else playChessSound('move');
+
+    renderBoard();
+
+    // Send move to Firebase if Online
+    if (isOnlineGame && !isRemote && roomRef) {
+        roomRef.child('lastMove').set({
+            fromR, fromC, toR, toC,
+            by: myColor,
+            moveNum: movelist.length
+        });
+    }
+
+    // Check Checkmate / Stalemate
+    let hasAnyLegalMove = false;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            if (board[r][c] && board[r][c][0] === turn) {
+                if (getLegalMovesForPiece(r, c).length > 0) {
+                    hasAnyLegalMove = true;
+                    break;
+                }
+            }
+        }
+        if (hasAnyLegalMove) break;
+    }
+
+    if (!hasAnyLegalMove) {
+        if (inCheck) {
+            const playerWon = (turn !== myColor);
+            if (isOnlineGame && roomRef && playerWon) {
+                roomRef.child('winner').set(myColor);
+            }
+            endGame(playerWon, playerWon ? 'کش و مات! تۆ یارییەکەت بردەوە' : 'کش و مات! بەرامبەر یارییەکەی بردەوە');
+        } else {
+            if (isOnlineGame && roomRef) roomRef.child('winner').set('draw');
+            endGame('draw', 'یارییەکە بە یەکسانی (Stalemate) کۆتایی هات');
+        }
+        return;
+    }
+
+    // Execute Premove if queued
+    if (turn === myColor && premove) {
+        const pm = premove;
+        premove = null;
+        const pLegal = getLegalMovesForPiece(pm.fromR, pm.fromC);
+        if (pLegal.some(m => m.toR === pm.toR && m.toC === pm.toC)) {
+            setTimeout(() => executeMove(pm.fromR, pm.fromC, pm.toR, pm.toC), 60);
+            return;
+        }
+    }
+
+    // Trigger Bot Move if offline
+    if (!isOnlineGame && turn !== myColor && gameActive) {
+        setTimeout(() => {
+            if (typeof makeBotMove === 'function') makeBotMove();
+        }, 350);
+    }
+}
  function renderBoard() {
     const boardEl = document.getElementById('chessBoard');
     boardEl.innerHTML = '';
