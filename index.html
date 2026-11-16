@@ -260,6 +260,28 @@
       box-shadow: 0 6px 16px rgba(212, 175, 55, 0.55);
     }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
+    /* Fit Games Perfectly Inside Screen Without Scroll */
+    body.in-game-mode { padding-bottom: 10px !important; }
+    body.in-game-mode .floating-bottom-dock { display: none !important; }
+    body.in-game-mode header { padding-top: 4px !important; padding-bottom: 4px !important; }
+    
+    #view-chess, #view-domino, #view-konkan {
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+    #chessBoard {
+      width: min(86vw, 62vh, 490px) !important;
+      height: min(86vw, 62vh, 490px) !important;
+      margin: 0 auto;
+    }
+    #dominoTableArea {
+      min-height: 54vh !important;
+      max-height: 62vh !important;
+    }
+    #konkanTableArea {
+      min-height: 56vh !important;
+      max-height: 65vh !important;
+    }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
   </style>
@@ -617,8 +639,8 @@
           </div>
           <div id="inGameChatMessages" class="h-24 overflow-y-auto space-y-1.5 text-xs p-1"></div>
           <form onsubmit="submitInGameChat(event)" class="flex gap-1.5">
-            <input id="inGameChatInput" type="text" placeholder="نامەیەک بنووسە..." class="flex-1 bg-[#0d1933] border border-yellow-500/25 rounded-lg px-2.5 py-1.5 text-xs text-white" />
-            <button type="submit" class="gold-btn px-3 py-1.5 rounded-lg text-xs">ناردن</button>
+           <input id="matchChatInput" type="text" onkeydown="if(event.key==='Enter') sendMatchChat()" placeholder="نامەیەک بنووسە..." class="min-w-0 flex-1 px-3 py-2 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none" />
+            <button onclick="sendMatchChat()" class="gold-btn px-3.5 py-2 rounded-xl text-xs shrink-0">ناردن</button>
           </form>
         </div>
         <div class="grid grid-cols-2 gap-2">
@@ -1388,6 +1410,8 @@
     document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
     const activeDock = document.getElementById('dock-' + (view === 'chess' || view === 'domino' || view === 'konkan' ? 'hub' : view));
     if (activeDock) activeDock.classList.add('active');
+    const isPlayingGame = (view === 'chess' || view === 'domino' || view === 'konkan');
+    document.body.classList.toggle('in-game-mode', isPlayingGame);
     if (view === 'leaderboard') loadLeaderboard(subTab);
     else if (view === 'friends') renderFriendsList();
     else if (view === 'rooms') loadActiveVoiceRooms();
