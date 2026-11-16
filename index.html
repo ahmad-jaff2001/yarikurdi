@@ -1975,6 +1975,32 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
             if (typeof makeBotMove === 'function') makeBotMove();
         }, 350);
     }
+
+}
+function makeBotMove() {
+    if (!gameActive || isOnlineGame || turn === myColor) return;
+    const allMoves = [];
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            if (board[r][c] && board[r][c][0] === turn) {
+                const moves = getLegalMovesForPiece(r, c);
+                moves.forEach(m => allMoves.push({ fromR: r, fromC: c, toR: m.toR, toC: m.toC }));
+            }
+        }
+    }
+    if (allMoves.length === 0) return;
+
+    // Prioritize captures & center control
+    const pieceVals = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0 };
+    allMoves.sort((a, b) => {
+        const capA = board[a.toR][a.toC] ? pieceVals[board[a.toR][a.toC][1]] || 0 : 0;
+        const capB = board[b.toR][b.toC] ? pieceVals[board[b.toR][b.toC][1]] || 0 : 0;
+        return capB - capA;
+    });
+
+    const topPool = allMoves.slice(0, Math.min(3, allMoves.length));
+    const chosen = topPool[Math.floor(Math.random() * topPool.length)];
+    executeMove(chosen.fromR, chosen.fromC, chosen.toR, chosen.toC, false);
 }
  function renderBoard() {
     const boardEl = document.getElementById('chessBoard');
