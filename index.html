@@ -1905,8 +1905,9 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
     if (!isRemote && turn === 'w') whiteTime += selectedIncrement;
     if (!isRemote && turn === 'b') blackTime += selectedIncrement;
 
-    movelist.push({ fromR, fromC, toR, toC, piece });
-    lastMove = { fromR, fromC, toR, toC, moveNum: movelist.length };
+  if (typeof moveList !== 'undefined') moveList.push({ fromR, fromC, toR, toC, piece });
+    const currentMoveNum = (typeof moveList !== 'undefined') ? moveList.length : ((lastMove?.moveNum || 0) + 1);
+    lastMove = { fromR, fromC, toR, toC, moveNum: currentMoveNum };
     selectedSq = null;
     legalMoves = [];
     clearArrows();
@@ -1926,8 +1927,9 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
         roomRef.child('lastMove').set({
             fromR, fromC, toR, toC,
             by: myColor,
-            moveNum: movelist.length
+            moveNum: currentMoveNum
         });
+    }
     }
 
     // Check Checkmate / Stalemate
@@ -1976,7 +1978,7 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
         }, 350);
     }
 
-}
+
 function makeBotMove() {
     if (!gameActive || isOnlineGame || turn === myColor) return;
     const allMoves = [];
