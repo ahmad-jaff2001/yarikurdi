@@ -1810,6 +1810,8 @@
        } const isGameView = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');
       const topHeader = document.querySelector('header');
       if (topHeader) topHeader.style.display = isGameView ? 'none' : '';
+      const bottomDock = document.querySelector('.floating-bottom-dock');
+      if (bottomDock) bottomDock.style.display = isGameView ? 'none' : '';
       document.querySelectorAll('.fixed.bottom-4, .fixed.bottom-3, .fixed.bottom-5, nav.fixed, .mobile-dock').forEach(el => {
         if (el.id !== 'challengeToast' && el.id !== 'gameOverModal') {
           el.style.display = isGameView ? 'none' : '';
