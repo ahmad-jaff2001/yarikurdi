@@ -358,6 +358,83 @@
       
     }
    /* Yalla Ludo Pro Design */
+   /* Royal Kurdish Dominoes 101 */
+    .domino-table-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      background: radial-gradient(circle at center, #0f5132 0%, #062e1c 100%);
+      border: 6px solid #78350f;
+      border-radius: 24px;
+      padding: 12px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(0, 0, 0, 0.65);
+    }
+    .domino-chain-area {
+      min-height: 155px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1.5px dashed rgba(250, 204, 21, 0.35);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .domino-tile {
+      background: linear-gradient(145deg, #fffbeb, #f3e8d2);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 4px 0 #94a3b8, 0 6px 12px rgba(0, 0, 0, 0.45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #0f172a;
+      font-weight: 900;
+      user-select: none;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .domino-tile.horizontal {
+      width: 64px;
+      height: 32px;
+      padding: 0 8px;
+      flex-direction: row;
+    }
+    .domino-tile.vertical-double {
+      width: 34px;
+      height: 64px;
+      padding: 6px 0;
+      flex-direction: column;
+    }
+    .domino-tile.hand-tile {
+      width: 44px;
+      height: 82px;
+      padding: 8px 0;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .domino-tile.hand-tile.playable {
+      border-color: #facc15;
+      box-shadow: 0 0 14px rgba(250, 204, 21, 0.8), 0 4px 0 #ca8a04;
+      transform: translateY(-6px);
+    }
+    .domino-tile.hand-tile.playable:hover {
+      transform: translateY(-10px) scale(1.05);
+    }
+    .domino-pip-half {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      width: 24px;
+      height: 24px;
+      place-items: center;
+    }
+    .domino-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: #1e293b;
+    }
+    .domino-dot.red-pip { background: #dc2626; width: 6px; height: 6px; }
     .yalla-ludo-wrap {
       max-width: 440px;
       margin: 0 auto;
@@ -914,212 +991,57 @@
   </section>
 
   <!-- VIEW 3: DOMINO ARENA -->
-  <section id="view-domino" class="hidden max-w-6xl mx-auto px-4 py-6">
-    <div class="mb-3 flex items-center justify-between">
-      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
-        <span>↩</span>
-        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
-      </button>
-    </div>
-    <div id="dominoSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
-      <div class="text-center space-y-1">
-        <div class="text-4xl mb-1">🁣</div>
-        <h2 class="text-2xl font-extrabold gold-text">مەیدانی دۆمینەی کوردی (١٠١)</h2>
-        <p class="text-xs text-slate-400">یەکەم یاریزان بگاتە ١٠١ خاڵ براوەیە</p>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-[#091326] border border-emerald-500/30 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-extrabold text-emerald-400">🌐 دۆمینەی ئۆنلاین (Elo)</span>
-          <span class="text-[11px] text-yellow-300 font-bold">خاڵی تۆ: <span id="dominoMyEloLabel">1200</span></span>
+ <!-- VIEW: DOMINOES 101 PRO -->
+  <section id="view-domino" class="hidden max-w-xl mx-auto px-3 py-3">
+    <div class="domino-table-wrap space-y-3">
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between">
+        <button onclick="switchView('hub')" class="px-3 py-1.5 rounded-xl bg-black/40 hover:bg-black/60 border border-yellow-400/30 text-xs font-extrabold text-yellow-300 flex items-center gap-1">
+          <span>↩</span><span>دەرچوون</span>
+        </button>
+        <div class="px-3 py-1 rounded-full bg-black/45 border border-yellow-400/30 text-xs font-black text-yellow-300">
+          🁣 دۆمینەی کوردی (١٠١)
         </div>
-        <button onclick="startDominoOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕان بەدوای یاریزاندا</button>
+        <button onclick="startNewDominoMatch()" class="px-3 py-1.5 rounded-xl bg-amber-500 text-[#050b18] text-xs font-black shadow">یاری نوێ 🔄</button>
       </div>
 
-      <div class="p-4 rounded-2xl bg-[#091326] border border-yellow-500/20 space-y-3">
-        <div class="flex items-center justify-between"><span class="text-sm font-extrabold text-yellow-300">🤖 یاریکردن لەگەڵ بۆت</span></div>
-        <button onclick="startDominoBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#16274b] text-white border border-yellow-500/30">دەستپێکردن</button>
-      </div>
-    </div>
-
-    <div id="dominoSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-6">
-      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
-        <div class="absolute inset-0 rounded-full border-2 border-yellow-400 radar-ring"></div>
-        <div class="w-16 h-16 rounded-full bg-yellow-500/20 border border-yellow-400 flex items-center justify-center text-3xl">🁣</div>
-      </div>
-      <h3 class="text-lg font-extrabold text-yellow-300">چاوەڕێی یاریزانی دۆمینەین...</h3>
-      <button onclick="cancelDominoMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">هەڵوەشاندنەوە</button>
-    </div>
-
-    <div id="dominoActiveArea" class="hidden space-y-4">
-      <div class="royal-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center font-extrabold text-white overflow-hidden" id="domOppAvatar">ب</div>
-          <div>
-            <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="domOppName">بەرامبەر</span><span id="domOppElo" class="text-[11px] text-yellow-400">(1200)</span></div>
-            <div id="domOppTilesBack" class="flex gap-1 mt-1"></div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4 bg-[#070f20] px-4 py-2 rounded-xl border border-yellow-500/30">
-          <div class="text-center"><div class="text-[10px] text-slate-400">تۆ</div><div id="domMyScore" class="text-lg font-extrabold text-emerald-400">0</div></div>
-          <div class="text-xs font-extrabold text-yellow-400">ئامانج: ١٠١</div>
-          <div class="text-center"><div class="text-[10px] text-slate-400">بەرامبەر</div><div id="domOppScore" class="text-lg font-extrabold text-red-400">0</div></div>
-        </div>
-
+      <!-- Scoreboard & Opponent -->
+      <div class="flex items-center justify-between bg-black/35 px-3 py-2 rounded-2xl border border-white/10">
         <div class="flex items-center gap-2">
-          <button id="domDrawBtn" onclick="drawFromBoneyard()" class="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-[#15284d] border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/20 transition flex items-center gap-1.5">
-            <span>📥</span> ڕاکێشان لە بازاڕ (<span id="domBoneyardCount">14</span>)
-          </button>
-          <button onclick="exitDominoGame()" class="px-3 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">دەرچوون</button>
-        </div>
-      </div>
-
-      <div class="text-center">
-        <span id="domTurnBanner" class="inline-block px-5 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-400/50 text-xs font-extrabold text-yellow-300">نۆرەی تۆیە</span>
-      </div>
-
-      <div class="domino-table rounded-3xl p-4 md:p-6 min-h-[260px] flex flex-col justify-between relative overflow-hidden">
-        <div id="domSideChoiceBar" class="hidden flex justify-center gap-4 mb-3 z-10">
-          <button onclick="placeSelectedTileOnSide('right')" class="gold-btn px-4 py-1.5 rounded-xl text-xs">➔ ڕاست (<span id="domRightEndVal">-</span>)</button>
-          <button onclick="placeSelectedTileOnSide('left')" class="gold-btn px-4 py-1.5 rounded-xl text-xs">چەپ (<span id="domLeftEndVal">-</span>) ⬅</button>
-        </div>
-        <div id="domChainContainer" class="flex-1 flex flex-wrap items-center justify-center gap-1.5 py-4 overflow-x-auto" style="direction: ltr;"></div>
-        <div class="flex justify-between items-center text-[11px] text-emerald-200/80 border-t border-white/10 pt-2">
-          <span>سەری ڕاست: <b id="domRightInfo" class="text-yellow-300">کراوە</b></span>
-          <span id="domRoundLog" class="text-yellow-200 font-bold">گەڕی یەکەم</span>
-          <span>سەری چەپ: <b id="domLeftInfo" class="text-yellow-300">کراوە</b></span>
-        </div>
-      </div>
-
-      <div class="royal-card rounded-2xl p-4 space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-extrabold text-yellow-300">🖐️ داشەکانی دەستی تۆ (کلیک لە داشێکی ڕووناک بکە):</span>
-          <span id="domMyTileCount" class="text-slate-400">٧ داش</span>
-        </div>
-        <div id="domMyHandContainer" class="flex flex-wrap items-center justify-center gap-2.5 py-2" style="direction: ltr;"></div>
-      </div>
-    </div>
-  </section>
-<!-- VIEW 3.5: KONKAN ARENA -->
-  <section id="view-konkan" class="hidden max-w-6xl mx-auto px-4 py-6">
-    <div class="mb-3 flex items-center justify-between">
-      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
-        <span>↩</span>
-        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
-      </button>
-    </div>
-    <!-- Setup Panel -->
-    <div id="konkanSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
-      <div class="text-center space-y-1">
-        <div class="text-4xl mb-1">🃏</div>
-        <h2 class="text-2xl font-extrabold gold-text">مەیدانی کۆنکانی شاهانە</h2>
-        <p class="text-xs text-slate-400">یەکەم یاریزان هەموو کارتەکانی دەستی دابگرێت یان فڕێ بدات براوەیە</p>
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-slate-300">شێوازی دابەشکردن:</label>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)" class="py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400 transition">١٠ کارتی (کلاسیک)</button>
-          <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)" class="py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] text-slate-300 border border-yellow-500/25 transition">٨ کارتی (خێرا)</button>
-        </div>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-[#091326] border border-emerald-500/30 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-extrabold text-emerald-400">🌐 کۆنکانی ئۆنلاین (Elo)</span>
-          <span class="text-[11px] text-yellow-300 font-bold">خاڵی تۆ: <span id="konkanMyEloLabel">1200</span></span>
-        </div>
-        <button onclick="startKonkanOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕان بەدوای یاریزاندا</button>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-[#091326] border border-yellow-500/20 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-extrabold text-yellow-300">🤖 یاریکردن لەگەڵ بۆتی زیرەک</span>
-        </div>
-        <button onclick="startKonkanBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#16274b] text-white border border-yellow-500/30 hover:border-yellow-400 transition">دەستپێکردن</button>
-      </div>
-    </div>
-
-    <!-- Searching Panel -->
-    <div id="konkanSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-6">
-      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
-        <div class="absolute inset-0 rounded-full border-2 border-yellow-400 radar-ring"></div>
-        <div class="w-16 h-16 rounded-full bg-yellow-500/20 border border-yellow-400 flex items-center justify-center text-3xl">🃏</div>
-      </div>
-      <h3 class="text-lg font-extrabold text-yellow-300">چاوەڕێی یاریزانی کۆنکانین...</h3>
-      <button onclick="cancelKonkanMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">هەڵوەشاندنەوە</button>
-    </div>
-
-    <!-- Active VIP Table -->
-    <div id="konkanActiveArea" class="hidden space-y-4">
-      <!-- Top Opponent Bar -->
-      <div class="royal-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div id="konkOppAvatar" class="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center font-extrabold text-white overflow-hidden">ب</div>
+          <div class="w-9 h-9 rounded-full bg-rose-600 border-2 border-yellow-400 flex items-center justify-center text-base">🤖</div>
           <div>
-            <div class="text-xs font-extrabold text-white flex items-center gap-1.5">
-              <span id="konkOppName">بەرامبەر</span>
-              <span id="konkOppElo" class="text-[11px] text-yellow-400">(1200)</span>
-            </div>
-            <div id="konkOppCardsBack" class="flex -space-x-3 space-x-reverse mt-1"></div>
+            <div class="text-xs font-extrabold text-white">بۆتی مامۆستا</div>
+            <div class="text-[11px] text-rose-300 font-bold">خاڵ: <span id="dominoBotScore">0</span> / 101 • کاشی: <span id="dominoBotCount">7</span></div>
           </div>
         </div>
-
-        <div class="text-center">
-          <span id="konkTurnBanner" class="inline-block px-5 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-400/50 text-xs font-extrabold text-yellow-300">نۆرەی تۆیە کارتێک ڕابکێشە</span>
-          <div id="konkActionLog" class="text-[11px] text-slate-300 mt-1">دەستپێکی یاری</div>
+        <div class="text-center px-2.5 py-1 rounded-xl bg-emerald-950/80 border border-emerald-400/30">
+          <div class="text-[10px] text-emerald-300">بازاڕ (بۆنیا)</div>
+          <div id="dominoBoneyardCount" class="text-sm font-black text-white">14</div>
         </div>
-
-        <button onclick="exitKonkanGame()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">دەرچوون</button>
-      </div>
-
-      <!-- Green Velvet Table -->
-      <div class="domino-table rounded-3xl p-4 md:p-6 min-h-[300px] flex flex-col justify-between gap-4 relative">
-        <!-- Deck & Discard Pile Center -->
-        <div class="flex items-center justify-center gap-8 py-2" style="direction: ltr;">
-          <!-- Closed Deck -->
-          <div onclick="konkanDrawFromDeck()" class="flex flex-col items-center gap-1.5 cursor-pointer group">
-            <div id="konkDeckBox" class="w-20 h-28 rounded-xl bg-gradient-to-br from-[#10254d] to-[#071229] border-2 border-yellow-400 shadow-2xl flex flex-col items-center justify-center group-hover:scale-105 transition">
-              <span class="text-2xl">👑</span>
-              <span id="konkDeckCount" class="text-xs font-extrabold text-yellow-300 mt-1">31</span>
-            </div>
-            <span class="text-[11px] font-bold text-emerald-200">ڕاکێشان (Deck)</span>
-          </div>
-
-          <!-- Open Discard Pile -->
-          <div onclick="konkanTakeDiscard()" class="flex flex-col items-center gap-1.5 cursor-pointer group">
-            <div id="konkDiscardSlot" class="w-20 h-28 rounded-xl border-2 border-dashed border-yellow-400/50 flex items-center justify-center bg-black/25 group-hover:scale-105 transition">
-              <span class="text-xs text-slate-400">بەتاڵ</span>
-            </div>
-            <span class="text-[11px] font-bold text-yellow-300">هەڵگرتنەوە (Discard)</span>
-          </div>
-        </div>
-
-        <!-- Melds Area on Table -->
-        <div class="space-y-2 border-t border-white/10 pt-3">
-          <div class="flex items-center justify-between text-[11px] text-emerald-200/80">
-            <span>کارتە داگیراوەکانی سەر مێز (بۆ زیادکردنی کارت کلیک لە سێتێک بکە):</span>
-            <span id="konkMeldsCount">٠ سێت</span>
-          </div>
-          <div id="konkTableMelds" class="flex flex-wrap items-center justify-center gap-3 min-h-[76px]" style="direction: ltr;">
-            <span class="text-xs text-emerald-200/50">هێشتا هیچ سێتێک دانەگیراوە...</span>
-          </div>
+        <div class="text-left">
+          <div class="text-xs font-extrabold text-yellow-300">تۆ</div>
+          <div class="text-[11px] text-emerald-300 font-bold">خاڵ: <span id="dominoMyScore">0</span> / 101</div>
         </div>
       </div>
 
-      <!-- Player Hand & Controls -->
-      <div class="royal-card rounded-2xl p-4 space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <span class="text-xs font-extrabold text-yellow-300">🖐️ کارتەکانی دەستت (<span id="konkMyCount">10</span>):</span>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="konkanSortHand('rank')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#15284d] text-slate-200 border border-yellow-500/25 hover:border-yellow-400">ڕیزکردن بە ژمارە 🔢</button>
-            <button onclick="konkanSortHand('suit')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#15284d] text-slate-200 border border-yellow-500/25 hover:border-yellow-400">ڕیزکردن بە جۆر ♠♥</button>
-            <button id="konkMeldBtn" onclick="konkanLayDownMeld()" class="gold-btn px-4 py-1.5 rounded-xl text-xs">⬇️ داگرتنی سێت (Meld)</button>
-            <button id="konkDiscardBtn" onclick="konkanDiscardSelected()" class="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-red-500/80 hover:bg-red-500 text-white shadow-lg transition">🗑️ فڕێدانی ١ کارت</button>
-          </div>
+      <!-- Status & Ends Indicator -->
+      <div class="flex items-center justify-between px-2 text-xs font-bold">
+        <span id="dominoStatusMsg" class="text-yellow-200">نۆرەی تۆیە — کاشییەک دابنێ</span>
+        <span id="dominoEndsBadge" class="text-[11px] text-slate-300 bg-black/30 px-2 py-0.5 rounded-lg">سەرەکان: کراوە</span>
+      </div>
+
+      <!-- Board Chain Area -->
+      <div id="dominoBoardChain" dir="ltr" class="domino-chain-area"></div>
+
+      <!-- Player Hand & Draw Button -->
+      <div class="space-y-2 pt-1">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[11px] font-bold text-emerald-200">کاشییەکانی دەستت:</span>
+          <button id="dominoDrawBtn" onclick="drawDominoFromBoneyard()" class="px-3 py-1 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-[#050b18] text-xs font-black shadow disabled:opacity-40">
+            ➕ ڕاکێشان لە بازاڕ
+          </button>
         </div>
-        <div id="konkMyHandContainer" class="flex flex-wrap items-center justify-center gap-1.5 py-2 min-h-[115px]" style="direction: ltr;"></div>
+        <div id="dominoPlayerHand" dir="ltr" class="flex flex-wrap items-center justify-center gap-2 min-h-[90px] p-2 rounded-2xl bg-black/25"></div>
       </div>
     </div>
   </section>
@@ -3968,6 +3890,250 @@ function makeBotMove() {
       }
       activeVoiceChannel = null;
     }
+   // ================= ROYAL KURDISH DOMINOES 101 ENGINE =================
+     domState = {
+      boneyard: [],
+      myHand: [],
+      botHand: [],
+      chain: [], // [{a, b}]
+      leftEnd: null,
+      rightEnd: null,
+      turn: 'player',
+      myScore: 0,
+      botScore: 0,
+      roundOver: false
+    };
+
+    function playDominoClack() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.exponentialRampToValueAtTime(210, now + 0.055);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.065);
+      } catch(e) {}
+    }
+
+    function renderPipHalfHTML(num) {
+      const patterns = {
+        0: [],
+        1: [4],
+        2: [0, 8],
+        3: [0, 4, 8],
+        4: [0, 2, 6, 8],
+        5: [0, 2, 4, 6, 8],
+        6: [0, 2, 3, 5, 6, 8]
+      };
+      const active = patterns[num] || [];
+      let html = '<div class="domino-pip-half">';
+      for (let i = 0; i < 9; i++) {
+        if (active.includes(i)) {
+          html += `<span class="domino-dot ${num === 6 || num === 1 ? 'red-pip' : ''}"></span>`;
+        } else {
+          html += '<span></span>';
+        }
+      }
+      return html + '</div>';
+    }
+
+    function startNewDominoMatch() {
+      domState.myScore = 0;
+      domState.botScore = 0;
+      startNewDominoRound();
+    }
+
+    function startNewDominoRound() {
+      let deck = [];
+      for (let i = 0; i <= 6; i++) {
+        for (let j = i; j <= 6; j++) deck.push({ a: i, b: j });
+      }
+      deck.sort(() => Math.random() - 0.5);
+
+      domState.myHand = deck.slice(0, 7);
+      domState.botHand = deck.slice(7, 14);
+      domState.boneyard = deck.slice(14);
+      domState.chain = [];
+      domState.leftEnd = null;
+      domState.rightEnd = null;
+      domState.turn = 'player';
+      domState.roundOver = false;
+
+      document.getElementById('dominoStatusMsg').textContent = 'نۆرەی تۆیە — کاشییەک دابنێ';
+      renderDominoUI();
+    }
+
+    function canPlayTile(tile) {
+      if (domState.chain.length === 0) return { left: true, right: true };
+      const left = (tile.a === domState.leftEnd || tile.b === domState.leftEnd);
+      const right = (tile.a === domState.rightEnd || tile.b === domState.rightEnd);
+      return { left, right };
+    }
+
+    function playMyDominoTile(idx) {
+      if (domState.turn !== 'player' || domState.roundOver) return;
+      const tile = domState.myHand[idx];
+      const fit = canPlayTile(tile);
+      if (!fit.left && !fit.right) return;
+
+      let side = fit.right ? 'right' : 'left';
+      if (domState.chain.length > 0 && fit.left && fit.right && domState.leftEnd !== domState.rightEnd) {
+        const goLeft = confirm(`ئەم کاشییە لە هەردوو سەر دەبێت (${domState.leftEnd} و ${domState.rightEnd}).\nOK داگرە بۆ لای چەپ (${domState.leftEnd}) یان Cancel بۆ لای ڕاست (${domState.rightEnd})`);
+        side = goLeft ? 'left' : 'right';
+      }
+
+      domState.myHand.splice(idx, 1);
+      placeTileOnChain(tile, side);
+      playDominoClack();
+
+      if (domState.myHand.length === 0) {
+        finishDominoRound('player');
+        return;
+      }
+      domState.turn = 'bot';
+      document.getElementById('dominoStatusMsg').textContent = 'بۆت بیردەکاتەوە...';
+      renderDominoUI();
+      setTimeout(playBotDominoTurn, 750);
+    }
+
+    function placeTileOnChain(tile, side) {
+      if (domState.chain.length === 0) {
+        domState.chain.push({ a: tile.a, b: tile.b });
+        domState.leftEnd = tile.a;
+        domState.rightEnd = tile.b;
+        return;
+      }
+      if (side === 'left') {
+        if (tile.b === domState.leftEnd) {
+          domState.chain.unshift({ a: tile.a, b: tile.b });
+          domState.leftEnd = tile.a;
+        } else {
+          domState.chain.unshift({ a: tile.b, b: tile.a });
+          domState.leftEnd = tile.b;
+        }
+      } else {
+        if (tile.a === domState.rightEnd) {
+          domState.chain.push({ a: tile.a, b: tile.b });
+          domState.rightEnd = tile.b;
+        } else {
+          domState.chain.push({ a: tile.b, b: tile.a });
+          domState.rightEnd = tile.a;
+        }
+      }
+    }
+
+    function drawDominoFromBoneyard() {
+      if (domState.turn !== 'player' || domState.roundOver) return;
+      const hasMove = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
+      if (hasMove) return;
+
+      if (domState.boneyard.length > 0) {
+        domState.myHand.push(domState.boneyard.pop());
+        playDominoClack();
+        renderDominoUI();
+      } else {
+        document.getElementById('dominoStatusMsg').textContent = 'بازاڕ بەتاڵە — نۆرە دەدرێتە بۆت';
+        domState.turn = 'bot';
+        renderDominoUI();
+        setTimeout(playBotDominoTurn, 750);
+      }
+    }
+
+    function playBotDominoTurn() {
+      if (domState.roundOver || domState.turn !== 'bot') return;
+      let playableIdx = domState.botHand.findIndex(t => { const f = canPlayTile(t); return f.left || f.right; });
+
+      while (playableIdx === -1 && domState.boneyard.length > 0) {
+        domState.botHand.push(domState.boneyard.pop());
+        playableIdx = domState.botHand.findIndex(t => { const f = canPlayTile(t); return f.left || f.right; });
+      }
+
+      if (playableIdx !== -1) {
+        const tile = domState.botHand.splice(playableIdx, 1)[0];
+        const fit = canPlayTile(tile);
+        placeTileOnChain(tile, fit.right ? 'right' : 'left');
+        playDominoClack();
+
+        if (domState.botHand.length === 0) {
+          finishDominoRound('bot');
+          return;
+        }
+      }
+
+      const myCanPlay = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
+      const botCanPlay = domState.botHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
+      if (!myCanPlay && !botCanPlay && domState.boneyard.length === 0) {
+        finishDominoRound('blocked');
+        return;
+      }
+
+      domState.turn = 'player';
+      document.getElementById('dominoStatusMsg').textContent = myCanPlay ? 'نۆرەی تۆیە — کاشییەک دابنێ' : 'کاشیت نییە — لە بازاڕ ڕابکێشە';
+      renderDominoUI();
+    }
+
+    function finishDominoRound(reason) {
+      domState.roundOver = true;
+      const myPips = domState.myHand.reduce((s, t) => s + t.a + t.b, 0);
+      const botPips = domState.botHand.reduce((s, t) => s + t.a + t.b, 0);
+
+      let msg = '';
+      if (reason === 'player' || (reason === 'blocked' && myPips < botPips)) {
+        domState.myScore += botPips;
+        msg = `🎉 ئەم دەورەت بردەوە! (+${botPips} خاڵ بۆ تۆ)`;
+      } else {
+        domState.botScore += myPips;
+        msg = `🤖 بۆت ئەم دەورەی بردەوە! (+${myPips} خاڵ بۆ بۆت)`;
+      }
+
+      renderDominoUI();
+      if (domState.myScore >= 101 || domState.botScore >= 101) {
+        document.getElementById('dominoStatusMsg').textContent = domState.myScore >= 101 ? '🏆 پیرۆزە! گەیشتیتە ١٠١ و یارییەکەت بردەوە!' : 'بۆت گەیشتە ١٠١ و بردییەوە!';
+      } else {
+        document.getElementById('dominoStatusMsg').textContent = msg + ' (دەوری نوێ دەستپێدەکات...)';
+        setTimeout(startNewDominoRound, 2400);
+      }
+    }
+
+    function renderDominoUI() {
+      document.getElementById('dominoMyScore').textContent = domState.myScore;
+      document.getElementById('dominoBotScore').textContent = domState.botScore;
+      document.getElementById('dominoBotCount').textContent = domState.botHand.length;
+      document.getElementById('dominoBoneyardCount').textContent = domState.boneyard.length;
+      document.getElementById('dominoEndsBadge').textContent = domState.chain.length === 0 ? 'سەرەکان: کراوە' : `چەپ: [${domState.leftEnd}] | ڕاست: [${domState.rightEnd}]`;
+
+      const chainEl = document.getElementById('dominoBoardChain');
+      chainEl.innerHTML = domState.chain.length === 0
+        ? '<span class="text-xs text-emerald-200/70">یەکەم کاشی لێرە دابنێ...</span>'
+        : domState.chain.map(t => {
+            const isDouble = t.a === t.b;
+            return `<div class="domino-tile ${isDouble ? 'vertical-double' : 'horizontal'}">
+              ${renderPipHalfHTML(t.a)}
+              <div style="${isDouble ? 'width:70%;height:1.5px;' : 'width:1.5px;height:70%;'}background:#94a3b8;"></div>
+              ${renderPipHalfHTML(t.b)}
+            </div>`;
+          }).join('');
+
+      const myCanPlay = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
+      const drawBtn = document.getElementById('dominoDrawBtn');
+      if (drawBtn) drawBtn.disabled = (domState.turn !== 'player' || myCanPlay || domState.roundOver);
+
+      const handEl = document.getElementById('dominoPlayerHand');
+      handEl.innerHTML = domState.myHand.map((t, i) => {
+        const f = canPlayTile(t);
+        const playable = (domState.turn === 'player' && !domState.roundOver && (f.left || f.right));
+        return `<div onclick="playMyDominoTile(${i})" class="domino-tile hand-tile ${playable ? 'playable' : 'opacity-80'}">
+          ${renderPipHalfHTML(t.a)}
+          <div style="width:72%;height:1.5px;background:#94a3b8;"></div>
+          ${renderPipHalfHTML(t.b)}
+        </div>`;
+      }).join('');
+    } 
 </script>
 <!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
   <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
