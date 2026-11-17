@@ -702,14 +702,60 @@ html, body {
     }
     ::-webkit-scrollbar-track { background: #070f20; }
     ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
+    /* شاشەی سەرەتایی شاهانە (Splash Screen) */
+    #royalSplashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 35%, #16284c 0%, #070d1b 65%, #03060d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+    #royalSplashScreen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-crown-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #f3cf65, #d4af37, #9e7e1b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.45), inset 0 2px 6px rgba(255,255,255,0.5);
+      animation: splashPulse 1.8s infinite ease-in-out;
+    }
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(243, 207, 101, 0.75); }
+    }
   </style>
 </head>
-<body>
 
+<body>
+<!-- شاشەی سەرەتایی شاهانە (وەک ئەپی مۆبایل) -->
+  <div id="royalSplashScreen">
+    <div class="splash-crown-ring mb-5">
+      <span class="text-5xl">👑</span>
+    </div>
+    <h1 class="text-4xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 mb-2">
+      YariKurdi
+    </h1>
+    <p class="text-xs text-slate-400 mb-6">مەیدانی یارییە کوردییەکان</p>
+    <div class="flex items-center gap-2.5 bg-white/5 border border-yellow-500/25 px-4 py-2 rounded-full">
+      <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping"></span>
+      <span id="splashStatusText" class="text-xs font-bold text-yellow-300">پشکنینی هەژمار...</span>
+    </div>
+  </div>
   <img id="dragGhost" src="" alt="" style="display:none; pointer-events:none;" />
 
   <!-- ==================== AUTH GATE MODAL (LOGIN / REGISTER) ==================== -->
-  <div id="authModal" class="fixed inset-0 bg-[#040914]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+  <div id="authModal" class="hidden inset-0 bg-[#040914]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="royal-card max-w-md w-full rounded-3xl p-6 md:p-8 space-y-6 border-2 border-yellow-500/40">
       <div class="text-center space-y-2">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[#050b18] font-extrabold text-3xl shadow-lg">♔</div>
@@ -1732,6 +1778,8 @@ html, body {
     if (kLbl) kLbl.textContent = playerProfile.elo.konkan || 1200;
     updateLevelUI();
     initRealtimeListenersAfterLogin();
+    const splash = document.getElementById('royalSplashScreen');
+      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
   }
 
   function openEditProfileModal() {
@@ -1812,15 +1860,26 @@ function updateProfileUI() {
   }
 
   // Auto-restore session if logged in previously
-  if (playerId) {
-    db.ref('players/' + playerId).once('value', snap => {
-      if (snap.exists()) {
-        completeAuthSession(playerId, snap.val());
-      } else {
-        localStorage.removeItem('yk_auth_uid');
-      }
-    });
-  }
+    function finishSplashAndShowAuth() {
+      document.getElementById('authModal').classList.remove('hidden');
+      const splash = document.getElementById('royalSplashScreen');
+      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
+    }
+
+    if (playerId) {
+      const st = document.getElementById('splashStatusText');
+      if (st) st.textContent = 'پشکنینی پڕۆفایل...';
+      db.ref('players/' + playerId).once('value', snap => {
+        if (snap.exists()) {
+          completeAuthSession(playerId, snap.val());
+        } else {
+          localStorage.removeItem('yk_auth_uid');
+          finishSplashAndShowAuth();
+        }
+      });
+    } else {
+      setTimeout(finishSplashAndShowAuth, 900);
+    }
 
   // Global players & presence listeners
   db.ref('players').on('value', snap => {
