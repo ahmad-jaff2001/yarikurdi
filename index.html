@@ -358,91 +358,240 @@
       
     }
    /* Yalla Ludo Pro Design */
-   /* Royal Kurdish Dominoes 101 */
-    .domino-table-wrap {
-      max-width: 520px;
+  /* ================= YARIKURDI ROYAL TEAHOUSE DOMINO 101 ================= */
+    .yk-domino-arena {
+      max-width: 440px;
+      min-height: 82vh;
       margin: 0 auto;
-      background: radial-gradient(circle at center, #0f5132 0%, #062e1c 100%);
-      border: 6px solid #78350f;
-      border-radius: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 28px;
       padding: 12px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      /* مێزی دارگوێزی تۆخ بە نەخشی ڕەسەن */
+      background:
+        radial-gradient(circle at 50% 45%, rgba(217, 119, 6, 0.14) 0%, rgba(15, 10, 6, 0.88) 85%),
+        repeating-linear-gradient(90deg, #3b2314 0px, #472a18 28px, #2f1b0f 30px, #3f2515 58px);
+      border: 3px solid #d97706;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 0, 0, 0.75);
     }
-    .domino-chain-area {
-      min-height: 155px;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1.5px dashed rgba(250, 204, 21, 0.35);
+    /* نەخشی فەرشی کوردی لە لێواری سەرەوە و خوارەوە */
+    .yk-domino-arena::before,
+    .yk-domino-arena::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #dc2626 0 12px, #facc15 12px 24px, #059669 24px 36px, #f8fafc 36px 48px);
+      opacity: 0.85;
+      z-index: 2;
+    }
+    .yk-domino-arena::before { top: 0; }
+    .yk-domino-arena::after { bottom: 0; }
+
+    /* شریتی سەرەوەی یاریزان و بۆت */
+    .yk-dom-hud-top {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .yk-dom-opponent-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(18, 13, 10, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(250, 204, 21, 0.25);
       border-radius: 16px;
-      padding: 12px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .yk-bot-mini-tiles {
+      display: flex;
+      gap: 3px;
+    }
+    .yk-bot-mini-tile {
+      width: 9px;
+      height: 16px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #ef4444, #991b1b);
+      border: 1px solid #fca5a5;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    /* کەپسوولی بازاڕ (بۆنیا) */
+    .yk-boneyard-pill {
+      margin: 4px auto 0;
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      color: #451a03;
+      border: 2px solid #f59e0b;
+      border-radius: 9999px;
+      padding: 3px 14px;
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .yk-boneyard-pill:hover:not(:disabled) { transform: scale(1.06); }
+    .yk-boneyard-pill:disabled { opacity: 0.7; cursor: default; }
+
+    /* گۆڕەپانی دانانی کاشییەکان */
+    .yk-dom-board-stage {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      margin: 8px 0;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px dashed rgba(251, 191, 36, 0.22);
+      padding: 10px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      align-content: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: 360px;
     }
-    .domino-tile {
-      background: linear-gradient(145deg, #fffbeb, #f3e8d2);
-      border: 1.5px solid #cbd5e1;
-      border-radius: 8px;
-      box-shadow: 0 4px 0 #94a3b8, 0 6px 12px rgba(0, 0, 0, 0.45);
+
+    /* کارتی ڕێنمایی ناوەڕاست */
+    .yk-dom-hint-banner {
+      background: rgba(255, 251, 235, 0.96);
+      color: #1c1917;
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      padding: 12px 16px;
+      max-width: 88%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* کاشیی عاجیی شاهانە بە بزمارە زێڕینەکەوە */
+    .yk-tile {
+      background: linear-gradient(155deg, #ffffff 0%, #fdf8ee 65%, #efe4ce 100%);
+      border: 1.5px solid #d6c5a9;
+      border-radius: 9px;
+      box-shadow: 0 4px 0 #a8967a, 0 7px 14px rgba(0, 0, 0, 0.55);
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
-      color: #0f172a;
-      font-weight: 900;
+      position: relative;
       user-select: none;
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
     }
-    .domino-tile.horizontal {
-      width: 64px;
-      height: 32px;
-      padding: 0 8px;
+    .yk-tile.horiz {
+      width: 58px;
+      height: 30px;
+      padding: 0 6px;
       flex-direction: row;
     }
-    .domino-tile.vertical-double {
-      width: 34px;
-      height: 64px;
+    .yk-tile.vert-double {
+      width: 32px;
+      height: 58px;
       padding: 6px 0;
       flex-direction: column;
     }
-    .domino-tile.hand-tile {
+    .yk-tile.in-hand {
       width: 44px;
       height: 82px;
-      padding: 8px 0;
+      padding: 7px 0;
       flex-direction: column;
       cursor: pointer;
     }
-    .domino-tile.hand-tile.playable {
+    .yk-tile.in-hand.can-move {
       border-color: #facc15;
-      box-shadow: 0 0 14px rgba(250, 204, 21, 0.8), 0 4px 0 #ca8a04;
-      transform: translateY(-6px);
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.9), 0 5px 0 #ca8a04;
+      transform: translateY(-9px);
     }
-    .domino-tile.hand-tile.playable:hover {
-      transform: translateY(-10px) scale(1.05);
+    .yk-tile.in-hand.can-move:hover {
+      transform: translateY(-14px) scale(1.06);
     }
-    .domino-pip-half {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      width: 24px;
-      height: 24px;
-      place-items: center;
+    .yk-tile.in-hand.locked-tile {
+      opacity: 0.72;
+      filter: brightness(0.92);
     }
-    .domino-dot {
+
+    /* هێڵ و ئەڵقەی زێڕینی ناوەڕاستی کاشی */
+    .yk-tile-divider-h {
+      width: 1.5px;
+      height: 74%;
+      background: linear-gradient(180deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-divider-v {
+      width: 74%;
+      height: 1.5px;
+      background: linear-gradient(90deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-rivet {
       width: 5px;
       height: 5px;
       border-radius: 9999px;
-      background: #1e293b;
+      background: radial-gradient(circle, #fde047, #b45309);
+      border: 0.5px solid #78350f;
     }
-    .domino-dot.red-pip { background: #dc2626; width: 6px; height: 6px; }
-    .yalla-ludo-wrap {
-      max-width: 440px;
-      margin: 0 auto;
-      background: linear-gradient(180deg, #1e193b 0%, #141129 100%);
-      border: 1.5px solid rgba(243, 207, 101, 0.28);
-      border-radius: 24px;
-      padding: 12px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+
+    /* خاڵە ڕەنگاوڕەنگەکانی سەر کاشی */
+    .yk-pip-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      width: 22px;
+      height: 22px;
+      place-items: center;
+    }
+    .yk-pip {
+      width: 5.2px;
+      height: 5.2px;
+      border-radius: 9999px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.45), 0 1px 1px rgba(0,0,0,0.35);
+    }
+    .pip-c-1, .pip-c-6 { background: #dc2626; } /* سووری یاقووتی */
+    .pip-c-4, .pip-c-5 { background: #0284c7; } /* شینی فیروزەیی */
+    .pip-c-2, .pip-c-3 { background: #059669; } /* سەوزی زمڕوتی */
+
+    /* پانێڵی خوارەوەی یاریزان */
+    .yk-dom-player-dock {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .yk-dom-player-bar {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9));
+      border: 1.5px solid rgba(250, 204, 21, 0.45);
+      border-radius: 16px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
     .yalla-wood-frame {
       background: linear-gradient(145deg, #9c6635, #6e431d);
@@ -988,70 +1137,78 @@
 
   <!-- VIEW 3: DOMINO ARENA -->
  <!-- VIEW: DOMINOES 101 PRO -->
-  <section id="view-domino" class="hidden max-w-xl mx-auto px-3 py-3">
-    <div class="domino-table-wrap space-y-3">
-      <!-- Top Bar -->
-      <div class="flex items-center justify-between">
-        <button onclick="switchView('hub')" class="px-3 py-1.5 rounded-xl bg-black/40 hover:bg-black/60 border border-yellow-400/30 text-xs font-extrabold text-yellow-300 flex items-center gap-1">
-          <span>↩</span><span>دەرچوون</span>
-        </button>
-        <div class="px-3 py-1 rounded-full bg-black/45 border border-yellow-400/30 text-xs font-black text-yellow-300">
-          🁣 دۆمینەی کوردی (١٠١)
-        </div>
-        <button onclick="startNewDominoMatch()" class="px-3 py-1.5 rounded-xl bg-amber-500 text-[#050b18] text-xs font-black shadow">یاری نوێ 🔄</button>
-      </div>
+  <!-- VIEW: YARIKURDI ROYAL TEAHOUSE DOMINO 101 -->
+  <section id="view-domino" class="hidden max-w-md mx-auto px-2 py-2">
+    <div class="yk-domino-arena">
+      <!-- سەرەوە: دوگمەی دەرچوون + نیشاندەری نۆرە + یاری نوێ -->
+      <div class="space-y-2">
+        <div class="yk-dom-hud-top">
+          <button onclick="switchView('hub')" class="w-9 h-9 rounded-full bg-white/95 hover:bg-white text-slate-900 font-black shadow-lg flex items-center justify-center text-sm" title="دەرچوون">
+            🏳️
+          </button>
 
-      <!-- Scoreboard & Opponent -->
-      <div class="flex items-center justify-between bg-black/35 px-3 py-2 rounded-2xl border border-white/10">
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-full bg-rose-600 border-2 border-yellow-400 flex items-center justify-center text-base">🤖</div>
-          <div>
-            <div class="text-xs font-extrabold text-white">بۆتی مامۆستا</div>
-            <div class="text-[11px] text-rose-300 font-bold">خاڵ: <span id="dominoBotScore">0</span> / 101 • کاشی: <span id="dominoBotCount">7</span></div>
+          <div id="ykDomTurnPill" class="px-4 py-1.5 rounded-full bg-red-600 border-2 border-yellow-300 text-white text-xs font-black shadow-lg flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-yellow-300 animate-ping"></span>
+            <span id="ykDomTurnText">نۆرەی تۆیە</span>
           </div>
-        </div>
-        <div class="text-center px-2.5 py-1 rounded-xl bg-emerald-950/80 border border-emerald-400/30">
-          <div class="text-[10px] text-emerald-300">بازاڕ (بۆنیا)</div>
-          <div id="dominoBoneyardCount" class="text-sm font-black text-white">14</div>
-        </div>
-        <div class="text-left">
-          <div class="text-xs font-extrabold text-yellow-300">تۆ</div>
-          <div class="text-[11px] text-emerald-300 font-bold">خاڵ: <span id="dominoMyScore">0</span> / 101</div>
-        </div>
-      </div>
 
-      <!-- Status & Ends Indicator -->
-      <div class="flex items-center justify-between px-2 text-xs font-bold">
-        <span id="dominoStatusMsg" class="text-yellow-200">نۆرەی تۆیە — کاشییەک دابنێ</span>
-        <span id="dominoEndsBadge" class="text-[11px] text-slate-300 bg-black/30 px-2 py-0.5 rounded-lg">سەرەکان: کراوە</span>
-      </div>
-
-      <!-- Board Chain Area -->
-      <div id="dominoBoardChain" dir="ltr" class="domino-chain-area"></div>
-
-      <!-- Player Hand & Draw Button -->
-      <div class="space-y-2 pt-1">
-        <div class="flex items-center justify-between px-1">
-          <span class="text-[11px] font-bold text-emerald-200">کاشییەکانی دەستت:</span>
-          <button id="dominoDrawBtn" onclick="drawDominoFromBoneyard()" class="px-3 py-1 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-[#050b18] text-xs font-black shadow disabled:opacity-40">
-            ➕ ڕاکێشان لە بازاڕ
+          <button onclick="startRoyalTeahouseDomino()" class="w-9 h-9 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black shadow-lg flex items-center justify-center text-sm" title="یاری نوێ">
+            🔄
           </button>
         </div>
-        <div id="dominoPlayerHand" dir="ltr" class="flex flex-wrap items-center justify-center gap-2 min-h-[90px] p-2 rounded-2xl bg-black/25"></div>
+
+        <!-- شریتی بۆت و ژمارەی کاشییەکانی -->
+        <div class="yk-dom-opponent-bar">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-base">🤖</div>
+            <div>
+              <div class="text-[11px] font-black text-amber-200">ژیریی دەستکرد • چایخانە</div>
+              <div class="text-[10px] text-slate-300">خاڵی بۆت: <strong id="ykDomBotScore" class="text-rose-400">0</strong> / 101</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div id="ykDomBotMiniTiles" class="yk-bot-mini-tiles"></div>
+            <span id="ykDomBotCountBadge" class="text-xs font-black text-white bg-white/10 px-2 py-0.5 rounded-md">7</span>
+          </div>
+        </div>
+
+        <!-- دوگمەی بازاڕ (بۆنیا) -->
+        <div class="text-center">
+          <button id="ykDomBoneyardBtn" onclick="drawTeahouseBoneyard()" class="yk-boneyard-pill">
+            <span>🁣</span>
+            <span><span id="ykDomBoneyardNum">14</span> پوول ماوە (بازاڕ)</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </section>
-  <!-- VIEW: KONKAN -->
-  <section id="view-konkan" class="hidden max-w-4xl mx-auto px-4 py-6 space-y-4">
-    <div class="flex items-center justify-between">
-      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-300 flex items-center gap-1.5">
-        <span>↩</span><span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
-      </button>
-      <h2 class="text-xl font-extrabold gold-text">🃏 یاریی کۆنکان</h2>
-      <div class="w-20"></div>
-    </div>
-    <div id="konkanArena" class="royal-card rounded-3xl p-6 text-center space-y-3">
-      <p class="text-sm text-slate-300">ئامادەکردنی مێزی کۆنکان...</p>
+
+      <!-- ناوەڕاست: مێزی دانانی کاشییەکان و هەڵبژاردنی چەپ/ڕاست -->
+      <div class="relative flex-1 flex flex-col justify-center">
+        <!-- دوگمەی هەڵبژاردنی لای چەپ یان ڕاست (کاتێک کاشییەک لە هەردوو سەر دەبێت) -->
+        <div id="ykDomSideChooser" class="hidden absolute top-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-slate-950/95 border-2 border-yellow-400 px-3 py-1.5 rounded-full shadow-2xl">
+          <button onclick="confirmChosenSide('left')" class="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-[11px] font-black">⬅️ لای چەپ (<span id="ykLeftValHint">0</span>)</button>
+          <button onclick="confirmChosenSide('right')" class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black">لای ڕاست (<span id="ykRightValHint">0</span>) ➡️</button>
+        </div>
+
+        <div id="ykDomBoardStage" dir="ltr" class="yk-dom-board-stage"></div>
+      </div>
+
+      <!-- خوارەوە: دەستی یاریزان و شریتی خاڵەکانت -->
+      <div class="yk-dom-player-dock">
+        <div id="ykDomPlayerHand" dir="ltr" class="flex items-center justify-center gap-1.5 min-h-[92px] px-1"></div>
+
+        <div class="yk-dom-player-bar">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-yellow-400 text-slate-950 font-black flex items-center justify-center text-xs shadow">تۆ</div>
+            <div>
+              <div id="ykDomPlayerName" class="text-xs font-black text-white">یاریزان</div>
+              <div id="ykDomEndsLabel" class="text-[10px] text-amber-300 font-bold">سەرەکان: کراوە</div>
+            </div>
+          </div>
+          <div class="px-3 py-1 rounded-full bg-yellow-400/15 border border-yellow-400/40 text-xs font-black text-yellow-300">
+            خاڵ: <span id="ykDomMyScore">0</span> / 101
+          </div>
+        </div>
+      </div>
     </div>
   </section>
   <!-- VIEW 3.8: ROYAL VOICE ROOMS -->
@@ -1608,8 +1765,9 @@
       const nav = document.getElementById('nav-' + v);
       if (nav) { nav.classList.remove('bg-yellow-500', 'text-[#050b18]'); nav.classList.add('text-slate-300'); }
     });
-    document.getElementById('view-' + view).classList.remove('hidden');
-    const activeNav = document.getElementById('nav-' + view);
+const targetViewEl = document.getElementById('view-' + view);
+      if (targetViewEl) targetViewEl.classList.remove('hidden');
+      if (view === 'domino' && teahouseDom.myHand.length === 0) startRoyalTeahouseDomino();    const activeNav = document.getElementById('nav-' + view);
     if (activeNav) { activeNav.classList.add('bg-yellow-500', 'text-[#050b18]'); activeNav.classList.remove('text-slate-300'); }
     document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
     const activeDock = document.getElementById('dock-' + (view === 'chess' || view === 'domino' || view === 'konkan' ? 'hub' : view));
@@ -3899,250 +4057,325 @@ function makeBotMove() {
       }
       activeVoiceChannel = null;
     }
-   // ================= ROYAL KURDISH DOMINOES 101 ENGINE =================
-     domState = {
+   // ================= YARIKURDI ROYAL TEAHOUSE DOMINO 101 ENGINE =================
+    const teahouseDom = {
       boneyard: [],
       myHand: [],
       botHand: [],
-      chain: [], // [{a, b}]
+      chain: [],
       leftEnd: null,
       rightEnd: null,
       turn: 'player',
       myScore: 0,
       botScore: 0,
-      roundOver: false
+      roundOver: false,
+      firstMoveRule: true,
+      requiredOpeningDouble: null,
+      pendingTileIdx: null
     };
 
-    function playDominoClack() {
+    function playTeahouseWoodClack() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(920, now);
-        osc.frequency.exponentialRampToValueAtTime(210, now + 0.055);
-        gain.gain.setValueAtTime(0.22, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.frequency.setValueAtTime(840, now);
+        osc.frequency.exponentialRampToValueAtTime(190, now + 0.06);
+        gain.gain.setValueAtTime(0.26, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
         osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(now); osc.stop(now + 0.065);
+        osc.start(now); osc.stop(now + 0.07);
       } catch(e) {}
     }
 
-    function renderPipHalfHTML(num) {
-      const patterns = {
-        0: [],
-        1: [4],
-        2: [0, 8],
-        3: [0, 4, 8],
-        4: [0, 2, 6, 8],
-        5: [0, 2, 4, 6, 8],
-        6: [0, 2, 3, 5, 6, 8]
-      };
-      const active = patterns[num] || [];
-      let html = '<div class="domino-pip-half">';
+    function buildTeahousePips(num) {
+      const map = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+      const dots = map[num] || [];
+      let html = '<div class="yk-pip-grid">';
       for (let i = 0; i < 9; i++) {
-        if (active.includes(i)) {
-          html += `<span class="domino-dot ${num === 6 || num === 1 ? 'red-pip' : ''}"></span>`;
-        } else {
-          html += '<span></span>';
-        }
+        html += dots.includes(i) ? `<span class="yk-pip pip-c-${num}"></span>` : '<span></span>';
       }
       return html + '</div>';
     }
 
-    function startNewDominoMatch() {
-      domState.myScore = 0;
-      domState.botScore = 0;
-      startNewDominoRound();
+    function startRoyalTeahouseDomino() {
+      teahouseDom.myScore = 0;
+      teahouseDom.botScore = 0;
+      const pNameEl = document.getElementById('ykDomPlayerName');
+      if (pNameEl && typeof currentUser !== 'undefined' && currentUser?.name) {
+        pNameEl.textContent = currentUser.name;
+      }
+      startTeahouseDominoRound();
     }
 
-    function startNewDominoRound() {
+    function startTeahouseDominoRound() {
       let deck = [];
       for (let i = 0; i <= 6; i++) {
         for (let j = i; j <= 6; j++) deck.push({ a: i, b: j });
       }
       deck.sort(() => Math.random() - 0.5);
 
-      domState.myHand = deck.slice(0, 7);
-      domState.botHand = deck.slice(7, 14);
-      domState.boneyard = deck.slice(14);
-      domState.chain = [];
-      domState.leftEnd = null;
-      domState.rightEnd = null;
-      domState.turn = 'player';
-      domState.roundOver = false;
+      teahouseDom.myHand = deck.slice(0, 7);
+      teahouseDom.botHand = deck.slice(7, 14);
+      teahouseDom.boneyard = deck.slice(14);
+      teahouseDom.chain = [];
+      teahouseDom.leftEnd = null;
+      teahouseDom.rightEnd = null;
+      teahouseDom.roundOver = false;
+      teahouseDom.pendingTileIdx = null;
+      document.getElementById('ykDomSideChooser').classList.add('hidden');
 
-      document.getElementById('dominoStatusMsg').textContent = 'نۆرەی تۆیە — کاشییەک دابنێ';
-      renderDominoUI();
+      // یاسای دۆمینەی کوردی: کێ گەورەترین جووتی هەبێت یەکەم دەست دادەنێت
+      let myMaxD = -1, botMaxD = -1;
+      teahouseDom.myHand.forEach(t => { if (t.a === t.b && t.a > myMaxD) myMaxD = t.a; });
+      teahouseDom.botHand.forEach(t => { if (t.a === t.b && t.a > botMaxD) botMaxD = t.a; });
+
+      if (myMaxD >= botMaxD && myMaxD !== -1) {
+        teahouseDom.turn = 'player';
+        teahouseDom.firstMoveRule = true;
+        teahouseDom.requiredOpeningDouble = myMaxD;
+      } else if (botMaxD > myMaxD) {
+        teahouseDom.turn = 'bot';
+        teahouseDom.firstMoveRule = true;
+        teahouseDom.requiredOpeningDouble = botMaxD;
+      } else {
+        teahouseDom.turn = 'player';
+        teahouseDom.firstMoveRule = false;
+        teahouseDom.requiredOpeningDouble = null;
+      }
+
+      renderTeahouseDomino();
+      if (teahouseDom.turn === 'bot') {
+        setTimeout(runTeahouseBotTurn, 900);
+      }
     }
 
-    function canPlayTile(tile) {
-      if (domState.chain.length === 0) return { left: true, right: true };
-      const left = (tile.a === domState.leftEnd || tile.b === domState.leftEnd);
-      const right = (tile.a === domState.rightEnd || tile.b === domState.rightEnd);
-      return { left, right };
+    function checkTeahouseTileFit(tile) {
+      if (teahouseDom.chain.length === 0) {
+        if (teahouseDom.firstMoveRule && teahouseDom.requiredOpeningDouble !== null) {
+          const ok = (tile.a === teahouseDom.requiredOpeningDouble && tile.b === teahouseDom.requiredOpeningDouble);
+          return { left: ok, right: ok };
+        }
+        return { left: true, right: true };
+      }
+      return {
+        left: (tile.a === teahouseDom.leftEnd || tile.b === teahouseDom.leftEnd),
+        right: (tile.a === teahouseDom.rightEnd || tile.b === teahouseDom.rightEnd)
+      };
     }
 
-    function playMyDominoTile(idx) {
-      if (domState.turn !== 'player' || domState.roundOver) return;
-      const tile = domState.myHand[idx];
-      const fit = canPlayTile(tile);
+    function clickTeahouseHandTile(idx) {
+      if (teahouseDom.turn !== 'player' || teahouseDom.roundOver) return;
+      const tile = teahouseDom.myHand[idx];
+      const fit = checkTeahouseTileFit(tile);
       if (!fit.left && !fit.right) return;
 
-      let side = fit.right ? 'right' : 'left';
-      if (domState.chain.length > 0 && fit.left && fit.right && domState.leftEnd !== domState.rightEnd) {
-        const goLeft = confirm(`ئەم کاشییە لە هەردوو سەر دەبێت (${domState.leftEnd} و ${domState.rightEnd}).\nOK داگرە بۆ لای چەپ (${domState.leftEnd}) یان Cancel بۆ لای ڕاست (${domState.rightEnd})`);
-        side = goLeft ? 'left' : 'right';
-      }
-
-      domState.myHand.splice(idx, 1);
-      placeTileOnChain(tile, side);
-      playDominoClack();
-
-      if (domState.myHand.length === 0) {
-        finishDominoRound('player');
+      if (teahouseDom.chain.length > 0 && fit.left && fit.right && teahouseDom.leftEnd !== teahouseDom.rightEnd) {
+        teahouseDom.pendingTileIdx = idx;
+        document.getElementById('ykLeftValHint').textContent = teahouseDom.leftEnd;
+        document.getElementById('ykRightValHint').textContent = teahouseDom.rightEnd;
+        document.getElementById('ykDomSideChooser').classList.remove('hidden');
         return;
       }
-      domState.turn = 'bot';
-      document.getElementById('dominoStatusMsg').textContent = 'بۆت بیردەکاتەوە...';
-      renderDominoUI();
-      setTimeout(playBotDominoTurn, 750);
+
+      executePlayerTeahouseMove(idx, fit.right ? 'right' : 'left');
     }
 
-    function placeTileOnChain(tile, side) {
-      if (domState.chain.length === 0) {
-        domState.chain.push({ a: tile.a, b: tile.b });
-        domState.leftEnd = tile.a;
-        domState.rightEnd = tile.b;
+    function confirmChosenSide(side) {
+      if (teahouseDom.pendingTileIdx === null) return;
+      const idx = teahouseDom.pendingTileIdx;
+      teahouseDom.pendingTileIdx = null;
+      document.getElementById('ykDomSideChooser').classList.add('hidden');
+      executePlayerTeahouseMove(idx, side);
+    }
+
+    function executePlayerTeahouseMove(idx, side) {
+      const tile = teahouseDom.myHand.splice(idx, 1)[0];
+      teahouseDom.firstMoveRule = false;
+      appendTeahouseChain(tile, side);
+      playTeahouseWoodClack();
+
+      if (teahouseDom.myHand.length === 0) {
+        endTeahouseRound('player');
+        return;
+      }
+      teahouseDom.turn = 'bot';
+      renderTeahouseDomino();
+      setTimeout(runTeahouseBotTurn, 800);
+    }
+
+    function appendTeahouseChain(tile, side) {
+      if (teahouseDom.chain.length === 0) {
+        teahouseDom.chain.push({ a: tile.a, b: tile.b });
+        teahouseDom.leftEnd = tile.a;
+        teahouseDom.rightEnd = tile.b;
         return;
       }
       if (side === 'left') {
-        if (tile.b === domState.leftEnd) {
-          domState.chain.unshift({ a: tile.a, b: tile.b });
-          domState.leftEnd = tile.a;
+        if (tile.b === teahouseDom.leftEnd) {
+          teahouseDom.chain.unshift({ a: tile.a, b: tile.b });
+          teahouseDom.leftEnd = tile.a;
         } else {
-          domState.chain.unshift({ a: tile.b, b: tile.a });
-          domState.leftEnd = tile.b;
+          teahouseDom.chain.unshift({ a: tile.b, b: tile.a });
+          teahouseDom.leftEnd = tile.b;
         }
       } else {
-        if (tile.a === domState.rightEnd) {
-          domState.chain.push({ a: tile.a, b: tile.b });
-          domState.rightEnd = tile.b;
+        if (tile.a === teahouseDom.rightEnd) {
+          teahouseDom.chain.push({ a: tile.a, b: tile.b });
+          teahouseDom.rightEnd = tile.b;
         } else {
-          domState.chain.push({ a: tile.b, b: tile.a });
-          domState.rightEnd = tile.a;
+          teahouseDom.chain.push({ a: tile.b, b: tile.a });
+          teahouseDom.rightEnd = tile.a;
         }
       }
     }
 
-    function drawDominoFromBoneyard() {
-      if (domState.turn !== 'player' || domState.roundOver) return;
-      const hasMove = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
-      if (hasMove) return;
+    function drawTeahouseBoneyard() {
+      if (teahouseDom.turn !== 'player' || teahouseDom.roundOver) return;
+      const hasAnyMove = teahouseDom.myHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+      if (hasAnyMove) return;
 
-      if (domState.boneyard.length > 0) {
-        domState.myHand.push(domState.boneyard.pop());
-        playDominoClack();
-        renderDominoUI();
+      if (teahouseDom.boneyard.length > 0) {
+        teahouseDom.myHand.push(teahouseDom.boneyard.pop());
+        playTeahouseWoodClack();
+        renderTeahouseDomino();
       } else {
-        document.getElementById('dominoStatusMsg').textContent = 'بازاڕ بەتاڵە — نۆرە دەدرێتە بۆت';
-        domState.turn = 'bot';
-        renderDominoUI();
-        setTimeout(playBotDominoTurn, 750);
+        teahouseDom.turn = 'bot';
+        renderTeahouseDomino();
+        setTimeout(runTeahouseBotTurn, 800);
       }
     }
 
-    function playBotDominoTurn() {
-      if (domState.roundOver || domState.turn !== 'bot') return;
-      let playableIdx = domState.botHand.findIndex(t => { const f = canPlayTile(t); return f.left || f.right; });
+    function runTeahouseBotTurn() {
+      if (teahouseDom.roundOver || teahouseDom.turn !== 'bot') return;
+      let moveIdx = teahouseDom.botHand.findIndex(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
 
-      while (playableIdx === -1 && domState.boneyard.length > 0) {
-        domState.botHand.push(domState.boneyard.pop());
-        playableIdx = domState.botHand.findIndex(t => { const f = canPlayTile(t); return f.left || f.right; });
+      while (moveIdx === -1 && teahouseDom.boneyard.length > 0) {
+        teahouseDom.botHand.push(teahouseDom.boneyard.pop());
+        moveIdx = teahouseDom.botHand.findIndex(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
       }
 
-      if (playableIdx !== -1) {
-        const tile = domState.botHand.splice(playableIdx, 1)[0];
-        const fit = canPlayTile(tile);
-        placeTileOnChain(tile, fit.right ? 'right' : 'left');
-        playDominoClack();
-
-        if (domState.botHand.length === 0) {
-          finishDominoRound('bot');
+      if (moveIdx !== -1) {
+        const tile = teahouseDom.botHand.splice(moveIdx, 1)[0];
+        teahouseDom.firstMoveRule = false;
+        const fit = checkTeahouseTileFit(tile);
+        appendTeahouseChain(tile, fit.right ? 'right' : 'left');
+        playTeahouseWoodClack();
+        if (teahouseDom.botHand.length === 0) {
+          endTeahouseRound('bot');
           return;
         }
       }
 
-      const myCanPlay = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
-      const botCanPlay = domState.botHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
-      if (!myCanPlay && !botCanPlay && domState.boneyard.length === 0) {
-        finishDominoRound('blocked');
+      const pCan = teahouseDom.myHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+      const bCan = teahouseDom.botHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+      if (!pCan && !bCan && teahouseDom.boneyard.length === 0) {
+        endTeahouseRound('blocked');
         return;
       }
 
-      domState.turn = 'player';
-      document.getElementById('dominoStatusMsg').textContent = myCanPlay ? 'نۆرەی تۆیە — کاشییەک دابنێ' : 'کاشیت نییە — لە بازاڕ ڕابکێشە';
-      renderDominoUI();
+      teahouseDom.turn = 'player';
+      renderTeahouseDomino();
     }
 
-    function finishDominoRound(reason) {
-      domState.roundOver = true;
-      const myPips = domState.myHand.reduce((s, t) => s + t.a + t.b, 0);
-      const botPips = domState.botHand.reduce((s, t) => s + t.a + t.b, 0);
+    function endTeahouseRound(reason) {
+      teahouseDom.roundOver = true;
+      const mySum = teahouseDom.myHand.reduce((s, t) => s + t.a + t.b, 0);
+      const botSum = teahouseDom.botHand.reduce((s, t) => s + t.a + t.b, 0);
 
-      let msg = '';
-      if (reason === 'player' || (reason === 'blocked' && myPips < botPips)) {
-        domState.myScore += botPips;
-        msg = `🎉 ئەم دەورەت بردەوە! (+${botPips} خاڵ بۆ تۆ)`;
+      let bannerMsg = '';
+      if (reason === 'player' || (reason === 'blocked' && mySum < botSum)) {
+        teahouseDom.myScore += botSum;
+        bannerMsg = `🎉 دەستخۆش! ئەم دەورەت بردەوە (+${botSum} خاڵ)`;
       } else {
-        domState.botScore += myPips;
-        msg = `🤖 بۆت ئەم دەورەی بردەوە! (+${myPips} خاڵ بۆ بۆت)`;
+        teahouseDom.botScore += mySum;
+        bannerMsg = `🤖 بۆت ئەم دەورەی بردەوە (+${mySum} خاڵ)`;
       }
 
-      renderDominoUI();
-      if (domState.myScore >= 101 || domState.botScore >= 101) {
-        document.getElementById('dominoStatusMsg').textContent = domState.myScore >= 101 ? '🏆 پیرۆزە! گەیشتیتە ١٠١ و یارییەکەت بردەوە!' : 'بۆت گەیشتە ١٠١ و بردییەوە!';
+      renderTeahouseDomino();
+      const stage = document.getElementById('ykDomBoardStage');
+      if (teahouseDom.myScore >= 101 || teahouseDom.botScore >= 101) {
+        const winText = teahouseDom.myScore >= 101 ? '🏆 پیرۆزە! گەیشتیتە ١٠١ و بوویتە پاڵەوانی چایخانە!' : 'بۆت گەیشتە ١٠١ و یارییەکەی بردەوە!';
+        stage.innerHTML += `<div class="yk-dom-hint-banner mt-3">${winText}</div>`;
       } else {
-        document.getElementById('dominoStatusMsg').textContent = msg + ' (دەوری نوێ دەستپێدەکات...)';
-        setTimeout(startNewDominoRound, 2400);
+        stage.innerHTML += `<div class="yk-dom-hint-banner mt-3">${bannerMsg}</div>`;
+        setTimeout(startTeahouseDominoRound, 2500);
       }
     }
 
-    function renderDominoUI() {
-      document.getElementById('dominoMyScore').textContent = domState.myScore;
-      document.getElementById('dominoBotScore').textContent = domState.botScore;
-      document.getElementById('dominoBotCount').textContent = domState.botHand.length;
-      document.getElementById('dominoBoneyardCount').textContent = domState.boneyard.length;
-      document.getElementById('dominoEndsBadge').textContent = domState.chain.length === 0 ? 'سەرەکان: کراوە' : `چەپ: [${domState.leftEnd}] | ڕاست: [${domState.rightEnd}]`;
+    function renderTeahouseDomino() {
+      document.getElementById('ykDomMyScore').textContent = teahouseDom.myScore;
+      document.getElementById('ykDomBotScore').textContent = teahouseDom.botScore;
+      document.getElementById('ykDomBotCountBadge').textContent = teahouseDom.botHand.length;
+      document.getElementById('ykDomBoneyardNum').textContent = teahouseDom.boneyard.length;
 
-      const chainEl = document.getElementById('dominoBoardChain');
-      chainEl.innerHTML = domState.chain.length === 0
-        ? '<span class="text-xs text-emerald-200/70">یەکەم کاشی لێرە دابنێ...</span>'
-        : domState.chain.map(t => {
-            const isDouble = t.a === t.b;
-            return `<div class="domino-tile ${isDouble ? 'vertical-double' : 'horizontal'}">
-              ${renderPipHalfHTML(t.a)}
-              <div style="${isDouble ? 'width:70%;height:1.5px;' : 'width:1.5px;height:70%;'}background:#94a3b8;"></div>
-              ${renderPipHalfHTML(t.b)}
-            </div>`;
-          }).join('');
+      // نیشاندانی کاشییە بچووکەکانی بۆت
+      const miniBox = document.getElementById('ykDomBotMiniTiles');
+      miniBox.innerHTML = Array(teahouseDom.botHand.length).fill('<span class="yk-bot-mini-tile"></span>').join('');
 
-      const myCanPlay = domState.myHand.some(t => { const f = canPlayTile(t); return f.left || f.right; });
-      const drawBtn = document.getElementById('dominoDrawBtn');
-      if (drawBtn) drawBtn.disabled = (domState.turn !== 'player' || myCanPlay || domState.roundOver);
+      // کەپسوولی نۆرە
+      const turnPill = document.getElementById('ykDomTurnPill');
+      const turnText = document.getElementById('ykDomTurnText');
+      if (teahouseDom.turn === 'player') {
+        turnPill.className = 'px-4 py-1.5 rounded-full bg-red-600 border-2 border-yellow-300 text-white text-xs font-black shadow-lg flex items-center gap-2';
+        turnText.textContent = 'نۆرەی تۆیە';
+      } else {
+        turnPill.className = 'px-4 py-1.5 rounded-full bg-slate-800 border border-slate-500 text-amber-200 text-xs font-black shadow-lg flex items-center gap-2';
+        turnText.textContent = 'نۆرەی بۆتە...';
+      }
 
-      const handEl = document.getElementById('dominoPlayerHand');
-      handEl.innerHTML = domState.myHand.map((t, i) => {
-        const f = canPlayTile(t);
-        const playable = (domState.turn === 'player' && !domState.roundOver && (f.left || f.right));
-        return `<div onclick="playMyDominoTile(${i})" class="domino-tile hand-tile ${playable ? 'playable' : 'opacity-80'}">
-          ${renderPipHalfHTML(t.a)}
-          <div style="width:72%;height:1.5px;background:#94a3b8;"></div>
-          ${renderPipHalfHTML(t.b)}
+      document.getElementById('ykDomEndsLabel').textContent = teahouseDom.chain.length === 0
+        ? 'سەرەکان: دەستپێک'
+        : `چەپ: [${teahouseDom.leftEnd}] • ڕاست: [${teahouseDom.rightEnd}]`;
+
+      // مێزی ناوەڕاست
+      const stage = document.getElementById('ykDomBoardStage');
+      if (teahouseDom.chain.length === 0) {
+        const hint = teahouseDom.firstMoveRule && teahouseDom.requiredOpeningDouble !== null
+          ? `لە یەکەم دەستدا دەبێت گەورەترین جووت (${teahouseDom.requiredOpeningDouble}-${teahouseDom.requiredOpeningDouble}) دابنێیت`
+          : 'یەکەم پوول لەسەر مێزەکە دابنێ';
+        stage.innerHTML = `
+          <div class="yk-dom-hint-banner">
+            <span>${hint}</span>
+            <span class="text-xl">🁣</span>
+          </div>`;
+      } else {
+        stage.innerHTML = teahouseDom.chain.map(t => {
+          const isDbl = t.a === t.b;
+          return `<div class="yk-tile ${isDbl ? 'vert-double' : 'horiz'}">
+            ${buildTeahousePips(t.a)}
+            <div class="${isDbl ? 'yk-tile-divider-v' : 'yk-tile-divider-h'}"><span class="yk-tile-rivet"></span></div>
+            ${buildTeahousePips(t.b)}
+          </div>`;
+        }).join('');
+      }
+
+      // دوگمەی بازاڕ
+      const pCanMove = teahouseDom.myHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+      const boneBtn = document.getElementById('ykDomBoneyardBtn');
+      if (boneBtn) {
+        boneBtn.disabled = (teahouseDom.turn !== 'player' || pCanMove || teahouseDom.roundOver);
+        if (!boneBtn.disabled && teahouseDom.boneyard.length > 0) {
+          boneBtn.classList.add('animate-bounce');
+        } else {
+          boneBtn.classList.remove('animate-bounce');
+        }
+      }
+
+      // دەستی یاریزان (کاشییە عاجییەکان)
+      const handBox = document.getElementById('ykDomPlayerHand');
+      handBox.innerHTML = teahouseDom.myHand.map((t, i) => {
+        const f = checkTeahouseTileFit(t);
+        const playable = (teahouseDom.turn === 'player' && !teahouseDom.roundOver && (f.left || f.right));
+        return `<div onclick="clickTeahouseHandTile(${i})" class="yk-tile in-hand ${playable ? 'can-move' : 'locked-tile'}">
+          ${buildTeahousePips(t.a)}
+          <div class="yk-tile-divider-v"><span class="yk-tile-rivet"></span></div>
+          ${buildTeahousePips(t.b)}
         </div>`;
       }).join('');
-    } 
+    }
 </script>
 <!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
   <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
