@@ -20,7 +20,31 @@
       --gold-light: #f3cf65;
       --gold-dark: #9e7e1b;
     }
+html, body {
+      background-color: #050a15 !important;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.14) 0%, transparent 55%),
+        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 15% 75%, rgba(239, 68, 68, 0.07) 0%, transparent 45%),
+        linear-gradient(180deg, #060c1a 0%, #091326 50%, #040811 100%) !important;
+      color: #f8fafc !important;
+      min-height: 100dvh;
+    }
 
+    /* درەوشانەوەی شاهانە بۆ کارتەکانی یاری */
+    .pito-game-card {
+      position: relative;
+      border-radius: 1.35rem !important;
+      border: 1.5px solid rgba(212, 175, 55, 0.35) !important;
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.85), 0 0 18px rgba(212, 175, 55, 0.12) !important;
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+
+    .pito-game-card:hover {
+      transform: translateY(-6px) scale(1.02) !important;
+      border-color: #f3cf65 !important;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.95), 0 0 28px rgba(243, 207, 101, 0.35) !important;
+    }
    
     .royal-card {
       background: linear-gradient(145deg, rgba(16, 30, 59, 0.94), rgba(8, 17, 36, 0.97));
@@ -859,8 +883,7 @@
   </div>
 </section>
   <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
-<section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-2 pb-28 overflow-y-auto overscroll-contain" style="max-height: calc(100dvh - 85px); -webkit-overflow-scrolling: touch;">    <div class="rounded-2xl bg-gradient-to-l from-[#10254d] via-[#17366e] to-[#0d1c3a] border border-yellow-500/35 p-3.5 flex items-center justify-between gap-3 shadow-lg">
-      <div class="space-y-0.5">
+<section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-3 pb-32 overflow-y-auto overscroll-contain relative" style="max-height: calc(100dvh - 82px); -webkit-overflow-scrolling: touch;">      <div class="space-y-0.5">
         <div class="text-sm font-black text-white flex items-center gap-1.5">پشتگیریمان بکە <span class="text-base">👑</span></div>
         <p class="text-[11px] text-slate-300">تا زیاتر بۆ کوردستان و یارییە کوردییەکان بکەین</p>
       </div>
@@ -997,8 +1020,7 @@
       </div>
 
       <!-- یارییە ئامادەنەکراوەکان -->
-      <div class="grid grid-cols-2 gap-3 opacity-85 relative z-10 pb-8">
-        <!-- تاوڵە -->
+<div class="grid grid-cols-2 sm:grid-cols-2 gap-3.5 relative z-10 pb-8">        <!-- تاوڵە -->
         <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card cursor-not-allowed">
           <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=600&q=80" class="grayscale-[45%]" alt="تاوڵە" />
           <div class="pito-card-overlay flex-col gap-1">
