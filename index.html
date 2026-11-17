@@ -931,17 +931,43 @@ html, body {
   <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
 <section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-3 pb-32 overflow-y-auto overscroll-contain relative" style="max-height: calc(100dvh - 82px); -webkit-overflow-scrolling: touch;">      <div class="space-y-0.5">
        
-    <!-- Tournament Banner -->
-    <div class="rounded-2xl bg-gradient-to-r from-[#09152b] to-[#1a2f59] border border-amber-400/35 p-3 flex items-center justify-between gap-2 shadow-md">
-      <button onclick="switchView('chess')" class="gold-btn px-4 py-1.5 rounded-xl text-xs whitespace-nowrap">بەشدار دەبم</button>
-      <div class="text-left flex items-center gap-2">
-        <div>
-          <div class="text-xs font-extrabold text-yellow-300">پاڵەوانێتی شاهانەی شەتڕەنج</div>
-          <div class="text-[10px] text-slate-300">ڕیزبەندی Elo و کێبڕکێی ڕاستەوخۆ</div>
+   <!-- پانێڵی پشتگیریمان بکە بە ئاڵای کوردستان -->
+      <div class="relative overflow-hidden rounded-2xl border border-amber-400/50 shadow-lg mb-3 p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+           style="background: linear-gradient(180deg, rgba(185,28,28,0.88) 0%, rgba(185,28,28,0.88) 33%, rgba(255,255,255,0.92) 33%, rgba(255,255,255,0.92) 66%, rgba(21,128,61,0.88) 66%, rgba(21,128,61,0.88) 100%);">
+        <!-- خۆری کوردستان لە ناوەڕاست -->
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-90">
+          <svg viewBox="0 0 100 100" class="w-24 h-24 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">
+            <circle cx="50" cy="50" r="16" fill="#facc15"/>
+            <g fill="#facc15">
+              <polygon points="50,8 53,34 47,34"/><polygon points="50,92 53,66 47,66"/>
+              <polygon points="8,50 34,53 34,47"/><polygon points="92,50 66,53 66,47"/>
+              <polygon points="20,20 40,36 36,40"/><polygon points="80,80 60,64 64,60"/>
+              <polygon points="80,20 64,40 60,36"/><polygon points="20,80 36,60 40,64"/>
+              <polygon points="34,11 45,35 39,37"/><polygon points="66,89 55,65 61,63"/>
+              <polygon points="66,11 61,37 55,35"/><polygon points="34,89 39,63 45,65"/>
+              <polygon points="11,34 37,39 35,45"/><polygon points="89,66 63,61 65,55"/>
+              <polygon points="89,34 65,45 63,39"/><polygon points="11,66 35,55 37,61"/>
+            </g>
+          </svg>
         </div>
-        <span class="text-2xl">🏆</span>
+        <!-- سێبەرێکی شووشەیی تاریک بۆ خوێندنەوەی نووسینەکان -->
+        <div class="absolute inset-0 bg-gradient-to-l from-[#050a15]/85 via-[#050a15]/45 to-[#050a15]/80 pointer-events-none"></div>
+
+        <!-- نووسینەکان -->
+        <div class="relative z-10 text-center sm:text-right">
+          <div class="text-base sm:text-lg font-black text-amber-300 drop-shadow-[0_2px_6px_rgba(0,0,0,1)]">
+            پشتگیریمان بکە 👑
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-white drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">
+            تا زیاتر بۆ کوردستان و یارییە کوردییەکان بکەین
+          </p>
+        </div>
+
+        <!-- دوگمەی دیوەخان -->
+        <button onclick="switchView('rooms')" class="relative z-10 gold-btn px-5 py-2 rounded-full text-xs sm:text-sm font-black whitespace-nowrap shadow-xl hover:scale-105 transition-transform">
+          دیوەخان 🎙️
+        </button>
       </div>
-    </div>
 
     <!-- Season Pass Progress Banner -->
     <div class="rounded-2xl bg-gradient-to-r from-[#071224] via-[#132952] to-[#0a1936] border border-yellow-500/30 p-3 space-y-2 shadow-md">
