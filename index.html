@@ -1211,6 +1211,19 @@
       </div>
     </div>
   </section>
+  <!-- VIEW: KONKAN -->
+  <section id="view-konkan" class="hidden max-w-4xl mx-auto px-4 py-6 space-y-4">
+    <div class="flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-300 flex items-center gap-1.5">
+        <span>↩</span><span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+      <h2 class="text-xl font-extrabold gold-text">🃏 یاریی کۆنکان</h2>
+      <div class="w-20"></div>
+    </div>
+    <div id="konkanArena" class="royal-card rounded-3xl p-6 text-center space-y-3">
+      <p class="text-sm text-slate-300">مێزی کۆنکان ئامادە دەکرێت...</p>
+    </div>
+  </section>
   <!-- VIEW 3.8: ROYAL VOICE ROOMS -->
   <section id="view-rooms" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
     <!-- Lobby: List & Create Room -->
@@ -1761,10 +1774,9 @@
   }
 
   function switchView(view, subTab = 'chess') {
-['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => {      document.getElementById('view-' + v).classList.add('hidden');
-      const nav = document.getElementById('nav-' + v);
+['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => { const sec = document.getElementById('view-' + v); if (sec) sec.classList.add('hidden'); });      const nav = document.getElementById('nav-' + v);
       if (nav) { nav.classList.remove('bg-yellow-500', 'text-[#050b18]'); nav.classList.add('text-slate-300'); }
-    });
+    };
 const targetViewEl = document.getElementById('view-' + view);
       if (targetViewEl) targetViewEl.classList.remove('hidden');
       if (view === 'domino' && teahouseDom.myHand.length === 0) startRoyalTeahouseDomino();    const activeNav = document.getElementById('nav-' + view);
@@ -1777,7 +1789,7 @@ const isPlayingGame = (view === 'chess' || view === 'domino' || view === 'konkan
     else if (view === 'friends') renderFriendsList();
     else if (view === 'rooms') loadActiveVoiceRooms();
     else if (view === 'ludo') initLudoGame();
-    }
+    
   
 ;
   // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
