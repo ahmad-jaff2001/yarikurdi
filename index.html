@@ -361,7 +361,8 @@
   /* ================= YARIKURDI ROYAL TEAHOUSE DOMINO 101 ================= */
     .yk-domino-arena {
       max-width: 440px;
-      min-height: 82vh;
+      min-height: 96dvh;
+      max-height: 96dvh;
       margin: 0 auto;
       position: relative;
       display: flex;
@@ -1142,9 +1143,9 @@
     <div class="yk-domino-arena">
       <!-- سەرەوە: دوگمەی دەرچوون + نیشاندەری نۆرە + یاری نوێ -->
       <div class="space-y-2">
-        <div class="yk-dom-hud-top">
-          <button onclick="switchView('hub')" class="w-9 h-9 rounded-full bg-white/95 hover:bg-white text-slate-900 font-black shadow-lg flex items-center justify-center text-sm" title="دەرچوون">
-            🏳️
+       <div class="yk-dom-hud-top">
+          <button onclick="confirmLeaveTeahouseDomino()" class="px-3 py-1.5 rounded-full bg-rose-600/90 hover:bg-rose-500 border border-rose-300/40 text-white font-black shadow-lg flex items-center gap-1 text-[11px]">
+            <span>🏳️</span><span>وازهێنان</span>
           </button>
 
           <div id="ykDomTurnPill" class="px-4 py-1.5 rounded-full bg-red-600 border-2 border-yellow-300 text-white text-xs font-black shadow-lg flex items-center gap-2">
@@ -1152,11 +1153,10 @@
             <span id="ykDomTurnText">نۆرەی تۆیە</span>
           </div>
 
-          <button onclick="startRoyalTeahouseDomino()" class="w-9 h-9 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black shadow-lg flex items-center justify-center text-sm" title="یاری نوێ">
-            🔄
+          <button onclick="switchView('hub')" class="px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-slate-900 font-black shadow-lg flex items-center gap-1 text-[11px]">
+            <span>↩</span><span>گەڕانەوە</span>
           </button>
         </div>
-
         <!-- شریتی بۆت و ژمارەی کاشییەکانی -->
         <div class="yk-dom-opponent-bar">
           <div class="flex items-center gap-2">
@@ -1807,7 +1807,15 @@
         renderFriendsList();
       } else if (view === 'rooms' && typeof loadActiveVoiceRooms === 'function') {
         loadActiveVoiceRooms();
-      }
+       } const isGameView = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');
+      const topHeader = document.querySelector('header');
+      if (topHeader) topHeader.style.display = isGameView ? 'none' : '';
+      document.querySelectorAll('.fixed.bottom-4, .fixed.bottom-3, .fixed.bottom-5, nav.fixed, .mobile-dock').forEach(el => {
+        if (el.id !== 'challengeToast' && el.id !== 'gameOverModal') {
+          el.style.display = isGameView ? 'none' : '';
+        }
+      });
+      
     }
   // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
 
@@ -4324,12 +4332,62 @@ function makeBotMove() {
 
       renderTeahouseDomino();
       const stage = document.getElementById('ykDomBoardStage');
-      if (teahouseDom.myScore >= 101 || teahouseDom.botScore >= 101) {
-        const winText = teahouseDom.myScore >= 101 ? '🏆 پیرۆزە! گەیشتیتە ١٠١ و بوویتە پاڵەوانی چایخانە!' : 'بۆت گەیشتە ١٠١ و یارییەکەی بردەوە!';
-        stage.innerHTML += `<div class="yk-dom-hint-banner mt-3">${winText}</div>`;
+     if (teahouseDom.myScore >= 101 || teahouseDom.botScore >= 101) {
+        const winText = teahouseDom.myScore >= 101
+          ? '🏆 پیرۆزە! گەیشتیتە ١٠١ و یارییەکەت بردەوە!'
+          : '😔 بەرامبەر گەیشتە ١٠١ و یارییەکەی بردەوە!';
+        stage.innerHTML += `
+          <div class="yk-dom-hint-banner flex-col gap-3 mt-2 w-full">
+            <div class="text-sm font-black">${winText}</div>
+            <div class="flex items-center justify-center gap-2 w-full">
+              <button id="ykRematchBtn" onclick="requestDominoRematch()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg">
+                🔄 دووبارەکردنەوە
+              </button>
+              <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-black shadow-lg">
+                🏠 گەڕانەوە
+              </button>
+            </div>
+          </div>`;
       } else {
         stage.innerHTML += `<div class="yk-dom-hint-banner mt-3">${bannerMsg}</div>`;
-        setTimeout(startTeahouseDominoRound, 2500);
+        setTimeout(startTeahouseDominoRound, 2400);
+      }
+    }
+
+    function confirmLeaveTeahouseDomino() {
+      if (teahouseDom.roundOver || teahouseDom.chain.length === 0) {
+        switchView('hub');
+        return;
+      }
+      if (confirm('دڵنیایت دەتەوێت لەم یارییە وازبهێنیت و بگەڕێیتەوە؟')) {
+        teahouseDom.roundOver = true;
+        if (teahouseDom.onlineRoomId && typeof db !== 'undefined') {
+          db.ref('dominoRooms/' + teahouseDom.onlineRoomId + '/forfeit').set(playerId || 'left');
+        }
+        switchView('hub');
+      }
+    }
+
+    function requestDominoRematch() {
+      if (teahouseDom.onlineRoomId && typeof db !== 'undefined' && typeof playerId !== 'undefined') {
+        const roomRef = db.ref('dominoRooms/' + teahouseDom.onlineRoomId + '/rematch');
+        roomRef.child(playerId).set(true);
+        const btn = document.getElementById('ykRematchBtn');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = '⏳ چاوەڕێی ئامادەبوونی بەرامبەر... (١/٢)';
+        }
+        roomRef.on('value', snap => {
+          const val = snap.val() || {};
+          const readyCount = Object.values(val).filter(Boolean).length;
+          if (readyCount >= 2) {
+            roomRef.off();
+            roomRef.remove();
+            startRoyalTeahouseDomino();
+          }
+        });
+      } else {
+        startRoyalTeahouseDomino();
       }
     }
 
