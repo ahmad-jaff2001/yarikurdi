@@ -21,11 +21,7 @@
       --gold-dark: #9e7e1b;
     }
 
-   html, body {
-      height: 100dvh;
-      overflow: hidden;
-      overscroll-behavior: none;
-    }
+   
     .royal-card {
       background: linear-gradient(145deg, rgba(16, 30, 59, 0.94), rgba(8, 17, 36, 0.97));
       border: 1px solid rgba(212, 175, 55, 0.25);
@@ -916,13 +912,16 @@
 
         <!-- ٣. دۆمینە -->
         <div onclick="switchView('domino')" class="pito-game-card cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=600&q=80" alt="دۆمینە" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+        <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=600&q=80" alt="دۆمینەی کوردی" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow z-20">ئامادەیە</span>
+          <div class="absolute top-2 left-2 z-20 flex items-center gap-1 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/25 shadow-lg">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Flag_of_Kurdistan.svg" alt="ئاڵای کوردستان" class="w-5 h-3.5 rounded-[2px] object-cover shadow-sm">
+            <span class="text-[10px] font-black text-white">کوردی</span>
+          </div>
           <div class="pito-card-overlay">
             <span class="pito-card-title">دۆمینە</span>
           </div>
         </div>
-
         <!-- ٤. کۆنکان -->
         <div onclick="switchView('konkan')" class="pito-game-card cursor-pointer">
           <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=600&q=80" alt="کۆنکان" />
@@ -1330,8 +1329,7 @@
   </section>
 
   <!-- VIEW 5: LEADERBOARD -->
-  <section id="view-leaderboard" class="hidden max-w-4xl mx-auto px-4 py-8 space-y-6">
-    <div class="text-center space-y-2">
+<section id="view-leaderboard" class="hidden max-w-4xl mx-auto px-4 pt-3 pb-24 space-y-4">    <div class="text-center space-y-2">
       <h2 class="text-3xl font-extrabold gold-text">🏆 ڕیزبەندی پاڵەوانانی YariKurdi</h2>
       <p class="text-xs text-slate-400">بەپێی سیستەمی Elo</p>
     </div>
@@ -1344,9 +1342,7 @@
       <div class="p-4 border-b border-yellow-500/20 flex items-center justify-between bg-[#0c1830]">
         <span id="lbCurrentTitle" class="text-sm font-extrabold text-yellow-300">ڕیزبەندی</span>
       </div>
-      <div id="leaderboardList" class="divide-y divide-slate-800/80">
-        <div class="p-8 text-center text-sm text-slate-400">داتاکان دەهێنرێن...</div>
-      </div>
+<div id="leaderboardList" class="divide-y divide-slate-800/80 max-h-[50vh] overflow-y-auto overscroll-contain pb-6" style="-webkit-overflow-scrolling: touch;">        <div class="p-8 text-center text-sm text-slate-400">داتاکان دەهێنرێن...</div>
     </div>
   </section>
 
