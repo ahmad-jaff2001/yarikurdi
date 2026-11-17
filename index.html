@@ -750,39 +750,39 @@
       </div>
     </div>
 
-    <!-- یارییە ئامادەکان (کار دەکەن) -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+    <!-- یارییە ئامادەکان -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 relative z-10">
         <!-- ١. شەتڕەنج -->
-        <div onclick="switchView('chess')" class="pito-game-card">
-          <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=500&q=80" alt="شەتڕەنج" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+        <div onclick="switchView('chess')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=600&q=80" alt="شەتڕەنج" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">شەتڕەنج</span>
           </div>
         </div>
 
         <!-- ٢. لودۆ -->
-        <div onclick="switchView('ludo')" class="pito-game-card">
-          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=500&q=80" alt="لودۆ" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+        <div onclick="switchView('ludo')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80" alt="لودۆ" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">لودۆ</span>
           </div>
         </div>
 
         <!-- ٣. دۆمینە -->
-        <div onclick="switchView('domino')" class="pito-game-card">
-          <img src="https://images.unsplash.com/photo-1585504198199-20277593b94f?auto=format&fit=crop&w=500&q=80" alt="دۆمینە" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+        <div onclick="switchView('domino')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=600&q=80" alt="دۆمینە" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">دۆمینە</span>
           </div>
         </div>
 
         <!-- ٤. کۆنکان -->
-        <div onclick="switchView('konkan')" class="pito-game-card">
-          <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=500&q=80" alt="کۆنکان" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+        <div onclick="switchView('konkan')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=600&q=80" alt="کۆنکان" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">کۆنکان</span>
           </div>
@@ -790,31 +790,27 @@
       </div>
 
       <!-- سەردێڕی یارییە چاوەڕوانکراوەکان -->
-      <div class="pt-3 pb-1 flex items-center justify-between border-t border-white/10">
+      <div class="pt-4 pb-1 flex items-center justify-between border-t border-white/10 relative z-10">
         <span class="text-xs font-extrabold text-yellow-400">⏳ یارییەکانی داهاتوو (ئامادە دەکرێن)</span>
         <span class="text-[10px] text-slate-400">بەم زووانە زیاد دەکرێن</span>
       </div>
 
-      <!-- یارییە ئامادەنەکراوەکان (قوفڵکراو) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-80">
+      <!-- یارییە ئامادەنەکراوەکان -->
+      <div class="grid grid-cols-2 gap-3 opacity-85 relative z-10 pb-8">
         <!-- تاوڵە -->
-        <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card relative cursor-not-allowed">
-<img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=600&q=80" class="grayscale-[45%]" alt="تاوڵە" />          <div class="absolute inset-0 bg-black/45 flex flex-col items-center justify-center gap-1">
-            <span class="text-xl">🔒</span>
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/90 text-[#050b18] text-[10px] font-black shadow">ئامادە دەکرێت</span>
-          </div>
-          <div class="pito-card-overlay">
+        <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card cursor-not-allowed">
+          <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=600&q=80" class="grayscale-[45%]" alt="تاوڵە" />
+          <div class="pito-card-overlay flex-col gap-1">
+            <span class="px-2 py-0.5 rounded-full bg-amber-500 text-[#050b18] text-[10px] font-black">🔒 ئامادە دەکرێت</span>
             <span class="pito-card-title text-slate-200">تاوڵە</span>
           </div>
         </div>
 
-        <!-- دامە -->
-        <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card relative cursor-not-allowed">
-          <img src="https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=500&q=80" class="grayscale-[55%]" alt="دامە" />
-<img src="https://images.unsplash.com/photo-1604948501466-4e9c339b9c24?auto=format&fit=crop&w=600&q=80" class="grayscale-[45%]" alt="دامە" />            <span class="text-xl">🔒</span>
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/90 text-[#050b18] text-[10px] font-black shadow">ئامادە دەکرێت</span>
-          </div>
-          <div class="pito-card-overlay">
+        <!-- دامەی کوردی -->
+        <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card cursor-not-allowed">
+          <img src="https://images.unsplash.com/photo-1604948501466-4e9c339b9c24?auto=format&fit=crop&w=600&q=80" class="grayscale-[45%]" alt="دامە" />
+          <div class="pito-card-overlay flex-col gap-1">
+            <span class="px-2 py-0.5 rounded-full bg-amber-500 text-[#050b18] text-[10px] font-black">🔒 ئامادە دەکرێت</span>
             <span class="pito-card-title text-slate-200">دامەی کوردی</span>
           </div>
         </div>
