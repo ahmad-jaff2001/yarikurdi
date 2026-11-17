@@ -21,15 +21,11 @@
       --gold-dark: #9e7e1b;
     }
 
-    body {
-      font-family: 'Noto Kufi Arabic', sans-serif;
-      background: radial-gradient(circle at top center, #0e1d3d 0%, var(--bg-deep) 75%);
-      color: #f1f5f9;
-      min-height: 100vh;
-      overflow-x: hidden;
-      user-select: none;
+   html, body {
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
     }
-
     .royal-card {
       background: linear-gradient(145deg, rgba(16, 30, 59, 0.94), rgba(8, 17, 36, 0.97));
       border: 1px solid rgba(212, 175, 55, 0.25);
@@ -867,8 +863,7 @@
   </div>
 </section>
   <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
-  <section id="view-hub" class="max-w-3xl mx-auto px-3.5 py-4 space-y-4">
-    <!-- Top Support & Social Banner -->
+<section id="view-hub" class="max-w-md mx-auto px-3 pt-1 pb-6 overflow-y-auto overscroll-contain" style="height: calc(100dvh - 155px); -webkit-overflow-scrolling: touch;">    <!-- Top Support & Social Banner -->
     <div class="rounded-2xl bg-gradient-to-l from-[#10254d] via-[#17366e] to-[#0d1c3a] border border-yellow-500/35 p-3.5 flex items-center justify-between gap-3 shadow-lg">
       <div class="space-y-0.5">
         <div class="text-sm font-black text-white flex items-center gap-1.5">پشتگیریمان بکە <span class="text-base">👑</span></div>
@@ -1423,6 +1418,16 @@
   // ==================== ACCOUNT, AUTH & AVATAR ENGINE ====================
   let playerId = localStorage.getItem('yk_auth_uid') || null;
   let playerName = '';
+  const OWNER_EMAIL = 'ah6753038@gmail.com';
+
+    function isOwnerEmail(email) {
+      return !!(email && email.trim().toLowerCase() === OWNER_EMAIL);
+    }
+
+    function getVerifiedBadgeHTML(email) {
+      if (!isOwnerEmail(email)) return '';
+      return `<span title="خاوەنی پلاتفۆرم • Verified Owner" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[10px] font-black shadow-md shadow-sky-500/40 mr-1 align-middle">✓</span>`;
+    }
   let playerAvatarData = ''; // Base64 compressed image or empty
   let pendingRegAvatar = '';
   let pendingEditAvatar = null;
@@ -1704,13 +1709,11 @@
   }
 
   function updateProfileUI() {
-    document.getElementById('headerPlayerName').textContent = playerName;
-    document.getElementById('headerChessElo').textContent = playerProfile.elo.chess;
+document.getElementById('headerPlayerName').innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);    document.getElementById('headerChessElo').textContent = playerProfile.elo.chess;
     document.getElementById('dominoMyEloLabel').textContent = playerProfile.elo.domino;
     document.getElementById('myFullIdDisplay').textContent = playerProfile.username;
     renderAvatarContent('headerAvatar', playerAvatarData, playerName);
-    document.getElementById('selfName').textContent = playerName;
-    renderAvatarContent('selfAvatar', playerAvatarData, playerName);
+document.getElementById('selfName').innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);    renderAvatarContent('selfAvatar', playerAvatarData, playerName);
     document.getElementById('selfEloBadge').textContent = `(${playerProfile.elo.chess})`;
   }
 
