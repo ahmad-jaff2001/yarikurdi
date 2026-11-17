@@ -1373,6 +1373,7 @@
   </div>
 
 <script>
+  let myFriendsMap = {}, incomingRequestsMap = {}, activeChatFriendId = null, activePrivateChatRef = null, pendingChallengeData = null;
  const firebaseConfig = {
     apiKey: "AIzaSyDdqs1jA9TOwO1QGxzru9YXCMWVAEP-u0E",
     authDomain: "yarikurdi-dc836.firebaseapp.com",
@@ -1773,27 +1774,42 @@
     }
   }
 
-  function switchView(view, subTab = 'chess') {
-['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => { const sec = document.getElementById('view-' + v); if (sec) sec.classList.add('hidden'); });      const nav = document.getElementById('nav-' + v);
-      if (nav) { nav.classList.remove('bg-yellow-500', 'text-[#050b18]'); nav.classList.add('text-slate-300'); }
-    };
-const targetViewEl = document.getElementById('view-' + view);
+ function switchView(view, subTab = 'chess') {
+      ['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => {
+        const sec = document.getElementById('view-' + v);
+        if (sec) sec.classList.add('hidden');
+        const nav = document.getElementById('nav-' + v);
+        if (nav) {
+          nav.classList.remove('bg-yellow-500', 'text-[#050b18]');
+          nav.classList.add('text-slate-300');
+        }
+      });
+
+      const targetViewEl = document.getElementById('view-' + view);
       if (targetViewEl) targetViewEl.classList.remove('hidden');
-      if (view === 'domino' && teahouseDom.myHand.length === 0) startRoyalTeahouseDomino();    const activeNav = document.getElementById('nav-' + view);
-    if (activeNav) { activeNav.classList.add('bg-yellow-500', 'text-[#050b18]'); activeNav.classList.remove('text-slate-300'); }
-    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
-    const activeDock = document.getElementById('dock-' + (view === 'chess' || view === 'domino' || view === 'konkan' ? 'hub' : view));
-    if (activeDock) activeDock.classList.add('active');
-const isPlayingGame = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');    document.body.classList.toggle('in-game-mode', isPlayingGame);
-    if (view === 'leaderboard') loadLeaderboard(subTab);
-    else if (view === 'friends') renderFriendsList();
-    else if (view === 'rooms') loadActiveVoiceRooms();
-    else if (view === 'ludo') initLudoGame();
-    
-  
-;
+
+      const activeNav = document.getElementById('nav-' + view);
+      if (activeNav) {
+        activeNav.classList.add('bg-yellow-500', 'text-[#050b18]');
+        activeNav.classList.remove('text-slate-300');
+      }
+
+      document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+      const dockKey = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo') ? 'hub' : view;
+      const activeDock = document.getElementById('dock-' + dockKey);
+      if (activeDock) activeDock.classList.add('active');
+
+      if (view === 'domino' && typeof teahouseDom !== 'undefined' && teahouseDom.myHand.length === 0) {
+        startRoyalTeahouseDomino();
+      } else if (view === 'leaderboard' && typeof loadLeaderboard === 'function') {
+        loadLeaderboard(subTab);
+      } else if (view === 'friends' && typeof renderFriendsList === 'function') {
+        renderFriendsList();
+      } else if (view === 'rooms' && typeof loadActiveVoiceRooms === 'function') {
+        loadActiveVoiceRooms();
+      }
+    }
   // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
-  let myFriendsMap = {}, incomingRequestsMap = {}, activeChatFriendId = null, activePrivateChatRef = null, pendingIncomingChallenge = null;
 
   function initRealtimeListenersAfterLogin() {
     const presenceRef = db.ref('presence/' + playerId);
