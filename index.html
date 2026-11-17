@@ -863,8 +863,7 @@
   </div>
 </section>
   <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
-<section id="view-hub" class="max-w-md mx-auto px-3 pt-1 pb-6 overflow-y-auto overscroll-contain" style="height: calc(100dvh - 155px); -webkit-overflow-scrolling: touch;">    <!-- Top Support & Social Banner -->
-    <div class="rounded-2xl bg-gradient-to-l from-[#10254d] via-[#17366e] to-[#0d1c3a] border border-yellow-500/35 p-3.5 flex items-center justify-between gap-3 shadow-lg">
+<section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-2 pb-28 overflow-y-auto overscroll-contain" style="max-height: calc(100dvh - 85px); -webkit-overflow-scrolling: touch;">    <div class="rounded-2xl bg-gradient-to-l from-[#10254d] via-[#17366e] to-[#0d1c3a] border border-yellow-500/35 p-3.5 flex items-center justify-between gap-3 shadow-lg">
       <div class="space-y-0.5">
         <div class="text-sm font-black text-white flex items-center gap-1.5">پشتگیریمان بکە <span class="text-base">👑</span></div>
         <p class="text-[11px] text-slate-300">تا زیاتر بۆ کوردستان و یارییە کوردییەکان بکەین</p>
@@ -1708,15 +1707,29 @@
     location.reload();
   }
 
-  function updateProfileUI() {
-document.getElementById('headerPlayerName').innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);    document.getElementById('headerChessElo').textContent = playerProfile.elo.chess;
-    document.getElementById('dominoMyEloLabel').textContent = playerProfile.elo.domino;
-    document.getElementById('myFullIdDisplay').textContent = playerProfile.username;
-    renderAvatarContent('headerAvatar', playerAvatarData, playerName);
-document.getElementById('selfName').innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);    renderAvatarContent('selfAvatar', playerAvatarData, playerName);
-    document.getElementById('selfEloBadge').textContent = `(${playerProfile.elo.chess})`;
-  }
+function updateProfileUI() {
+      const hName = document.getElementById('headerPlayerName');
+      if (hName) hName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
 
+      const hElo = document.getElementById('headerChessElo');
+      if (hElo) hElo.textContent = playerProfile.elo.chess;
+
+      const dElo = document.getElementById('dominoMyEloLabel');
+      if (dElo) dElo.textContent = playerProfile.elo.domino;
+
+      const fId = document.getElementById('myFullIdDisplay');
+      if (fId) fId.textContent = playerProfile.username;
+
+      renderAvatarContent('headerAvatar', playerAvatarData, playerName);
+
+      const sName = document.getElementById('selfName');
+      if (sName) sName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
+
+      renderAvatarContent('selfAvatar', playerAvatarData, playerName);
+
+      const sBadge = document.getElementById('selfEloBadge');
+      if (sBadge) sBadge.textContent = `(${playerProfile.elo.chess})`;
+    }
   function copyMyPlayerId() {
     navigator.clipboard.writeText(playerProfile.username);
     alert("ناوی بەکارهێنەرەکەت کۆپی کرا: " + playerProfile.username);
@@ -1742,8 +1755,10 @@ document.getElementById('selfName').innerHTML = playerName + getVerifiedBadgeHTM
   db.ref('presence').on('value', snap => {
     onlineUsersMap = snap.val() || {};
     const count = snap.numChildren() || 1;
-    document.getElementById('onlineCountText').textContent = `${count} یاریزان ئێستا لە سەرهێڵن`;
-    document.getElementById('onlineBadge').textContent = `سەرهێڵ: ${count}`;
+   const ocText = document.getElementById('onlineCountText');
+      if (ocText) ocText.textContent = `${count} یاریزان ئێستا لە سەرهێڵن`;
+      const oBadge = document.getElementById('onlineBadge');
+      if (oBadge) oBadge.textContent = `سەرهێڵ: ${count}`;
     if (playerId) renderFriendsList();
   });
 
