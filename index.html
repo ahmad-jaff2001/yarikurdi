@@ -673,69 +673,77 @@
       </div>
     </div>
 
-    <!-- 3-Column Visual Game Cards Grid -->
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1">
-      <!-- 1. Chess -->
-      <div onclick="switchView('chess')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=500&q=80" alt="شەتڕەنج" />
-        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">شەتڕەنج</span>
+    <!-- یارییە ئامادەکان (کار دەکەن) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+        <!-- ١. شەتڕەنج -->
+        <div onclick="switchView('chess')" class="pito-game-card">
+          <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=500&q=80" alt="شەتڕەنج" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">شەتڕەنج</span>
+          </div>
         </div>
-      </div>
 
-      <!-- 2. Konkan -->
-      <div onclick="switchView('konkan')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1541278107931-e006523892df?auto=format&fit=crop&w=500&q=80" alt="کۆنکان" />
-        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">کۆنکان</span>
-        </div>
-      </div>
-
-      <!-- 3. Domino -->
-      <div onclick="switchView('domino')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=500&q=80" alt="دۆمینە" />
-        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-red-400">♥</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">دۆمینە</span>
-        </div>
-      </div>
-
-      <!-- 4. Voice Rooms / Live Mic -->
-      <div onclick="switchView('rooms')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=500&q=80" alt="دیوەخان" />
-        <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-[#050b18] text-[9px] font-black">LIVE</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">دیوەخان 🎙️</span>
-        </div>
-      </div>
-
-      <!-- 5. Backgammon -->
-      <div onclick="switchView('leaderboard', 'backgammon')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1632501641765-e568d28b0015?auto=format&fit=crop&w=500&q=80" alt="تاوڵە" />
-        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white/80">♡</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">تاوڵە</span>
-        </div>
-      </div>
-
-      <!-- 6. Dama -->
-      <div onclick="switchView('leaderboard', 'dama')" class="pito-game-card">
-        <img src="https://images.unsplash.com/photo-1606503153255-59d8b8b82176?auto=format&fit=crop&w=500&q=80" alt="دامە" />
-        <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white/80">♡</span>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">دامە</span>
-        </div>
-      </div>
-      <div onclick="switchView('ludo')" class="pito-game-card">
+        <!-- ٢. لودۆ -->
+        <div onclick="switchView('ludo')" class="pito-game-card">
           <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=500&q=80" alt="لودۆ" />
-          <span class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-xs text-white">🎲</span>
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">لودۆ</span>
           </div>
         </div>
-    </div>
+
+        <!-- ٣. دۆمینە -->
+        <div onclick="switchView('domino')" class="pito-game-card">
+          <img src="https://images.unsplash.com/photo-1585504198199-20277593b94f?auto=format&fit=crop&w=500&q=80" alt="دۆمینە" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">دۆمینە</span>
+          </div>
+        </div>
+
+        <!-- ٤. کۆنکان -->
+        <div onclick="switchView('konkan')" class="pito-game-card">
+          <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=500&q=80" alt="کۆنکان" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/90 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">کۆنکان</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- سەردێڕی یارییە چاوەڕوانکراوەکان -->
+      <div class="pt-3 pb-1 flex items-center justify-between border-t border-white/10">
+        <span class="text-xs font-extrabold text-yellow-400">⏳ یارییەکانی داهاتوو (ئامادە دەکرێن)</span>
+        <span class="text-[10px] text-slate-400">بەم زووانە زیاد دەکرێن</span>
+      </div>
+
+      <!-- یارییە ئامادەنەکراوەکان (قوفڵکراو) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-80">
+        <!-- تاوڵە -->
+        <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card relative cursor-not-allowed">
+          <img src="https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=500&q=80" class="grayscale-[55%]" alt="تاوڵە" />
+          <div class="absolute inset-0 bg-black/45 flex flex-col items-center justify-center gap-1">
+            <span class="text-xl">🔒</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/90 text-[#050b18] text-[10px] font-black shadow">ئامادە دەکرێت</span>
+          </div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title text-slate-200">تاوڵە</span>
+          </div>
+        </div>
+
+        <!-- دامە -->
+        <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت!')" class="pito-game-card relative cursor-not-allowed">
+          <img src="https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=500&q=80" class="grayscale-[55%]" alt="دامە" />
+          <div class="absolute inset-0 bg-black/45 flex flex-col items-center justify-center gap-1">
+            <span class="text-xl">🔒</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/90 text-[#050b18] text-[10px] font-black shadow">ئامادە دەکرێت</span>
+          </div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title text-slate-200">دامەی کوردی</span>
+          </div>
+        </div>
+      </div>
   </section>
 <!-- VIEW: LUDO -->
   <section id="view-ludo" class="hidden max-w-lg mx-auto px-3 py-3">
@@ -909,6 +917,12 @@
 
   <!-- VIEW 3: DOMINO ARENA -->
   <section id="view-domino" class="hidden max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-3 flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+        <span>↩</span>
+        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+    </div>
     <div id="dominoSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
       <div class="text-center space-y-1">
         <div class="text-4xl mb-1">🁣</div>
@@ -991,6 +1005,12 @@
   </section>
 <!-- VIEW 3.5: KONKAN ARENA -->
   <section id="view-konkan" class="hidden max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-3 flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+        <span>↩</span>
+        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+    </div>
     <!-- Setup Panel -->
     <div id="konkanSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
       <div class="text-center space-y-1">
