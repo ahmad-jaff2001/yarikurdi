@@ -1,5 +1,5 @@
 // ========================================================
-// YARI KURDI - PRO CHESS ENGINE (PHASER 3 + FULL FIDE)
+// YARI KURDI - PRO CHESS ENGINE (PHASER 3 + DRAG + PREMOVE)
 // ========================================================
 
 const CHESS_PIECE_SVGS = {
@@ -42,9 +42,11 @@ let chessPhaserGame = null, chessSceneRef = null;
 class RoyalChessScene extends Phaser.Scene {
   constructor() {
     super({ key: 'RoyalChessScene' });
-    this.pieceSprites = {};
     this.arrows = [];
     this.rightStart = null;
+    this.dragInfo = null;
+    this.dragGhostSprite = null;
+    this.pieceGridSprites = {};
   }
 
   preload() {
@@ -57,11 +59,12 @@ class RoyalChessScene extends Phaser.Scene {
     chessSceneRef = this;
     this.boardGfx = this.add.graphics();
     this.highlightGfx = this.add.graphics();
-    this.arrowGfx = this.add.graphics();
     this.piecesLayer = this.add.container(0, 0);
+    this.arrowGfx = this.add.graphics();
 
     this.input.mouse.disableContextMenu();
 
+    // Pointer Down: هەڵگرتن یان دەستپێکردنی ڕاکێشان (Drag)
     this.input.on('pointerdown', (pointer) => {
       if (!gameActive) return;
       const sq = this.xyToSq(pointer.x, pointer.y);
@@ -78,31 +81,55 @@ class RoyalChessScene extends Phaser.Scene {
       }
 
       const p = board[sq.r][sq.c];
+
+      // ئەگەر داشێکی خۆمان بێت -> ئامادەکردن بۆ کلیک یان ڕاکێشان (هەم لە نۆرەی خۆمان هەم بۆ Premove)
       if (p && p[0] === myColor) {
+        if (premove) premove = null;
         selectedSq = sq;
-        legalMoves = (turn === myColor) ? getLegalMovesForPiece(sq.r, sq.c) : [];
-        if (turn !== myColor) premove = null;
+        legalMoves = (turn === myColor) ? getLegalMovesForPiece(sq.r, sq.c) : getPremoveHintSquares(sq.r, sq.c);
+
+        this.dragInfo = {
+          fromR: sq.r,
+          fromC: sq.c,
+          piece: p,
+          startX: pointer.x,
+          startY: pointer.y,
+          isDragging: false
+        };
+
         this.syncBoardVisual();
-      } else if (selectedSq) {
-        if (turn !== myColor) {
-          if (selectedSq.r !== sq.r || selectedSq.c !== sq.c) {
-            premove = { fromR: selectedSq.r, fromC: selectedSq.c, toR: sq.r, toC: sq.c };
-            selectedSq = null;
-            legalMoves = [];
-          }
-          this.syncBoardVisual();
-          return;
-        }
-        if (legalMoves.some(m => m.toR === sq.r && m.toC === sq.c)) {
-          executeMove(selectedSq.r, selectedSq.c, sq.r, sq.c, false);
-        } else {
-          selectedSq = null;
-          legalMoves = [];
-          this.syncBoardVisual();
-        }
+        return;
+      }
+
+      // ئەگەر پێشتر داشێک دیاریکرابێت و کلیک لە خانەی دووەم بکرێت
+      if (selectedSq) {
+        this.handleDestinationAction(selectedSq.r, selectedSq.c, sq.r, sq.c);
       }
     });
 
+    // Pointer Move: جووڵاندنی داشەکە لەگەڵ ماوس یان پەنجە
+    this.input.on('pointermove', (pointer) => {
+      if (!this.dragInfo || !gameActive) return;
+      const dist = Phaser.Math.Distance.Between(this.dragInfo.startX, this.dragInfo.startY, pointer.x, pointer.y);
+
+      if (dist > 6 && !this.dragInfo.isDragging) {
+        this.dragInfo.isDragging = true;
+        const origKey = `${this.dragInfo.fromR}_${this.dragInfo.fromC}`;
+        if (this.pieceGridSprites[origKey]) {
+          this.pieceGridSprites[origKey].setAlpha(0.28);
+        }
+        const sqSize = this.scale.width / 8;
+        this.dragGhostSprite = this.add.image(pointer.x, pointer.y, this.dragInfo.piece);
+        this.dragGhostSprite.setDisplaySize(sqSize * 1.02, sqSize * 1.02);
+        this.dragGhostSprite.setDepth(50);
+      }
+
+      if (this.dragInfo.isDragging && this.dragGhostSprite) {
+        this.dragGhostSprite.setPosition(pointer.x, pointer.y);
+      }
+    });
+
+    // Pointer Up: دانانی داشە ڕاکێشراوەکە یان کێشانی سەهم
     this.input.on('pointerup', (pointer) => {
       if (this.rightStart) {
         const endSq = this.xyToSq(pointer.x, pointer.y);
@@ -111,11 +138,60 @@ class RoyalChessScene extends Phaser.Scene {
           this.drawArrows();
         }
         this.rightStart = null;
+        return;
+      }
+
+      if (this.dragInfo) {
+        const info = this.dragInfo;
+        this.dragInfo = null;
+
+        if (this.dragGhostSprite) {
+          this.dragGhostSprite.destroy();
+          this.dragGhostSprite = null;
+        }
+
+        const origKey = `${info.fromR}_${info.fromC}`;
+        if (this.pieceGridSprites[origKey]) {
+          this.pieceGridSprites[origKey].setAlpha(1);
+        }
+
+        if (info.isDragging) {
+          const dropSq = this.xyToSq(pointer.x, pointer.y);
+          if (dropSq && (dropSq.r !== info.fromR || dropSq.c !== info.fromC)) {
+            this.handleDestinationAction(info.fromR, info.fromC, dropSq.r, dropSq.c);
+          } else {
+            this.syncBoardVisual();
+          }
+        }
       }
     });
 
     this.drawBaseBoard();
     this.syncBoardVisual();
+  }
+
+  handleDestinationAction(fromR, fromC, toR, toC) {
+    // ئەگەر نۆرەی بەرامبەرە -> Premove دابنێ
+    if (turn !== myColor) {
+      if (fromR !== toR || fromC !== toC) {
+        premove = { fromR, fromC, toR, toC };
+        playChessSound('move');
+      }
+      selectedSq = null;
+      legalMoves = [];
+      this.syncBoardVisual();
+      return;
+    }
+
+    // ئەگەر نۆرەی خۆمانە -> جووڵەی یاسایی جێبەجێ بکە
+    const valid = getLegalMovesForPiece(fromR, fromC).some(m => m.toR === toR && m.toC === toC);
+    if (valid) {
+      executeMove(fromR, fromC, toR, toC, false);
+    } else {
+      selectedSq = null;
+      legalMoves = [];
+      this.syncBoardVisual();
+    }
   }
 
   xyToSq(x, y) {
@@ -147,7 +223,6 @@ class RoyalChessScene extends Phaser.Scene {
         const r = myColor === 'w' ? i : 7 - i;
         const c = myColor === 'w' ? j : 7 - j;
         const isLight = (r + c) % 2 === 0;
-        // ڕەنگی تەختەی شاهانەی Chess.com / YariKurdi
         this.boardGfx.fillStyle(isLight ? 0xe2e8f0 : 0x2c4c6e, 1);
         this.boardGfx.fillRect(j * sqSize, i * sqSize, sqSize, sqSize);
       }
@@ -162,7 +237,7 @@ class RoyalChessScene extends Phaser.Scene {
 
     // دوا جووڵە
     if (lastMove) {
-      [ { r: lastMove.fromR, c: lastMove.fromC }, { r: lastMove.toR, c: lastMove.toC } ].forEach(pos => {
+      [{ r: lastMove.fromR, c: lastMove.fromC }, { r: lastMove.toR, c: lastMove.toC }].forEach(pos => {
         const dr = myColor === 'w' ? pos.r : 7 - pos.r;
         const dc = myColor === 'w' ? pos.c : 7 - pos.c;
         this.highlightGfx.fillStyle(0xfacc15, 0.36);
@@ -178,12 +253,12 @@ class RoyalChessScene extends Phaser.Scene {
       this.highlightGfx.fillRect(dc * sqSize, dr * sqSize, sqSize, sqSize);
     }
 
-    // Premove
+    // خانەکانی Premove (ڕەنگی سووری Chess.com)
     if (premove) {
-      [ { r: premove.fromR, c: premove.fromC }, { r: premove.toR, c: premove.toC } ].forEach(pos => {
+      [{ r: premove.fromR, c: premove.fromC, a: 0.55 }, { r: premove.toR, c: premove.toC, a: 0.72 }].forEach(pos => {
         const dr = myColor === 'w' ? pos.r : 7 - pos.r;
         const dc = myColor === 'w' ? pos.c : 7 - pos.c;
-        this.highlightGfx.fillStyle(0xef4444, 0.52);
+        this.highlightGfx.fillStyle(0xef4444, pos.a);
         this.highlightGfx.fillRect(dc * sqSize, dr * sqSize, sqSize, sqSize);
       });
     }
@@ -193,14 +268,18 @@ class RoyalChessScene extends Phaser.Scene {
     if (kingCheck) {
       const dr = myColor === 'w' ? kingCheck.r : 7 - kingCheck.r;
       const dc = myColor === 'w' ? kingCheck.c : 7 - kingCheck.c;
-      this.highlightGfx.fillStyle(0xdc2626, 0.78);
+      this.highlightGfx.fillStyle(0xdc2626, 0.8);
       this.highlightGfx.fillRect(dc * sqSize, dr * sqSize, sqSize, sqSize);
     }
 
-    // خاڵی جووڵە یاساییەکان
+    // خاڵی جووڵە یاساییەکان (یان خانه چاوەڕوانکراوەکانی Premove)
+    const isPremoveMode = (turn !== myColor);
     legalMoves.forEach(m => {
       const { x, y } = this.sqToCenter(m.toR, m.toC);
-      if (board[m.toR][m.toC]) {
+      if (isPremoveMode) {
+        this.highlightGfx.fillStyle(0xf87171, 0.55);
+        this.highlightGfx.fillCircle(x, y, sqSize * 0.14);
+      } else if (board[m.toR][m.toC]) {
         this.highlightGfx.lineStyle(4, 0xef4444, 0.85);
         this.highlightGfx.strokeCircle(x, y, sqSize * 0.42);
       } else {
@@ -211,6 +290,7 @@ class RoyalChessScene extends Phaser.Scene {
 
     // کێشانەوەی داشەکان
     this.piecesLayer.removeAll(true);
+    this.pieceGridSprites = {};
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const p = board[r][c];
@@ -219,6 +299,7 @@ class RoyalChessScene extends Phaser.Scene {
         const sprite = this.add.image(x, y, p);
         sprite.setDisplaySize(sqSize * 0.84, sqSize * 0.84);
         this.piecesLayer.add(sprite);
+        this.pieceGridSprites[`${r}_${c}`] = sprite;
       }
     }
 
@@ -228,6 +309,9 @@ class RoyalChessScene extends Phaser.Scene {
       if (kingCheck) {
         turnEl.textContent = `⚠️ کش! (${baseTurnText})`;
         turnEl.className = 'text-xs font-extrabold text-red-400 animate-pulse';
+      } else if (premove) {
+        turnEl.textContent = `⚡ Premove ئامادەیە`;
+        turnEl.className = 'text-xs font-extrabold text-rose-400';
       } else {
         turnEl.textContent = baseTurnText;
         turnEl.className = 'text-xs font-bold text-yellow-300';
@@ -250,6 +334,46 @@ class RoyalChessScene extends Phaser.Scene {
       this.arrowGfx.fillCircle(p2.x, p2.y, 8);
     });
   }
+}
+
+// پێدانی هەموو جووڵە ئەگەرییەکان بۆ Premove کاتێک نۆرەی بەرامبەرە
+function getPremoveHintSquares(r, c) {
+  const p = board[r][c];
+  if (!p) return [];
+  const color = p[0], type = p[1], moves = [];
+  const inBounds = (nr, nc) => nr >= 0 && nr < 8 && nc >= 0 && nc < 8;
+
+  if (type === 'P') {
+    const dir = color === 'w' ? -1 : 1, startRow = color === 'w' ? 6 : 1;
+    if (inBounds(r + dir, c)) moves.push({ fromR: r, fromC: c, toR: r + dir, toC: c });
+    if (r === startRow && inBounds(r + dir * 2, c)) moves.push({ fromR: r, fromC: c, toR: r + dir * 2, toC: c });
+    [-1, 1].forEach(dc => { if (inBounds(r + dir, c + dc)) moves.push({ fromR: r, fromC: c, toR: r + dir, toC: c + dc }); });
+  } else if (type === 'N') {
+    [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dr, dc]) => {
+      if (inBounds(r + dr, c + dc)) moves.push({ fromR: r, fromC: c, toR: r + dr, toC: c + dc });
+    });
+  } else if (type === 'K') {
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      if ((dr !== 0 || dc !== 0) && inBounds(r + dr, c + dc)) moves.push({ fromR: r, fromC: c, toR: r + dr, toC: c + dc });
+    }
+    const row = color === 'w' ? 7 : 0;
+    if (r === row && c === 4) {
+      moves.push({ fromR: row, fromC: 4, toR: row, toC: 6 });
+      moves.push({ fromR: row, fromC: 4, toR: row, toC: 2 });
+    }
+  } else {
+    const dirs = [];
+    if (type === 'R' || type === 'Q') dirs.push([-1,0],[1,0],[0,-1],[0,1]);
+    if (type === 'B' || type === 'Q') dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);
+    dirs.forEach(([dr, dc]) => {
+      let nr = r + dr, nc = c + dc;
+      while (inBounds(nr, nc)) {
+        moves.push({ fromR: r, fromC: c, toR: nr, toC: nc });
+        nr += dr; nc += dc;
+      }
+    });
+  }
+  return moves;
 }
 
 function initChessPhaser() {
@@ -515,17 +639,21 @@ function executeMove(fromR, fromC, toR, toC, isRemote = false) {
     return;
   }
 
+  // جێبەجێکردنی خێرای Premove هەر کە نۆرەی خۆمان هات
   if (turn === myColor && premove) {
     const pm = premove;
     premove = null;
-    if (getLegalMovesForPiece(pm.fromR, pm.fromC).some(m => m.toR === pm.toR && m.toC === pm.toC)) {
-      setTimeout(() => executeMove(pm.fromR, pm.fromC, pm.toR, pm.toC), 60);
+    if (board[pm.fromR][pm.fromC] && board[pm.fromR][pm.fromC][0] === myColor &&
+        getLegalMovesForPiece(pm.fromR, pm.fromC).some(m => m.toR === pm.toR && m.toC === pm.toC)) {
+      setTimeout(() => executeMove(pm.fromR, pm.fromC, pm.toR, pm.toC, false), 55);
       return;
+    } else {
+      renderBoard();
     }
   }
 
   if (!isOnlineGame && turn !== myColor && gameActive) {
-    setTimeout(makeBotMove, 380);
+    setTimeout(makeBotMove, 450);
   }
 }
 
