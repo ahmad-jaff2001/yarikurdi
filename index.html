@@ -611,10 +611,11 @@ html, body {
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     }
     .yalla-wood-frame {
-      background: linear-gradient(145deg, #9c6635, #6e431d);
-      padding: 9px;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+      background: linear-gradient(145deg, #451a03 0%, #78350f 45%, #451a03 100%);
+      padding: 11px;
+      border-radius: 22px;
+      border: 2.5px solid #f59e0b;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), inset 0 2px 4px rgba(254, 240, 138, 0.45), 0 0 25px rgba(245, 158, 11, 0.22);
     }
     .ludo-grid {
       display: grid;
@@ -622,43 +623,67 @@ html, body {
       grid-template-rows: repeat(15, 1fr);
       width: 100%;
       aspect-ratio: 1 / 1;
-      background: #ffffff;
-      border-radius: 8px;
+      background: #fefce8;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1.5px solid #4a2c11;
+      border: 2px solid #92400e;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
     }
     .ludo-cell {
-      border: 0.5px solid #cbd5e1;
+      border: 0.5px solid rgba(146, 64, 14, 0.22);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
     }
     .ludo-socket {
-      width: 72%;
-      height: 72%;
+      width: 76%;
+      height: 76%;
       border-radius: 9999px;
-      background: rgba(15, 23, 42, 0.34);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(226,232,240,0.95));
+      border: 1.5px solid rgba(146, 64, 14, 0.35);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(255, 255, 255, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .ludo-token {
-      width: 86%;
-      height: 86%;
+      width: 88%;
+      height: 88%;
       border-radius: 9999px;
-      border: 2px solid #ffffff;
+      border: 2.5px solid #ffffff;
       cursor: pointer;
       position: relative;
       z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 11px;
+      font-weight: 900;
       color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.55), inset 0 2px 3px rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ludo-token:hover {
+      transform: scale(1.16) translateY(-2px);
+    }
+    .yalla-dice-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      border: 2px solid #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), inset 0 2px 3px #ffffff;
+      transition: transform 0.15s ease;
+    }
+    .yalla-dice-box:active {
+      transform: scale(0.92);
     }
     .ludo-token.yellow-pawn {
       background: radial-gradient(circle at 32% 30%, #fde047, #eab308 65%, #a16207);
@@ -3933,116 +3958,62 @@ function makeBotMove() {
       red: [-1, -1, -1, -1]
     };
 
-    // دەنگی نەرم و دارینی خۆش (Wood/Velvet Dice & Soft Chime)
+   // سیستمی دەنگی پڕۆفیشناڵی Yalla Ludo
     function playYallaSound(type = 'dice') {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const now = ctx.currentTime;
+
         if (type === 'dice') {
-          [0, 0.06, 0.12].forEach((offset, i) => {
+          // دەنگی تەقەتەقی زار لەناو قاپدا
+          [0, 0.06, 0.13, 0.21].forEach((delay, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(320 + i * 75, now + offset);
-            osc.frequency.exponentialRampToValueAtTime(140, now + offset + 0.055);
-            gain.gain.setValueAtTime(0.14, now + offset);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.06);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220 + i * 75, now + delay);
+            osc.frequency.exponentialRampToValueAtTime(90, now + delay + 0.05);
+            gain.gain.setValueAtTime(0.25, now + delay);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.05);
             osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(now + offset); osc.stop(now + offset + 0.065);
+            osc.start(now + delay); osc.stop(now + delay + 0.06);
           });
         } else if (type === 'step') {
+          // دەنگی هەنگاونانی پول لەسەر تەختە
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(520, now);
-          osc.frequency.exponentialRampToValueAtTime(680, now + 0.08);
-          gain.gain.setValueAtTime(0.11, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(580, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.07);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
           osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 0.095);
-        } else if (type === 'six') {
-          [523, 659, 784].forEach((f, idx) => {
+          osc.start(now); osc.stop(now + 0.08);
+        } else if (type === 'kill') {
+          // دەنگی کوشتنی پولی بەرامبەر
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(480, now);
+          osc.frequency.exponentialRampToValueAtTime(95, now + 0.35);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.36);
+        } else if (type === 'win' || type === 'six') {
+          // ئاوازی زێڕینی بردنەوە یان هاتنی ژمارە ٦
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(f, now + idx * 0.06);
-            gain.gain.setValueAtTime(0.12, now + idx * 0.06);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.18);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+            gain.gain.setValueAtTime(0.22, now + idx * 0.09);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.09 + 0.25);
             osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(now + idx * 0.06); osc.stop(now + idx * 0.06 + 0.19);
+            osc.start(now + idx * 0.09); osc.stop(now + idx * 0.09 + 0.26);
           });
         }
-      } catch(e) {}
+      } catch (e) {}
     }
-
-    function sendLudoQuickReaction(txt) {
-      document.getElementById('ludoStatusText').textContent = txt;
-      playYallaSound('step');
-    }
-
-    function initLudoGame() {
-      ludoState = { turn: 'yellow', dice: 0, rolled: false, yellow: [-1, -1, -1, -1], red: [-1, -1, -1, -1] };
-      const nameEl = document.getElementById('ludoMyName');
-      if (nameEl && typeof playerName !== 'undefined') nameEl.textContent = playerName;
-      document.getElementById('ludoDiceBox').textContent = '🎲';
-      document.getElementById('ludoOppDiceBox').textContent = '🎲';
-      document.getElementById('ludoTurnBadge').textContent = 'نۆرەی تۆیە (زەرد)';
-      document.getElementById('ludoStatusText').textContent = 'کلیک لە زارەکە بکە';
-      renderLudoBoard();
-    }
-
-    function leaveLudoRoom() {
-      stopLiveVoiceMic();
-      switchView('hub');
-    }
-
-    function getLudoCoord(color, pos, idx) {
-      if (pos === -1) return color === 'yellow' ? YELLOW_BASE[idx] : RED_BASE[idx];
-      if (pos >= 51) {
-        const stretchIdx = Math.min(pos - 51, 5);
-        return color === 'yellow' ? YELLOW_HOME_STRETCH[stretchIdx] : RED_HOME_STRETCH[stretchIdx];
-      }
-      const offset = color === 'yellow' ? 0 : 26;
-      return LUDO_PATH[(pos + offset) % 52];
-    }
-
-    function canMoveLudoToken(color, idx, dice) {
-      const pos = ludoState[color][idx];
-      if (pos === 56) return false;
-      if (pos === -1) return dice === 6;
-      return pos + dice <= 56;
-    }
-
-    function rollLudoDice() {
-      const allowedColor = ludoOnlineMode ? ludoMyColor : 'yellow';
-      if (ludoState.turn !== allowedColor || ludoState.rolled) return;
-      const diceBox = document.getElementById('ludoDiceBox');
-      diceBox.classList.remove('dice-rolling');
-      void diceBox.offsetWidth;
-      diceBox.classList.add('dice-rolling');
-
-      const val = Math.floor(Math.random() * 6) + 1;
-      playYallaSound(val === 6 ? 'six' : 'dice');
-      ludoState.dice = val;
-      ludoState.rolled = true;
-      const faces = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
-      diceBox.textContent = faces[val];
-
-      const movable = [0,1,2,3].filter(i => canMoveLudoToken(allowedColor, i, val));
-      renderLudoBoard();
-
-      if (movable.length === 0) {
-        const noMoveMsg = `زار (${val}) — جوڵە نییە`;
-        document.getElementById('ludoStatusText').textContent = noMoveMsg;
-        if (ludoOnlineMode) syncLudoOnlineState(noMoveMsg);
-        setTimeout(() => switchLudoTurn(allowedColor === 'yellow' ? 'red' : 'yellow'), 900);
-      } else {
-        const moveMsg = `زار (${val}) — مۆرێک بجوڵێنە`;
-        document.getElementById('ludoStatusText').textContent = moveMsg;
-        if (ludoOnlineMode) syncLudoOnlineState(moveMsg);
-      }
-    }
-
     function moveLudoToken(color, idx) {
       if (ludoOnlineMode && color !== ludoMyColor) return;
       if (ludoState.turn !== color || !ludoState.rolled) return;
@@ -4139,7 +4110,19 @@ function makeBotMove() {
         }
       }, 850);
     }
-
+// دڵنیابوون لە دروستبوونی تەختەی لودۆ لە یەکەم چرکەوە
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof initLudoGame === 'function') initLudoGame();
+    });
+    const _origSwitchViewLudo = window.switchView;
+    if (typeof _origSwitchViewLudo === 'function') {
+      window.switchView = function(viewName) {
+        _origSwitchViewLudo(viewName);
+        if (viewName === 'ludo' && typeof initLudoGame === 'function') {
+          initLudoGame();
+        }
+      };
+    }
     function renderLudoBoard() {
       const board = document.getElementById('ludoBoard');
       if (!board) return;
