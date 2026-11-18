@@ -1,5 +1,5 @@
 // ========================================================
-// YARI KURDI - ULTRA HD ROYAL KURDISH TEAHOUSE DOMINO 101
+// YARI KURDI - 4K CRISP ROYAL KURDISH TEAHOUSE DOMINO 101
 // ========================================================
 
 const teahouseDom = {
@@ -21,6 +21,7 @@ const teahouseDom = {
 
 let dominoPhaserGame = null;
 let dominoSceneRef = null;
+const DOM_DPR = Math.min(Math.max(window.devicePixelRatio || 2, 2.5), 3);
 
 function playTeahouseWoodClack() {
   if (typeof soundEnabled !== 'undefined' && !soundEnabled) return;
@@ -63,74 +64,69 @@ class RoyalDominoScene extends Phaser.Scene {
     this.renderAll();
   }
 
-  // کێشانەوەی مێزی چایخانەی فۆلکلۆری کوردی بە دیقەی بەرز
   drawFolkloreTeahouseTable() {
+    const S = DOM_DPR;
     const w = this.scale.width;
     const h = this.scale.height;
-    const tableH = h - 126;
+    const tableH = h - 126 * S;
     this.bgGfx.clear();
     this.folkloreLayer.removeAll(true);
 
-    // ١. پاشبنەمای دارگوێزی تۆخی چایخانە
-    this.bgGfx.fillStyle(0x1e0f07, 1);
+    // پاشبنەمای دارگوێزی تۆخی چایخانە
+    this.bgGfx.fillStyle(0x1b0d06, 1);
     this.bgGfx.fillRect(0, 0, w, h);
 
     // تەختە دارینەکانی مێزەکە
     const plankCount = 7;
-    const plankW = (w - 16) / plankCount;
+    const plankW = (w - 16 * S) / plankCount;
     for (let i = 0; i < plankCount; i++) {
-      const shade = i % 2 === 0 ? 0x3b2010 : 0x321a0c;
+      const shade = i % 2 === 0 ? 0x3f2212 : 0x331b0d;
       this.bgGfx.fillStyle(shade, 1);
-      this.bgGfx.fillRect(8 + i * plankW, 6, plankW - 1.5, tableH - 8);
+      this.bgGfx.fillRect(8 * S + i * plankW, 6 * S, plankW - 1.5 * S, tableH - 8 * S);
     }
 
-    // سێبەری گەرم لە ناوەڕاستی مێزەکە (وەک ڕووناکی فانۆسی چایخانە)
-    this.bgGfx.fillStyle(0xd97706, 0.11);
+    // ڕووناکی گەرم لە ناوەڕاستی مێزەکە
+    this.bgGfx.fillStyle(0xd97706, 0.12);
     this.bgGfx.fillCircle(w / 2, tableH / 2, w * 0.44);
 
-    // ٢. چوارچێوەی زێڕین و نەخشی جاجمی فۆلکلۆری لە دەوری مێزەکە
-    this.bgGfx.lineStyle(3, 0xd97706, 0.85);
-    this.bgGfx.strokeRoundedRect(8, 6, w - 16, tableH - 8, 18);
+    // چوارچێوەی زێڕین و نەخشی جاجمی فۆلکلۆری
+    this.bgGfx.lineStyle(3 * S, 0xd97706, 0.88);
+    this.bgGfx.strokeRoundedRect(8 * S, 6 * S, w - 16 * S, tableH - 8 * S, 18 * S);
 
-    // نەخشی فەرشی کوردی لە سەرەوە و خوارەوەی مێزەکە
     const rugColors = [0xdc2626, 0xfacc15, 0x059669, 0xf8fafc];
-    const segW = 14;
-    for (let x = 18; x < w - 26; x += segW) {
+    const segW = 14 * S;
+    for (let x = 18 * S; x < w - 26 * S; x += segW) {
       const col = rugColors[Math.floor(x / segW) % rugColors.length];
-      this.bgGfx.fillStyle(col, 0.75);
-      this.bgGfx.fillRect(x, 9, segW - 2, 4);
-      this.bgGfx.fillRect(x, tableH - 9, segW - 2, 4);
+      this.bgGfx.fillStyle(col, 0.82);
+      this.bgGfx.fillRect(x, 9 * S, segW - 2 * S, 4 * S);
+      this.bgGfx.fillRect(x, tableH - 9 * S, segW - 2 * S, 4 * S);
     }
 
-    // ٣. ئاڵای کوردستان و خۆرە زێڕینەکە لە ناوەڕاستی مێزی چایخانەکە (بە شێوەیەکی شاهانە)
-    const flagW = Math.min(w * 0.56, 210);
+    // ئاڵای کوردستان و خۆرە ٢١ تیشکەکە لە ناوەڕاستی مێزەکە
+    const flagW = Math.min(w * 0.56, 215 * S);
     const flagH = flagW * 0.62;
     const fx = (w - flagW) / 2;
     const fy = (tableH - flagH) / 2;
 
     const flagGfx = this.add.graphics();
-    // سێبەری ئاڵاکە
     flagGfx.fillStyle(0x000000, 0.25);
-    flagGfx.fillRoundedRect(fx - 3, fy - 3, flagW + 6, flagH + 6, 10);
+    flagGfx.fillRoundedRect(fx - 3 * S, fy - 3 * S, flagW + 6 * S, flagH + 6 * S, 10 * S);
 
-    // سوور، سپی، سەوز
-    flagGfx.fillStyle(0xed2939, 0.24);
+    flagGfx.fillStyle(0xed2939, 0.28);
     flagGfx.fillRect(fx, fy, flagW, flagH / 3);
-    flagGfx.fillStyle(0xffffff, 0.22);
+    flagGfx.fillStyle(0xffffff, 0.26);
     flagGfx.fillRect(fx, fy + flagH / 3, flagW, flagH / 3);
-    flagGfx.fillStyle(0x278e43, 0.24);
+    flagGfx.fillStyle(0x278e43, 0.28);
     flagGfx.fillRect(fx, fy + (flagH * 2) / 3, flagW, flagH / 3);
 
-    // چوارچێوەی زێڕینی ناسک بۆ ئاڵاکە
-    flagGfx.lineStyle(1.5, 0xfacc15, 0.35);
+    flagGfx.lineStyle(1.5 * S, 0xfacc15, 0.42);
     flagGfx.strokeRect(fx, fy, flagW, flagH);
 
-    // خۆری کوردستان (٢١ تیشک) لە ناوەڕاستی ئاڵاکە
     const cx = w / 2;
     const cy = tableH / 2;
     const innerR = flagH * 0.14;
     const outerR = flagH * 0.28;
-    flagGfx.fillStyle(0xfebd11, 0.42);
+    flagGfx.fillStyle(0xfebd11, 0.48);
     flagGfx.beginPath();
     const rays = 21;
     for (let i = 0; i < rays * 2; i++) {
@@ -145,55 +141,62 @@ class RoyalDominoScene extends Phaser.Scene {
     flagGfx.fillPath();
     flagGfx.fillCircle(cx, cy, innerR * 0.92);
 
+    // کێشانی ئیستکانە چای کەمەرباریک و ژێرپیاڵە لە گۆشەی خوارەوەی مێزەکە (بە گرافیکی Vector، نەک ئیمۆجی!)
+    const tx = w - 34 * S;
+    const ty = tableH - 28 * S;
+    flagGfx.fillStyle(0xe2e8f0, 0.85);
+    flagGfx.fillEllipse(tx, ty + 8 * S, 24 * S, 7 * S);
+    flagGfx.lineStyle(1.2 * S, 0xdc2626, 0.85);
+    flagGfx.strokeEllipse(tx, ty + 8 * S, 20 * S, 5 * S);
+    // چا ڕەشەکەی ناو ئیستکانەکە
+    flagGfx.fillStyle(0x9a3412, 0.92);
+    flagGfx.fillRoundedRect(tx - 6 * S, ty - 7 * S, 12 * S, 14 * S, 4 * S);
+    // شووشەی ئیستکانەکە
+    flagGfx.lineStyle(1.4 * S, 0xffffff, 0.8);
+    flagGfx.strokeRoundedRect(tx - 6.5 * S, ty - 9 * S, 13 * S, 16 * S, 4.5 * S);
+
     this.folkloreLayer.add(flagGfx);
 
-    // ٤. وردەکاریی فۆلکلۆری چایخانە لە گۆشەکانی مێزەکە (ئیستکانە چای کەمەرباریک و قەندان)
-    const teaLeft = this.add.text(22, 18, '🫖', { fontSize: '20px' }).setAlpha(0.55);
-    const teaRight = this.add.text(w - 44, tableH - 36, '☕', { fontSize: '19px' }).setAlpha(0.55);
-    this.folkloreLayer.add([teaLeft, teaRight]);
-
-    // ٥. پانێڵی خوارەوە بۆ دەستی یاریزان (تەختەی دارگوێزی شاهانە)
-    this.bgGfx.fillStyle(0x120904, 0.92);
-    this.bgGfx.fillRoundedRect(8, h - 116, w - 16, 110, 18);
-    this.bgGfx.lineStyle(2, 0xf59e0b, 0.55);
-    this.bgGfx.strokeRoundedRect(8, h - 116, w - 16, 110, 18);
+    // پانێڵی خوارەوە بۆ دەستی یاریزان
+    this.bgGfx.fillStyle(0x120904, 0.94);
+    this.bgGfx.fillRoundedRect(8 * S, h - 116 * S, w - 16 * S, 110 * S, 18 * S);
+    this.bgGfx.lineStyle(2 * S, 0xf59e0b, 0.6);
+    this.bgGfx.strokeRoundedRect(8 * S, h - 116 * S, w - 16 * S, 110 * S, 18 * S);
   }
 
-  // دروستکردنی کاشیی عاجی ٣ ڕەهەندی بە دیقەی بەرز
   createDominoTileContainer(a, b, orientation = 'vertical', scale = 1, playable = false) {
+    const S = DOM_DPR * scale;
     const container = this.add.container(0, 0);
     const isHoriz = orientation === 'horizontal';
-    const tileW = (isHoriz ? 70 : 38) * scale;
-    const tileH = (isHoriz ? 38 : 70) * scale;
-    const rad = 8 * scale;
+    const tileW = (isHoriz ? 70 : 38) * S;
+    const tileH = (isHoriz ? 38 : 70) * S;
+    const rad = 8 * S;
 
     const gfx = this.add.graphics();
 
-    // سێبەری قووڵ و بنکەی کاشییەکە (3D Thickness)
+    // سێبەر و ئەستووری ٣ ڕەهەندی
     gfx.fillStyle(0x000000, 0.55);
-    gfx.fillRoundedRect(-tileW / 2 + 2.5, -tileH / 2 + 5, tileW, tileH, rad);
+    gfx.fillRoundedRect(-tileW / 2 + 2.5 * S, -tileH / 2 + 5 * S, tileW, tileH, rad);
 
     gfx.fillStyle(0xb8a382, 1);
-    gfx.fillRoundedRect(-tileW / 2, -tileH / 2 + 2.5, tileW, tileH, rad);
+    gfx.fillRoundedRect(-tileW / 2, -tileH / 2 + 2.5 * S, tileW, tileH, rad);
 
-    // ڕووی سەرەوەی عاجی (Ivory Surface)
+    // ڕووی سەرەوەی عاجی
     gfx.fillStyle(0xfffdf7, 1);
     gfx.fillRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, rad);
 
-    // بریقەی سپی لە لێواری سەرەوە
-    gfx.fillStyle(0xffffff, 0.75);
-    gfx.fillRoundedRect(-tileW / 2 + 2, -tileH / 2 + 1.5, tileW - 4, tileH * 0.22, rad * 0.7);
+    gfx.fillStyle(0xffffff, 0.8);
+    gfx.fillRoundedRect(-tileW / 2 + 2 * S, -tileH / 2 + 1.5 * S, tileW - 4 * S, tileH * 0.22, rad * 0.7);
 
-    // چوارچێوەی زێڕین بۆ ئەو کاشییانەی دەجوڵێن
     if (playable) {
-      gfx.lineStyle(2.5, 0xfacc15, 1);
+      gfx.lineStyle(2.5 * S, 0xfacc15, 1);
     } else {
-      gfx.lineStyle(1.4, 0xd6c5a9, 1);
+      gfx.lineStyle(1.4 * S, 0xd6c5a9, 1);
     }
     gfx.strokeRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, rad);
 
     // هێڵ و بزماری زێڕینی ناوەڕاست
-    gfx.lineStyle(1.8, 0xb45309, 0.9);
+    gfx.lineStyle(1.8 * S, 0xb45309, 0.9);
     if (isHoriz) {
       gfx.beginPath();
       gfx.moveTo(0, -tileH * 0.36);
@@ -206,11 +209,10 @@ class RoyalDominoScene extends Phaser.Scene {
       gfx.strokePath();
     }
     gfx.fillStyle(0xf59e0b, 1);
-    gfx.fillCircle(0, 0, 2.8 * scale);
+    gfx.fillCircle(0, 0, 2.8 * S);
     gfx.fillStyle(0xfef08a, 1);
-    gfx.fillCircle(-0.6 * scale, -0.6 * scale, 1.1 * scale);
+    gfx.fillCircle(-0.6 * S, -0.6 * S, 1.1 * S);
 
-    // خاڵە ڕەنگاوڕەنگەکان بە قووڵییەوە
     const drawHalfPips = (val, cx, cy, halfSize) => {
       const pipMap = {
         0: [],
@@ -232,13 +234,13 @@ class RoyalDominoScene extends Phaser.Scene {
       const pts = pipMap[val] || [];
       const col = colorMap[val] || 0x1e293b;
       const spread = halfSize * 0.56;
-      const r = (val === 1 ? 3.8 : 2.8) * scale;
+      const r = (val === 1 ? 3.8 : 2.8) * S;
 
       pts.forEach(([ox, oy]) => {
         const px = cx + ox * spread;
         const py = cy + oy * spread;
         gfx.fillStyle(0x000000, 0.22);
-        gfx.fillCircle(px, py + 0.8 * scale, r);
+        gfx.fillCircle(px, py + 0.8 * S, r);
         gfx.fillStyle(col, 1);
         gfx.fillCircle(px, py, r);
       });
@@ -258,6 +260,7 @@ class RoyalDominoScene extends Phaser.Scene {
   }
 
   renderAll() {
+    const S = DOM_DPR;
     this.boardLayer.removeAll(true);
     this.slotsLayer.removeAll(true);
     this.handLayer.removeAll(true);
@@ -268,37 +271,37 @@ class RoyalDominoScene extends Phaser.Scene {
 
     const w = this.scale.width;
     const h = this.scale.height;
-    const boardCenterY = (h - 126) / 2;
+    const boardCenterY = (h - 126 * S) / 2;
 
     if (teahouseDom.chain.length === 0) {
       const hint = teahouseDom.firstMoveRule && teahouseDom.requiredOpeningDouble !== null
         ? `گەورەترین جووت (${teahouseDom.requiredOpeningDouble}-${teahouseDom.requiredOpeningDouble}) ڕابکێشە سەر مێزەکە`
-        : 'یەکەم پوول ڕابکێشە سەر مێزەکە 🁣';
+        : 'یەکەم پوول ڕابکێشە سەر مێزەکە';
 
       const txt = this.add.text(w / 2, boardCenterY, hint, {
         fontFamily: 'Noto Kufi Arabic, sans-serif',
-        fontSize: '13px',
+        fontSize: `${Math.round(13.5 * S)}px`,
         fontStyle: 'bold',
         color: '#fef3c7',
-        backgroundColor: 'rgba(15, 23, 42, 0.88)',
-        padding: { x: 14, y: 10 },
+        backgroundColor: 'rgba(15, 23, 42, 0.92)',
+        padding: { x: Math.round(16 * S), y: Math.round(11 * S) },
         align: 'center',
-        wordWrap: { width: w - 64 }
+        wordWrap: { width: w - 64 * S }
       }).setOrigin(0.5);
       this.boardLayer.add(txt);
 
-      this.centerSlotZone = { x: w / 2, y: boardCenterY, w: 125, h: 90 };
+      this.centerSlotZone = { x: w / 2, y: boardCenterY, w: 125 * S, h: 90 * S };
     } else {
       const count = teahouseDom.chain.length;
       const tileScale = count > 14 ? 0.66 : (count > 8 ? 0.78 : 0.9);
-      const maxRowWidth = w - 84;
+      const maxRowWidth = w - 84 * S;
 
       const rows = [[]];
       let curRowW = 0;
 
       teahouseDom.chain.forEach((t, idx) => {
         const isDbl = t.a === t.b;
-        const tw = (isDbl ? 38 : 70) * tileScale + 4;
+        const tw = (isDbl ? 38 : 70) * tileScale * S + 4 * S;
         if (curRowW + tw > maxRowWidth && rows[rows.length - 1].length > 0) {
           rows.push([]);
           curRowW = 0;
@@ -307,9 +310,9 @@ class RoyalDominoScene extends Phaser.Scene {
         curRowW += tw;
       });
 
-      const rowHeight = 64 * tileScale;
+      const rowHeight = 64 * tileScale * S;
       const totalH = rows.length * rowHeight;
-      const startY = Math.max(46, boardCenterY - totalH / 2 + rowHeight / 2);
+      const startY = Math.max(46 * S, boardCenterY - totalH / 2 + rowHeight / 2);
 
       let firstTilePos = null;
       let lastTilePos = null;
@@ -336,15 +339,15 @@ class RoyalDominoScene extends Phaser.Scene {
       });
 
       if (firstTilePos) {
-        this.leftSlotZone = { x: Math.max(38, firstTilePos.x - 32), y: firstTilePos.y, w: 62, h: 56 };
+        this.leftSlotZone = { x: Math.max(38 * S, firstTilePos.x - 32 * S), y: firstTilePos.y, w: 62 * S, h: 56 * S };
       }
       if (lastTilePos) {
-        const targetX = lastTilePos.isRev ? Math.max(38, lastTilePos.x - 75) : Math.min(w - 38, lastTilePos.x + 32);
-        this.rightSlotZone = { x: targetX, y: lastTilePos.y, w: 62, h: 56 };
+        const targetX = lastTilePos.isRev ? Math.max(38 * S, lastTilePos.x - 75 * S) : Math.min(w - 38 * S, lastTilePos.x + 32 * S);
+        this.rightSlotZone = { x: targetX, y: lastTilePos.y, w: 62 * S, h: 56 * S };
       }
     }
 
-    // خانە درەوشاوەکانی سەر مێز کاتێک کاشییەک بە پەنجە ڕادەکێشرێت
+    // خانە درەوشاوەکانی سەر مێز کاتێک کاشییەک ڕادەکێشرێت
     if (teahouseDom.activeDragIdx !== null && teahouseDom.turn === 'player' && !teahouseDom.roundOver) {
       const draggedTile = teahouseDom.myHand[teahouseDom.activeDragIdx];
       if (draggedTile) {
@@ -352,15 +355,15 @@ class RoyalDominoScene extends Phaser.Scene {
         const drawDropTarget = (zone, label) => {
           if (!zone) return;
           const g = this.add.graphics();
-          g.fillStyle(0x10b981, 0.34);
-          g.fillRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12);
-          g.lineStyle(2.5, 0xfacc15, 0.95);
-          g.strokeRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12);
+          g.fillStyle(0x10b981, 0.36);
+          g.fillRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12 * S);
+          g.lineStyle(2.5 * S, 0xfacc15, 0.95);
+          g.strokeRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12 * S);
           this.slotsLayer.add(g);
 
           const lbl = this.add.text(zone.x, zone.y, label, {
             fontFamily: 'Noto Kufi Arabic, sans-serif',
-            fontSize: '12px',
+            fontSize: `${Math.round(12.5 * S)}px`,
             fontStyle: 'bold',
             color: '#fef08a'
           }).setOrigin(0.5);
@@ -379,19 +382,19 @@ class RoyalDominoScene extends Phaser.Scene {
     // دەستی یاریزان لە خوارەوە
     const handCount = teahouseDom.myHand.length;
     if (handCount > 0) {
-      const maxHandWidth = w - 26;
-      const handScale = handCount > 8 ? Math.max(0.68, maxHandWidth / (handCount * 42)) : 0.96;
-      const stepX = Math.min(45 * handScale, maxHandWidth / handCount);
+      const maxHandWidth = w - 26 * S;
+      const handScale = handCount > 8 ? Math.max(0.68, maxHandWidth / (handCount * 42 * S)) : 0.96;
+      const stepX = Math.min(45 * handScale * S, maxHandWidth / handCount);
       const totalHandW = stepX * handCount;
       const startHandX = (w - totalHandW) / 2 + stepX / 2;
-      const baseHandY = h - 62;
+      const baseHandY = h - 62 * S;
 
       teahouseDom.myHand.forEach((tile, idx) => {
         const fit = (teahouseDom.turn === 'player' && !teahouseDom.roundOver)
           ? checkTeahouseTileFit(tile)
           : { left: false, right: false };
         const canPlay = fit.left || fit.right;
-        const yPos = canPlay ? baseHandY - 10 : baseHandY;
+        const yPos = canPlay ? baseHandY - 10 * S : baseHandY;
 
         const card = this.createDominoTileContainer(tile.a, tile.b, 'vertical', handScale, canPlay);
         card.setPosition(startHandX + idx * stepX, yPos);
@@ -426,19 +429,19 @@ class RoyalDominoScene extends Phaser.Scene {
             }
 
             if (teahouseDom.chain.length === 0) {
-              if (dropY < h - 115) {
+              if (dropY < h - 115 * S) {
                 executePlayerTeahouseMove(idx, 'right');
                 return;
               }
             } else {
               const distLeft = (fit.left && this.leftSlotZone)
                 ? Phaser.Math.Distance.Between(dropX, dropY, this.leftSlotZone.x, this.leftSlotZone.y)
-                : 9999;
+                : 99999;
               const distRight = (fit.right && this.rightSlotZone)
                 ? Phaser.Math.Distance.Between(dropX, dropY, this.rightSlotZone.x, this.rightSlotZone.y)
-                : 9999;
+                : 99999;
 
-              if (dropY < h - 110) {
+              if (dropY < h - 110 * S) {
                 if (fit.left && fit.right) {
                   executePlayerTeahouseMove(idx, distLeft <= distRight ? 'left' : 'right');
                   return;
@@ -456,7 +459,7 @@ class RoyalDominoScene extends Phaser.Scene {
           });
 
           card.on('pointerup', (pointer) => {
-            if (Phaser.Math.Distance.Between(pointer.downX, pointer.downY, pointer.upX, pointer.upY) < 8) {
+            if (Phaser.Math.Distance.Between(pointer.downX, pointer.downY, pointer.upX, pointer.upY) < 8 * S) {
               if (teahouseDom.chain.length === 0) {
                 executePlayerTeahouseMove(idx, 'right');
               } else if (fit.left && !fit.right) {
@@ -477,13 +480,13 @@ class RoyalDominoScene extends Phaser.Scene {
     if (teahouseDom.roundBannerText) {
       const box = this.add.text(w / 2, boardCenterY, teahouseDom.roundBannerText, {
         fontFamily: 'Noto Kufi Arabic, sans-serif',
-        fontSize: '14px',
+        fontSize: `${Math.round(14 * S)}px`,
         fontStyle: 'bold',
         color: '#fef08a',
         backgroundColor: '#0f172a',
-        padding: { x: 16, y: 12 },
+        padding: { x: Math.round(16 * S), y: Math.round(12 * S) },
         align: 'center',
-        wordWrap: { width: w - 44 }
+        wordWrap: { width: w - 44 * S }
       }).setOrigin(0.5);
       this.overlayLayer.add(box);
     }
@@ -498,14 +501,19 @@ function initDominoPhaser() {
     stage.innerHTML = '';
     stage.style.padding = '0';
     stage.style.overflow = 'hidden';
-    const w = stage.clientWidth || 390;
-    const h = Math.max(stage.clientHeight || 430, 420);
+    const cssW = stage.clientWidth || 390;
+    const cssH = Math.max(stage.clientHeight || 430, 420);
 
     dominoPhaserGame = new Phaser.Game({
       type: Phaser.AUTO,
-      width: w,
-      height: h,
-      resolution: Math.max(window.devicePixelRatio || 2, 2),
+      width: Math.round(cssW * DOM_DPR),
+      height: Math.round(cssH * DOM_DPR),
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: Math.round(cssW * DOM_DPR),
+        height: Math.round(cssH * DOM_DPR)
+      },
       antialias: true,
       parent: 'ykDomBoardStage',
       transparent: true,
