@@ -808,6 +808,112 @@
       0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
       50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(243, 207, 101, 0.75); }
     }
+    /* ================= YARIKURDI MASTERPIECE ROYAL HUB UI ================= */
+    @keyframes royalSheen {
+      0% { transform: translateX(150%) skewX(-25deg); }
+      100% { transform: translateX(-150%) skewX(-25deg); }
+    }
+    @keyframes sunPulseGlow {
+      0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.85)); }
+      50% { transform: scale(1.07) rotate(6deg); filter: drop-shadow(0 0 26px rgba(253, 224, 71, 1)); }
+    }
+    @keyframes royalBorderGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25), 0 16px 35px rgba(0, 0, 0, 0.8); }
+      50% { box-shadow: 0 0 28px rgba(250, 204, 21, 0.5), 0 20px 42px rgba(0, 0, 0, 0.9); }
+    }
+
+    html, body {
+      background-color: #120703 !important;
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.24) 0%, transparent 55%),
+        radial-gradient(circle at 15% 40%, rgba(185, 28, 28, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(21, 128, 61, 0.15) 0%, transparent 45%),
+        linear-gradient(180deg, #241107 0%, #160904 48%, #0d0502 100%) !important;
+      background-attachment: fixed !important;
+    }
+
+    section {
+      position: relative;
+      z-index: 10;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(28, 13, 5, 0.94) 0%, rgba(18, 8, 3, 0.88) 100%) !important;
+      backdrop-filter: blur(18px) !important;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.75), 0 2px 15px rgba(245, 158, 11, 0.18) !important;
+    }
+
+    #view-hub svg.w-24.h-24 {
+      animation: sunPulseGlow 4.5s ease-in-out infinite;
+    }
+
+    .pito-game-card {
+      border-radius: 1.5rem !important;
+      border: 2px solid rgba(250, 204, 21, 0.55) !important;
+      background: #1a0c05 !important;
+      box-shadow: 0 16px 34px -8px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(254, 240, 138, 0.45) !important;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.35s ease !important;
+    }
+
+    .pito-game-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 55%;
+      background: linear-gradient(90deg, transparent, rgba(255, 250, 220, 0.32), transparent);
+      transform: translateX(220%) skewX(-25deg);
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .pito-game-card:hover {
+      transform: translateY(-9px) scale(1.035) !important;
+      border-color: #fde047 !important;
+      box-shadow: 0 26px 48px -10px rgba(0, 0, 0, 0.95), 0 0 32px rgba(250, 204, 21, 0.5) !important;
+    }
+
+    .pito-game-card:hover::after {
+      animation: royalSheen 0.85s ease-out forwards;
+    }
+
+    .pito-card-overlay {
+      background: linear-gradient(to top, rgba(12, 5, 2, 0.96) 10%, rgba(12, 5, 2, 0.32) 52%, transparent 100%) !important;
+    }
+
+    .pito-card-title {
+      font-size: 17px !important;
+      letter-spacing: 0.3px;
+      background: linear-gradient(180deg, #ffffff 0%, #fef08a 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.95));
+    }
+
+    .gold-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 52%, #b45309 100%) !important;
+      border: 1.5px solid #fef9c3 !important;
+      box-shadow: 0 8px 22px rgba(245, 158, 11, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.75) !important;
+    }
+
+    .gold-btn::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 45%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      transform: translateX(250%) skewX(-25deg);
+      animation: royalSheen 3.8s infinite ease-in-out;
+    }
+
+    .floating-bottom-dock {
+      background: linear-gradient(180deg, rgba(38, 18, 7, 0.92) 0%, rgba(18, 8, 3, 0.98) 100%) !important;
+      backdrop-filter: blur(20px) !important;
+      border: 1.8px solid rgba(250, 204, 21, 0.65) !important;
+      animation: royalBorderGlow 4s ease-in-out infinite;
+    }
   </style>
 </head>
 
@@ -2818,5 +2924,56 @@ function updateProfileUI() {
     <button id="dock-leaderboard" onclick="switchView('leaderboard')" class="dock-item" title="ڕیزبەندی">🏆</button>
     <button id="dock-profile" onclick="openEditProfileModal()" class="dock-item" title="پڕۆفایل">👤</button>
   </nav>
+  <!-- پاشبنەمای زیندووی پڕیشکە زێڕینەکانی دیوەخانی شاهانە -->
+  <canvas id="ykMasterpieceBg" style="position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1;"></canvas>
+  <script>
+    (function () {
+      const cvs = document.getElementById('ykMasterpieceBg');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      let w, h, motes = [];
+
+      function resize() {
+        w = cvs.width = window.innerWidth;
+        h = cvs.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      for (let i = 0; i < 38; i++) {
+        motes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 2.2 + 0.8,
+          vy: -(Math.random() * 0.45 + 0.15),
+          vx: (Math.random() - 0.5) * 0.25,
+          a: Math.random() * 0.55 + 0.15,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      function loop() {
+        if (!document.hidden && !document.body.classList.contains('in-game-mode')) {
+          ctx.clearRect(0, 0, w, h);
+          for (const m of motes) {
+            m.y += m.vy;
+            m.phase += 0.02;
+            m.x += m.vx + Math.sin(m.phase) * 0.2;
+            if (m.y < -10) { m.y = h + 10; m.x = Math.random() * w; }
+            const alpha = m.a * (0.65 + 0.35 * Math.sin(m.phase * 1.5));
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(253, 224, 71, ${alpha.toFixed(3)})`;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#f59e0b';
+            ctx.fill();
+          }
+          ctx.shadowBlur = 0;
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+    })();
+  </script>
 </body>
 </html>
