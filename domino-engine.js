@@ -1,5 +1,5 @@
 // ========================================================
-// YARI KURDI - ROYAL DOMINO 101 ENGINE (PHASER 3 DRAG & DROP)
+// YARI KURDI - ULTRA HD ROYAL KURDISH TEAHOUSE DOMINO 101
 // ========================================================
 
 const teahouseDom = {
@@ -30,9 +30,9 @@ function playTeahouseWoodClack() {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(860, now);
-    osc.frequency.exponentialRampToValueAtTime(175, now + 0.065);
-    gain.gain.setValueAtTime(0.28, now);
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(165, now + 0.065);
+    gain.gain.setValueAtTime(0.3, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -53,63 +53,147 @@ class RoyalDominoScene extends Phaser.Scene {
   create() {
     dominoSceneRef = this;
     this.bgGfx = this.add.graphics();
+    this.folkloreLayer = this.add.container(0, 0);
     this.boardLayer = this.add.container(0, 0);
     this.slotsLayer = this.add.container(0, 0);
     this.handLayer = this.add.container(0, 0);
     this.overlayLayer = this.add.container(0, 0);
 
-    this.drawTableBackground();
+    this.drawFolkloreTeahouseTable();
     this.renderAll();
   }
 
-  drawTableBackground() {
+  // کێشانەوەی مێزی چایخانەی فۆلکلۆری کوردی بە دیقەی بەرز
+  drawFolkloreTeahouseTable() {
     const w = this.scale.width;
     const h = this.scale.height;
+    const tableH = h - 126;
     this.bgGfx.clear();
+    this.folkloreLayer.removeAll(true);
 
-    // مێزی دارگوێزی شاهانە
-    this.bgGfx.fillStyle(0x2b170c, 1);
+    // ١. پاشبنەمای دارگوێزی تۆخی چایخانە
+    this.bgGfx.fillStyle(0x1e0f07, 1);
     this.bgGfx.fillRect(0, 0, w, h);
 
-    // ڕووبەری ناوەڕاستی مێزەکە
-    this.bgGfx.fillStyle(0x3b2112, 0.92);
-    this.bgGfx.fillRoundedRect(10, 8, w - 20, h - 132, 18);
-    this.bgGfx.lineStyle(2, 0xd97706, 0.45);
-    this.bgGfx.strokeRoundedRect(10, 8, w - 20, h - 132, 18);
+    // تەختە دارینەکانی مێزەکە
+    const plankCount = 7;
+    const plankW = (w - 16) / plankCount;
+    for (let i = 0; i < plankCount; i++) {
+      const shade = i % 2 === 0 ? 0x3b2010 : 0x321a0c;
+      this.bgGfx.fillStyle(shade, 1);
+      this.bgGfx.fillRect(8 + i * plankW, 6, plankW - 1.5, tableH - 8);
+    }
 
-    // ناوچەی دەستی یاریزان لە خوارەوە
-    this.bgGfx.fillStyle(0x160c06, 0.78);
-    this.bgGfx.fillRoundedRect(8, h - 116, w - 16, 108, 16);
-    this.bgGfx.lineStyle(1.5, 0xfacc15, 0.35);
-    this.bgGfx.strokeRoundedRect(8, h - 116, w - 16, 108, 16);
+    // سێبەری گەرم لە ناوەڕاستی مێزەکە (وەک ڕووناکی فانۆسی چایخانە)
+    this.bgGfx.fillStyle(0xd97706, 0.11);
+    this.bgGfx.fillCircle(w / 2, tableH / 2, w * 0.44);
+
+    // ٢. چوارچێوەی زێڕین و نەخشی جاجمی فۆلکلۆری لە دەوری مێزەکە
+    this.bgGfx.lineStyle(3, 0xd97706, 0.85);
+    this.bgGfx.strokeRoundedRect(8, 6, w - 16, tableH - 8, 18);
+
+    // نەخشی فەرشی کوردی لە سەرەوە و خوارەوەی مێزەکە
+    const rugColors = [0xdc2626, 0xfacc15, 0x059669, 0xf8fafc];
+    const segW = 14;
+    for (let x = 18; x < w - 26; x += segW) {
+      const col = rugColors[Math.floor(x / segW) % rugColors.length];
+      this.bgGfx.fillStyle(col, 0.75);
+      this.bgGfx.fillRect(x, 9, segW - 2, 4);
+      this.bgGfx.fillRect(x, tableH - 9, segW - 2, 4);
+    }
+
+    // ٣. ئاڵای کوردستان و خۆرە زێڕینەکە لە ناوەڕاستی مێزی چایخانەکە (بە شێوەیەکی شاهانە)
+    const flagW = Math.min(w * 0.56, 210);
+    const flagH = flagW * 0.62;
+    const fx = (w - flagW) / 2;
+    const fy = (tableH - flagH) / 2;
+
+    const flagGfx = this.add.graphics();
+    // سێبەری ئاڵاکە
+    flagGfx.fillStyle(0x000000, 0.25);
+    flagGfx.fillRoundedRect(fx - 3, fy - 3, flagW + 6, flagH + 6, 10);
+
+    // سوور، سپی، سەوز
+    flagGfx.fillStyle(0xed2939, 0.24);
+    flagGfx.fillRect(fx, fy, flagW, flagH / 3);
+    flagGfx.fillStyle(0xffffff, 0.22);
+    flagGfx.fillRect(fx, fy + flagH / 3, flagW, flagH / 3);
+    flagGfx.fillStyle(0x278e43, 0.24);
+    flagGfx.fillRect(fx, fy + (flagH * 2) / 3, flagW, flagH / 3);
+
+    // چوارچێوەی زێڕینی ناسک بۆ ئاڵاکە
+    flagGfx.lineStyle(1.5, 0xfacc15, 0.35);
+    flagGfx.strokeRect(fx, fy, flagW, flagH);
+
+    // خۆری کوردستان (٢١ تیشک) لە ناوەڕاستی ئاڵاکە
+    const cx = w / 2;
+    const cy = tableH / 2;
+    const innerR = flagH * 0.14;
+    const outerR = flagH * 0.28;
+    flagGfx.fillStyle(0xfebd11, 0.42);
+    flagGfx.beginPath();
+    const rays = 21;
+    for (let i = 0; i < rays * 2; i++) {
+      const r = i % 2 === 0 ? outerR : innerR;
+      const angle = (i * Math.PI) / rays - Math.PI / 2;
+      const px = cx + Math.cos(angle) * r;
+      const py = cy + Math.sin(angle) * r;
+      if (i === 0) flagGfx.moveTo(px, py);
+      else flagGfx.lineTo(px, py);
+    }
+    flagGfx.closePath();
+    flagGfx.fillPath();
+    flagGfx.fillCircle(cx, cy, innerR * 0.92);
+
+    this.folkloreLayer.add(flagGfx);
+
+    // ٤. وردەکاریی فۆلکلۆری چایخانە لە گۆشەکانی مێزەکە (ئیستکانە چای کەمەرباریک و قەندان)
+    const teaLeft = this.add.text(22, 18, '🫖', { fontSize: '20px' }).setAlpha(0.55);
+    const teaRight = this.add.text(w - 44, tableH - 36, '☕', { fontSize: '19px' }).setAlpha(0.55);
+    this.folkloreLayer.add([teaLeft, teaRight]);
+
+    // ٥. پانێڵی خوارەوە بۆ دەستی یاریزان (تەختەی دارگوێزی شاهانە)
+    this.bgGfx.fillStyle(0x120904, 0.92);
+    this.bgGfx.fillRoundedRect(8, h - 116, w - 16, 110, 18);
+    this.bgGfx.lineStyle(2, 0xf59e0b, 0.55);
+    this.bgGfx.strokeRoundedRect(8, h - 116, w - 16, 110, 18);
   }
 
+  // دروستکردنی کاشیی عاجی ٣ ڕەهەندی بە دیقەی بەرز
   createDominoTileContainer(a, b, orientation = 'vertical', scale = 1, playable = false) {
     const container = this.add.container(0, 0);
     const isHoriz = orientation === 'horizontal';
-    const tileW = (isHoriz ? 68 : 36) * scale;
-    const tileH = (isHoriz ? 36 : 68) * scale;
+    const tileW = (isHoriz ? 70 : 38) * scale;
+    const tileH = (isHoriz ? 38 : 70) * scale;
+    const rad = 8 * scale;
 
     const gfx = this.add.graphics();
 
-    // سێبەر
-    gfx.fillStyle(0x000000, 0.45);
-    gfx.fillRoundedRect(-tileW / 2 + 2, -tileH / 2 + 4, tileW, tileH, 7 * scale);
+    // سێبەری قووڵ و بنکەی کاشییەکە (3D Thickness)
+    gfx.fillStyle(0x000000, 0.55);
+    gfx.fillRoundedRect(-tileW / 2 + 2.5, -tileH / 2 + 5, tileW, tileH, rad);
 
-    // لەشی کاشیی عاجی
-    gfx.fillStyle(0xfdf8ee, 1);
-    gfx.fillRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, 7 * scale);
+    gfx.fillStyle(0xb8a382, 1);
+    gfx.fillRoundedRect(-tileW / 2, -tileH / 2 + 2.5, tileW, tileH, rad);
 
-    // لێواری زێڕین ئەگەر داشەکە بجوڵێت
+    // ڕووی سەرەوەی عاجی (Ivory Surface)
+    gfx.fillStyle(0xfffdf7, 1);
+    gfx.fillRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, rad);
+
+    // بریقەی سپی لە لێواری سەرەوە
+    gfx.fillStyle(0xffffff, 0.75);
+    gfx.fillRoundedRect(-tileW / 2 + 2, -tileH / 2 + 1.5, tileW - 4, tileH * 0.22, rad * 0.7);
+
+    // چوارچێوەی زێڕین بۆ ئەو کاشییانەی دەجوڵێن
     if (playable) {
       gfx.lineStyle(2.5, 0xfacc15, 1);
     } else {
-      gfx.lineStyle(1.5, 0xcbb682, 1);
+      gfx.lineStyle(1.4, 0xd6c5a9, 1);
     }
-    gfx.strokeRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, 7 * scale);
+    gfx.strokeRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, rad);
 
     // هێڵ و بزماری زێڕینی ناوەڕاست
-    gfx.lineStyle(1.5, 0xb45309, 0.85);
+    gfx.lineStyle(1.8, 0xb45309, 0.9);
     if (isHoriz) {
       gfx.beginPath();
       gfx.moveTo(0, -tileH * 0.36);
@@ -122,9 +206,11 @@ class RoyalDominoScene extends Phaser.Scene {
       gfx.strokePath();
     }
     gfx.fillStyle(0xf59e0b, 1);
-    gfx.fillCircle(0, 0, 2.5 * scale);
+    gfx.fillCircle(0, 0, 2.8 * scale);
+    gfx.fillStyle(0xfef08a, 1);
+    gfx.fillCircle(-0.6 * scale, -0.6 * scale, 1.1 * scale);
 
-    // خاڵە ڕەنگاوڕەنگەکان
+    // خاڵە ڕەنگاوڕەنگەکان بە قووڵییەوە
     const drawHalfPips = (val, cx, cy, halfSize) => {
       const pipMap = {
         0: [],
@@ -146,11 +232,15 @@ class RoyalDominoScene extends Phaser.Scene {
       const pts = pipMap[val] || [];
       const col = colorMap[val] || 0x1e293b;
       const spread = halfSize * 0.56;
-      const r = (val === 1 ? 3.6 : 2.7) * scale;
+      const r = (val === 1 ? 3.8 : 2.8) * scale;
 
-      gfx.fillStyle(col, 1);
       pts.forEach(([ox, oy]) => {
-        gfx.fillCircle(cx + ox * spread, cy + oy * spread, r);
+        const px = cx + ox * spread;
+        const py = cy + oy * spread;
+        gfx.fillStyle(0x000000, 0.22);
+        gfx.fillCircle(px, py + 0.8 * scale, r);
+        gfx.fillStyle(col, 1);
+        gfx.fillCircle(px, py, r);
       });
     };
 
@@ -178,9 +268,8 @@ class RoyalDominoScene extends Phaser.Scene {
 
     const w = this.scale.width;
     const h = this.scale.height;
-    const boardCenterY = (h - 124) / 2;
+    const boardCenterY = (h - 126) / 2;
 
-    // ١. کێشانەوەی زنجیرەی کاشییەکانی سەر مێزەکە بە شێوەی مارپێچ (Snake Layout) تا هەرگیز لە شاشە دەرنەچن
     if (teahouseDom.chain.length === 0) {
       const hint = teahouseDom.firstMoveRule && teahouseDom.requiredOpeningDouble !== null
         ? `گەورەترین جووت (${teahouseDom.requiredOpeningDouble}-${teahouseDom.requiredOpeningDouble}) ڕابکێشە سەر مێزەکە`
@@ -190,27 +279,26 @@ class RoyalDominoScene extends Phaser.Scene {
         fontFamily: 'Noto Kufi Arabic, sans-serif',
         fontSize: '13px',
         fontStyle: 'bold',
-        color: '#fde68a',
-        backgroundColor: 'rgba(15, 23, 42, 0.85)',
+        color: '#fef3c7',
+        backgroundColor: 'rgba(15, 23, 42, 0.88)',
         padding: { x: 14, y: 10 },
         align: 'center',
-        wordWrap: { width: w - 60 }
+        wordWrap: { width: w - 64 }
       }).setOrigin(0.5);
       this.boardLayer.add(txt);
 
-      this.centerSlotZone = { x: w / 2, y: boardCenterY, w: 120, h: 90 };
+      this.centerSlotZone = { x: w / 2, y: boardCenterY, w: 125, h: 90 };
     } else {
       const count = teahouseDom.chain.length;
       const tileScale = count > 14 ? 0.66 : (count > 8 ? 0.78 : 0.9);
-      const maxRowWidth = w - 86;
+      const maxRowWidth = w - 84;
 
-      // ڕیزکردنی کاشییەکان لە چەند ڕیزێکی ڕێکدا
       const rows = [[]];
       let curRowW = 0;
 
       teahouseDom.chain.forEach((t, idx) => {
         const isDbl = t.a === t.b;
-        const tw = (isDbl ? 36 : 68) * tileScale + 4;
+        const tw = (isDbl ? 38 : 70) * tileScale + 4;
         if (curRowW + tw > maxRowWidth && rows[rows.length - 1].length > 0) {
           rows.push([]);
           curRowW = 0;
@@ -247,27 +335,16 @@ class RoyalDominoScene extends Phaser.Scene {
         });
       });
 
-      // دیاریکردنی شوێنی سێبەری سەری چەپ و سەری ڕاست بۆ ڕاکێشان بە پەنجە
       if (firstTilePos) {
-        this.leftSlotZone = {
-          x: Math.max(38, firstTilePos.x - 32),
-          y: firstTilePos.y,
-          w: 62,
-          h: 56
-        };
+        this.leftSlotZone = { x: Math.max(38, firstTilePos.x - 32), y: firstTilePos.y, w: 62, h: 56 };
       }
       if (lastTilePos) {
         const targetX = lastTilePos.isRev ? Math.max(38, lastTilePos.x - 75) : Math.min(w - 38, lastTilePos.x + 32);
-        this.rightSlotZone = {
-          x: targetX,
-          y: lastTilePos.y,
-          w: 62,
-          h: 56
-        };
+        this.rightSlotZone = { x: targetX, y: lastTilePos.y, w: 62, h: 56 };
       }
     }
 
-    // ٢. نیشاندانی خانە درەوشاوەکانی سەر مێز کاتێک یاریزان داشێکی بە پەنجە گرتووە!
+    // خانە درەوشاوەکانی سەر مێز کاتێک کاشییەک بە پەنجە ڕادەکێشرێت
     if (teahouseDom.activeDragIdx !== null && teahouseDom.turn === 'player' && !teahouseDom.roundOver) {
       const draggedTile = teahouseDom.myHand[teahouseDom.activeDragIdx];
       if (draggedTile) {
@@ -275,17 +352,17 @@ class RoyalDominoScene extends Phaser.Scene {
         const drawDropTarget = (zone, label) => {
           if (!zone) return;
           const g = this.add.graphics();
-          g.fillStyle(0x10b981, 0.28);
+          g.fillStyle(0x10b981, 0.34);
           g.fillRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12);
-          g.lineStyle(2.5, 0x34d399, 0.95);
+          g.lineStyle(2.5, 0xfacc15, 0.95);
           g.strokeRoundedRect(zone.x - zone.w / 2, zone.y - zone.h / 2, zone.w, zone.h, 12);
           this.slotsLayer.add(g);
 
           const lbl = this.add.text(zone.x, zone.y, label, {
             fontFamily: 'Noto Kufi Arabic, sans-serif',
-            fontSize: '11px',
+            fontSize: '12px',
             fontStyle: 'bold',
-            color: '#ecfdf5'
+            color: '#fef08a'
           }).setOrigin(0.5);
           this.slotsLayer.add(lbl);
         };
@@ -299,12 +376,12 @@ class RoyalDominoScene extends Phaser.Scene {
       }
     }
 
-    // ٣. کێشانەوەی دەستی یاریزان لە خوارەوە بە ڕاکێشانی تەواو (Drag & Drop)
+    // دەستی یاریزان لە خوارەوە
     const handCount = teahouseDom.myHand.length;
     if (handCount > 0) {
       const maxHandWidth = w - 26;
       const handScale = handCount > 8 ? Math.max(0.68, maxHandWidth / (handCount * 42)) : 0.96;
-      const stepX = Math.min(44 * handScale, maxHandWidth / handCount);
+      const stepX = Math.min(45 * handScale, maxHandWidth / handCount);
       const totalHandW = stepX * handCount;
       const startHandX = (w - totalHandW) / 2 + stepX / 2;
       const baseHandY = h - 62;
@@ -318,7 +395,7 @@ class RoyalDominoScene extends Phaser.Scene {
 
         const card = this.createDominoTileContainer(tile.a, tile.b, 'vertical', handScale, canPlay);
         card.setPosition(startHandX + idx * stepX, yPos);
-        if (!canPlay) card.setAlpha(0.75);
+        if (!canPlay) card.setAlpha(0.76);
 
         if (canPlay) {
           card.setInteractive({ draggable: true, useHandCursor: true });
@@ -330,10 +407,9 @@ class RoyalDominoScene extends Phaser.Scene {
             this.renderAll();
           });
 
-          card.on('drag', (pointer, dragX, dragY) => {
-            // بەهۆی renderAll داشەکان دروست دەبنەوە، بۆیە لێرە Ghost دەجوڵێنین
+          card.on('drag', (pointer) => {
             if (!this.dragGhost) {
-              this.dragGhost = this.createDominoTileContainer(tile.a, tile.b, 'vertical', 1.08, true);
+              this.dragGhost = this.createDominoTileContainer(tile.a, tile.b, 'vertical', 1.1, true);
               this.dragGhost.setDepth(200);
               this.overlayLayer.add(this.dragGhost);
             }
@@ -349,7 +425,6 @@ class RoyalDominoScene extends Phaser.Scene {
               this.dragGhost = null;
             }
 
-            // پشکنین بزانە یاریزان داشەکەی لە کام سەر بەرداوەتەوە!
             if (teahouseDom.chain.length === 0) {
               if (dropY < h - 115) {
                 executePlayerTeahouseMove(idx, 'right');
@@ -363,10 +438,8 @@ class RoyalDominoScene extends Phaser.Scene {
                 ? Phaser.Math.Distance.Between(dropX, dropY, this.rightSlotZone.x, this.rightSlotZone.y)
                 : 9999;
 
-              // ئەگەر داشەکەی هێنابێتە سەر مێزەکە
               if (dropY < h - 110) {
                 if (fit.left && fit.right) {
-                  // کام سەرەیان نزیکتر بوو لە پەنجەی یاریزان، یەکسەر لەو سەرە دادەنرێت!
                   executePlayerTeahouseMove(idx, distLeft <= distRight ? 'left' : 'right');
                   return;
                 } else if (fit.left) {
@@ -382,7 +455,6 @@ class RoyalDominoScene extends Phaser.Scene {
             this.renderAll();
           });
 
-          // ئەگەر تەنها کلیکی لێ کرد (بۆ ئەو داشانەی تەنها یەک سەریان هەیە)
           card.on('pointerup', (pointer) => {
             if (Phaser.Math.Distance.Between(pointer.downX, pointer.downY, pointer.upX, pointer.upY) < 8) {
               if (teahouseDom.chain.length === 0) {
@@ -402,7 +474,6 @@ class RoyalDominoScene extends Phaser.Scene {
       });
     }
 
-    // ٤. ئەگەر دەورەکە تەواو بوو، پەیامی ئەنجام لە ناوەڕاستدا پیشان بدە
     if (teahouseDom.roundBannerText) {
       const box = this.add.text(w / 2, boardCenterY, teahouseDom.roundBannerText, {
         fontFamily: 'Noto Kufi Arabic, sans-serif',
@@ -434,6 +505,8 @@ function initDominoPhaser() {
       type: Phaser.AUTO,
       width: w,
       height: h,
+      resolution: Math.max(window.devicePixelRatio || 2, 2),
+      antialias: true,
       parent: 'ykDomBoardStage',
       transparent: true,
       scene: [RoyalDominoScene]
@@ -687,7 +760,6 @@ function renderTeahouseDomino() {
     else boneBtn.classList.remove('animate-bounce');
   }
 
-  // شاردنەوەی کۆنتێنەرە HTMLـە کۆنەکەی دەستی یاریزان چونکە ئێستا Phaser 3 خۆی بە ڕاکێشانی پەنجە دروستی دەکات
   const oldHandBox = document.getElementById('ykDomPlayerHand');
   if (oldHandBox) oldHandBox.style.display = 'none';
 
