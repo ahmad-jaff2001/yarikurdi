@@ -15,99 +15,111 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <style>
-  :root {
-      --bg-deep: #fdfbf7;
+:root {
+      --bg-deep: #fffdf8;
       --bg-royal: #ffffff;
       --bg-card: #ffffff;
-      --gold: #d4af37;
-      --gold-light: #f3cf65;
-      --gold-dark: #9e7e1b;
+      --gold: #eab308;
+      --gold-light: #fde047;
+      --gold-dark: #b45309;
+      --kurd-red: #dc2626;
+      --kurd-green: #15803d;
     }
 
     html, body {
-      background-color: #fbf8f1 !important;
+      background-color: #fffdf8 !important;
+      /* تێکەڵەیەکی ڕوون و شاهانە لە ڕەنگەکانی ئاڵای کوردستان (سوور لە سەرەوە، سپی و خۆری زێڕین لە ناوەڕاست، سەوز لە خوارەوە) */
       background-image:
-        radial-gradient(circle at 15% 10%, rgba(251, 191, 36, 0.22) 0%, transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(245, 158, 11, 0.16) 0%, transparent 48%),
-        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.10) 0%, transparent 50%),
-        linear-gradient(180deg, #fffdf9 0%, #f7f1e3 55%, #efe6d2 100%) !important;
-      color: #1e293b !important;
+        radial-gradient(circle at 50% 24%, rgba(250, 204, 21, 0.28) 0%, transparent 45%),
+        linear-gradient(180deg,
+          rgba(220, 38, 38, 0.14) 0%,
+          rgba(255, 253, 247, 0.96) 28%,
+          rgba(255, 251, 235, 0.98) 68%,
+          rgba(21, 128, 61, 0.16) 100%) !important;
+      color: #1c1917 !important;
       min-height: 100dvh;
     }
 
-    /* هیدەر و شریتی سەرەوە بە ڕەنگی سپی مەڕمەڕی و زێڕین */
+    /* هیدەر بە شریتی جاجم و ئاڵای کوردستانەوە */
     header {
-      background: rgba(255, 253, 248, 0.92) !important;
-      border-bottom: 2px solid rgba(212, 175, 55, 0.35) !important;
-      box-shadow: 0 4px 20px rgba(180, 130, 20, 0.08) !important;
+      background: rgba(255, 253, 248, 0.95) !important;
+      border-bottom: 4px solid transparent !important;
+      border-image: repeating-linear-gradient(90deg, #dc2626 0 18px, #facc15 18px 36px, #15803d 36px 54px, #ffffff 54px 72px) 1 !important;
+      box-shadow: 0 6px 24px rgba(120, 53, 15, 0.10) !important;
     }
     header nav {
-      background: #f3ecdc !important;
-      border: 1px solid rgba(212, 175, 55, 0.35) !important;
+      background: #fef9ec !important;
+      border: 1.5px solid rgba(217, 119, 6, 0.4) !important;
     }
     header nav button.text-slate-300,
     header .text-white {
-      color: #1e293b !important;
+      color: #1c1917 !important;
     }
     header .text-slate-400 {
-      color: #64748b !important;
+      color: #78350f !important;
     }
     header .bg-\[\#0e1c38\] {
       background: #ffffff !important;
-      border-color: rgba(212, 175, 55, 0.45) !important;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border-color: rgba(217, 119, 6, 0.45) !important;
     }
 
-    /* درەوشانەوەی شاهانە بۆ کارتەکانی یاری */
+    /* کارتەکانی یاری بە چوارچێوەی زێڕین و سێبەری چایخانە */
     .pito-game-card {
       position: relative;
       border-radius: 1.45rem !important;
       background: #ffffff !important;
-      border: 2.5px solid rgba(212, 175, 55, 0.55) !important;
-      box-shadow: 0 14px 30px -8px rgba(146, 108, 21, 0.22), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      border: 2.5px solid #d97706 !important;
+      box-shadow: 0 14px 28px -8px rgba(120, 53, 15, 0.25), 0 0 0 3px rgba(250, 204, 21, 0.22) !important;
       transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
     }
 
     .pito-game-card:hover {
       transform: translateY(-7px) scale(1.025) !important;
-      border-color: #d97706 !important;
-      box-shadow: 0 22px 42px -10px rgba(217, 119, 6, 0.35), 0 0 24px rgba(250, 204, 21, 0.4) !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 22px 42px -10px rgba(220, 38, 38, 0.28), 0 0 24px rgba(250, 204, 21, 0.5) !important;
     }
 
     .royal-card {
-      background: linear-gradient(145deg, #ffffff 0%, #fcf8ee 100%) !important;
-      border: 1.5px solid rgba(212, 175, 55, 0.4) !important;
-      box-shadow: 0 12px 30px rgba(146, 108, 21, 0.12) !important;
-      color: #1e293b !important;
+      background: linear-gradient(145deg, #ffffff 0%, #fffbeb 100%) !important;
+      border: 1.5px solid rgba(217, 119, 6, 0.42) !important;
+      box-shadow: 0 12px 30px rgba(120, 53, 15, 0.12) !important;
+      color: #1c1917 !important;
       backdrop-filter: blur(12px);
     }
 
-    .royal-card .text-white { color: #0f172a !important; }
+    .royal-card .text-white { color: #1c1917 !important; }
     .royal-card .text-slate-300,
-    .royal-card .text-slate-400 { color: #475569 !important; }
+    .royal-card .text-slate-400 { color: #57534e !important; }
     .royal-card .bg-\[\#091326\],
     .royal-card .bg-\[\#071022\],
     .royal-card .bg-\[\#081124\] {
-      background: #f8f3e6 !important;
-      color: #0f172a !important;
-      border-color: rgba(212, 175, 55, 0.35) !important;
+      background: #fef9ec !important;
+      color: #1c1917 !important;
+      border-color: rgba(217, 119, 6, 0.35) !important;
     }
 
     .gold-btn {
-      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
-      color: #ffffff !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-      font-weight: 800;
-      box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+      background: linear-gradient(135deg, #facc15 0%, #d97706 100%) !important;
+      color: #1c1917 !important;
+      font-weight: 900;
+      border: 1px solid #fef08a;
+      box-shadow: 0 6px 18px rgba(217, 119, 6, 0.32);
       transition: all 0.2s ease;
     }
 
-    .gold-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(217, 119, 6, 0.48); }
+    .gold-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(217, 119, 6, 0.45); }
 
     .gold-text {
-      background: linear-gradient(to left, #b45309, #d97706, #92400e);
+      background: linear-gradient(to left, #b91c1c, #d97706, #15803d);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    /* شریتی خوارەوەی مۆبایل بە لێواری ئاڵای کوردستان */
+    .floating-bottom-dock {
+      background: rgba(255, 253, 248, 0.98) !important;
+      border: 2px solid #d97706 !important;
+      box-shadow: 0 12px 32px rgba(120, 53, 15, 0.25) !important;
     }
     /* Chess Board */
     .board-wrapper {
@@ -1031,14 +1043,14 @@
         </button>
       </div>
 
-   <!-- Season Pass Progress Banner -->
-    <div class="rounded-2xl bg-gradient-to-r from-[#fffbeb] via-[#fef3c7] to-[#fde68a] border-2 border-amber-400/70 p-3 space-y-2 shadow-md">
+   <!-- Season Pass Progress Banner (Kurdistan Flag & Teahouse Theme) -->
+    <div class="rounded-2xl bg-gradient-to-l from-red-50 via-amber-50 to-emerald-50 border-2 border-amber-500/60 p-3 space-y-2 shadow-md">
       <div class="flex items-center justify-between">
-        <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-900 font-extrabold">👑 ڕێگای YariKurdi • وەرزی ١</span>
-        <span id="hubSeasonLevelTag" class="text-[11px] font-extrabold text-emerald-700">ئاستی 1</span>
+        <span class="text-[11px] px-3 py-0.5 rounded-full bg-amber-400/25 text-amber-950 border border-amber-500/40 font-black">☀️ دیوەخانی YariKurdi • وەرزی ١</span>
+        <span id="hubSeasonLevelTag" class="text-[11px] font-black text-emerald-800">ئاستی 1</span>
       </div>
-      <div class="w-full h-3 rounded-full bg-white/85 border border-amber-400/50 overflow-hidden p-0.5">
-        <div id="hubSeasonBar" class="h-full rounded-full bg-gradient-to-l from-amber-400 via-yellow-500 to-amber-600 transition-all duration-500" style="width: 35%"></div>
+      <div class="w-full h-3.5 rounded-full bg-white border border-amber-400/60 overflow-hidden p-0.5 shadow-inner">
+        <div id="hubSeasonBar" class="h-full rounded-full bg-gradient-to-l from-[#dc2626] via-[#facc15] to-[#15803d] transition-all duration-500" style="width: 35%"></div>
       </div>
     </div>
 
