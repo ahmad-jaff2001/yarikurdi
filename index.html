@@ -1,1244 +1,2822 @@
-// =========================================================================
-// YARI KURDI - MAGICAL KURDISH TEAHOUSE KONKAN ENGINE (4K PROCEDURAL ART)
-// =========================================================================
-
-let konkCardsPerPlayer = 10;
-let konkIsOnline = false;
-let konkRoomRef = null;
-let konkQueueRef = null;
-let konkMyRole = 'p1';
-let konkState = null;
-let konkSelectedIds = [];
-let konkOppInfo = { id: null, name: 'بۆتی کۆنکان', elo: 1250, avatar: '' };
-
-let konkanPhaserGame = null;
-let konkanSceneRef = null;
-const KONK_DPR = Math.min(Math.max(window.devicePixelRatio || 2, 2.5), 3);
-
-function selectKonkanCardsCount(cnt) {
-  konkCardsPerPlayer = cnt;
-  const b10 = document.getElementById('konk-mode-10');
-  const b8 = document.getElementById('konk-mode-8');
-  if (!b10 || !b8) return;
-  if (cnt === 10) {
-    b10.className = 'py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0d06] border border-amber-300 shadow transition';
-    b8.className = 'py-2.5 rounded-xl text-xs font-bold bg-[#1a0d06] text-amber-100 border border-amber-500/30 transition';
-  } else {
-    b8.className = 'py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0d06] border border-amber-300 shadow transition';
-    b10.className = 'py-2.5 rounded-xl text-xs font-bold bg-[#1a0d06] text-amber-100 border border-amber-500/30 transition';
-  }
-}
-
-function createKonkanDeck() {
-  const suits = ['S', 'H', 'D', 'C'];
-  const deck = [];
-  for (const s of suits) {
-    for (let r = 1; r <= 13; r++) {
-      deck.push({ id: `${r}${s}`, r, s });
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YariKurdi | مەیدانی یارییە کوردییەکان</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+  <script src="ludo-engine.js" defer></script>
+  <script src="domino-engine.js" defer></script>
+  <script src="chess-engine.js" defer></script>
+  <script src="konkan-engine.js" defer></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <style>
+:root {
+      --bg-deep: #1a0d06;
+      --bg-royal: #29150a;
+      --bg-card: #241208;
+      --gold: #facc15;
+      --gold-light: #fef08a;
+      --gold-dark: #b45309;
     }
-  }
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  return deck;
-}
 
-function initNewKonkanGame(cardsCount = 10) {
-  const deck = createKonkanDeck();
-  const p1Hand = deck.splice(0, cardsCount);
-  const p2Hand = deck.splice(0, cardsCount);
-  const discard = [deck.pop()];
-  return {
-    cardsCount,
-    deck,
-    discard,
-    p1Hand,
-    p2Hand,
-    melds: [],
-    turn: 'p1',
-    phase: 'draw',
-    mustMeldCardId: null,
-    log: 'کارتێک لە Deck ڕابکێشە یان کارتی فڕێدراو هەڵبگرەوە',
-    winner: null
+    html, body {
+      background-color: #1a0d06 !important;
+      /* پاشبنەمای چایخانەی دارگوێزی شاهانە بە تیشکی زێڕین و ڕەنگەکانی کوردستان */
+      background-image:
+        radial-gradient(circle at 50% 18%, rgba(250, 204, 21, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(220, 38, 38, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 15% 75%, rgba(21, 128, 61, 0.12) 0%, transparent 45%),
+        linear-gradient(180deg, #2b170c 0%, #1c0e06 50%, #120803 100%) !important;
+      color: #ffffff !important;
+      min-height: 100dvh;
+    }
+
+    /* هیدەر بە شریتی ئاڵای کوردستان و نووسینی زەقی سپی و زێڕین */
+    header {
+      background: rgba(28, 14, 6, 0.95) !important;
+      border-bottom: 4px solid transparent !important;
+      border-image: repeating-linear-gradient(90deg, #dc2626 0 18px, #facc15 18px 36px, #15803d 36px 54px, #ffffff 54px 72px) 1 !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65) !important;
+    }
+    header nav {
+      background: #170b05 !important;
+      border: 1.5px solid rgba(250, 204, 21, 0.35) !important;
+    }
+    header nav button.text-slate-300,
+    header .text-white {
+      color: #ffffff !important;
+    }
+    header .text-slate-400 {
+      color: #fde68a !important;
+    }
+    header .bg-\[\#0e1c38\] {
+      background: #2b170c !important;
+      border-color: rgba(250, 204, 21, 0.45) !important;
+    }
+
+    /* کارتەکانی یاری بە چوارچێوەی زێڕینی درەوشاوە */
+    .pito-game-card {
+      position: relative;
+      border-radius: 1.45rem !important;
+      background: #241208 !important;
+      border: 2.5px solid #f59e0b !important;
+      box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.85), 0 0 18px rgba(250, 204, 21, 0.18) !important;
+      transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+
+    .pito-game-card:hover {
+      transform: translateY(-7px) scale(1.025) !important;
+      border-color: #fde047 !important;
+      box-shadow: 0 22px 42px -8px rgba(0, 0, 0, 0.95), 0 0 28px rgba(250, 204, 21, 0.45) !important;
+    }
+
+    .royal-card {
+      background: linear-gradient(145deg, rgba(43, 23, 12, 0.96), rgba(24, 12, 5, 0.98)) !important;
+      border: 1.5px solid rgba(250, 204, 21, 0.35) !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(12px);
+    }
+
+    .royal-card .text-white { color: #ffffff !important; }
+    .royal-card .text-slate-300,
+    .royal-card .text-slate-400 { color: #e7e5e4 !important; }
+    .royal-card .bg-\[\#091326\],
+    .royal-card .bg-\[\#071022\],
+    .royal-card .bg-\[\#081124\] {
+      background: #1a0d06 !important;
+      color: #ffffff !important;
+      border-color: rgba(250, 204, 21, 0.35) !important;
+    }
+
+    .gold-btn {
+      background: linear-gradient(135deg, #fde047 0%, #f59e0b 55%, #d97706 100%) !important;
+      color: #1a0d06 !important;
+      font-weight: 900;
+      border: 1px solid #fef9c3;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .gold-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(250, 204, 21, 0.6); }
+
+    .gold-text {
+      background: linear-gradient(to left, #fef08a, #facc15, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* شریتی خوارەوەی مۆبایل */
+    .floating-bottom-dock {
+      background: rgba(36, 18, 8, 0.97) !important;
+      border: 2px solid #f59e0b !important;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85) !important;
+    }
+    .dock-item { color: #fef3c7 !important; }
+    .dock-item.active { color: #1a0d06 !important; }
+    /* Chess Board */
+    .board-wrapper {
+      position: relative;
+      width: min(88vw, 480px);
+      height: min(88vw, 480px);
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+      direction: ltr;
+      touch-action: none;
+    }
+
+    .chess-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .sq.light { background-color: #d9e2ec; }
+    .sq.dark { background-color: #334e68; }
+    .sq.selected { background-color: rgba(212, 175, 55, 0.65) !important; }
+    .sq.last-move { background-color: rgba(243, 207, 101, 0.38) !important; }
+    .sq.premove-from { background-color: rgba(220, 38, 38, 0.55) !important; }
+    .sq.premove-to { background-color: rgba(239, 68, 68, 0.7) !important; }
+    .sq.in-check { background: radial-gradient(circle, #ef4444 15%, #991b1b 85%) !important; }
+    .sq.drag-hover { box-shadow: inset 0 0 0 4px rgba(243, 207, 101, 0.9); }
+
+    .legal-dot { width: 28%; height: 28%; border-radius: 50%; background: rgba(16, 185, 129, 0.75); pointer-events: none; }
+    .legal-ring { position: absolute; inset: 6%; border-radius: 50%; border: 4px solid rgba(239, 68, 68, 0.8); pointer-events: none; }
+
+    .piece { width: 84%; height: 84%; z-index: 2; pointer-events: none; transition: transform 0.1s ease; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.45)); }
+    .piece.dragging-origin { opacity: 0.25; }
+
+    #dragGhost { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%) scale(1.18); filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.65)); display: none; }
+    .coord-file { position: absolute; bottom: 2px; right: 4px; font-size: 10px; font-weight: 700; opacity: 0.7; pointer-events: none; }
+    .coord-rank { position: absolute; top: 2px; left: 4px; font-size: 10px; font-weight: 700; opacity: 0.7; pointer-events: none; }
+    #arrowCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+    /* Domino Table & Ivory Tiles */
+    .domino-table {
+      background: radial-gradient(circle at center, #0e3a2f 0%, #07201a 75%, #04130f 100%);
+      border: 4px solid #b59224;
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.75), 0 15px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    .domino-tile {
+      background: linear-gradient(145deg, #fffdf7 0%, #f3ead3 100%);
+      border: 2px solid #cbb682;
+      border-radius: 10px;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 #ffffff;
+      color: #111827;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .domino-tile.playable {
+      border-color: #f3cf65;
+      box-shadow: 0 0 16px rgba(243, 207, 101, 0.65), 0 6px 14px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+    }
+    .domino-tile.playable:hover { transform: translateY(-10px) scale(1.06); }
+    .domino-tile.selected-tile { transform: translateY(-14px) scale(1.08); border: 3px solid #10b981; box-shadow: 0 0 22px rgba(16, 185, 129, 0.85); }
+
+    .domino-back { background: linear-gradient(135deg, #10254d 0%, #071229 100%); border: 2px solid #d4af37; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+    .pip-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 3px; }
+    .pip { width: 7px; height: 7px; border-radius: 50%; margin: auto; }
+    .pip-0 { background: transparent; }
+    .pip-1 { background: #dc2626; width: 9px; height: 9px; }
+    .pip-2 { background: #1e3a8a; }
+    .pip-3 { background: #047857; }
+    .pip-4 { background: #b45309; }
+    .pip-5 { background: #6d28d9; }
+    .pip-6 { background: #111827; }
+
+    @keyframes pulseRing { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2.1); opacity: 0; } }
+    .radar-ring { animation: pulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+/* Konkan Royal Cards & Table */
+    .konkan-card {
+      width: 68px;
+      height: 100px;
+      background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: -3px 6px 14px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px 6px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .konkan-card:hover { transform: translateY(-10px) scale(1.04); z-index: 20; }
+    .konkan-card.selected {
+      transform: translateY(-18px) scale(1.07);
+      border: 3px solid #f3cf65;
+      box-shadow: 0 0 22px rgba(243, 207, 101, 0.85);
+      z-index: 25;
+    }
+    .konkan-card-sm { width: 46px; height: 68px; padding: 3px 4px; border-radius: 7px; cursor: default; }
+    .konkan-card-sm:hover { transform: none; }
+    .konkan-back {
+      width: 44px; height: 64px;
+      background: repeating-linear-gradient(45deg, #10254d, #10254d 5px, #17346b 5px, #17346b 10px);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .meld-group {
+      background: rgba(5, 11, 24, 0.45);
+      border: 1.5px dashed rgba(243, 207, 101, 0.45);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .meld-group:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+    /* Live Mic Voice Ring */
+    @keyframes voicePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75); }
+      70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .mic-speaking {
+      border: 2.5px solid #10b981 !important;
+      animation: voicePulse 1.1s infinite;
+    }
+    /* Modern App UI: 3-Column Visual Cards & Floating Bottom Dock */
+    body { padding-bottom: 92px; }
+    .pito-game-card {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .pito-game-card:hover, .pito-game-card:active {
+      transform: translateY(-4px) scale(1.02);
+      border-color: #f3cf65;
+      box-shadow: 0 14px 30px rgba(243, 207, 101, 0.28);
+    }
+    .pito-game-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .pito-game-card:hover img { transform: scale(1.07); }
+    .pito-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4, 9, 20, 0.94) 8%, rgba(4, 9, 20, 0.25) 52%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .pito-card-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+      line-height: 1.2;
+    }
+    .floating-bottom-dock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      padding: 7px 14px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(243, 207, 101, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 45;
+    }
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      color: #334155;
+      font-size: 19px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dock-item.active {
+      background: linear-gradient(135deg, #d4af37, #b48811);
+      color: #050b18;
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.55);
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    /* Fit Games Perfectly Inside Screen Without Scroll */
+    body.in-game-mode { padding-bottom: 10px !important; }
+    body.in-game-mode .floating-bottom-dock { display: none !important; }
+    body.in-game-mode header { padding-top: 4px !important; padding-bottom: 4px !important; }
+    
+    #view-chess, #view-domino, #view-konkan {
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+    #chessBoard {
+      width: min(86vw, 62vh, 490px) !important;
+      height: min(86vw, 62vh, 490px) !important;
+      margin: 0 auto;
+    }
+    #dominoTableArea {
+      min-height: 54vh !important;
+      max-height: 62vh !important;
+    }
+    /* Chess.com Pro Layout (Full Screen Fit, Zero Scroll) */
+    body.in-game-mode {
+      padding-bottom: 0 !important;
+      overflow-x: hidden;
+    }
+    body.in-game-mode header,
+    body.in-game-mode .floating-bottom-dock {
+      display: none !important;
+    }
+
+    .chesscom-arena {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      min-height: 100vh;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .chesscom-arena {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        gap: 10px;
+      }
+    }
+    .chesscom-board-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .chesscom-player-strip {
+      width: min(92vw, 76vh, 620px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1930;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 12px;
+      padding: 8px 14px;
+    }
+    #chessBoard {
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
+      aspect-ratio: 1 / 1 !important;
+      margin: 0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75) !important;
+    }
+    .chesscom-sidebar {
+      height: min(86vh, 710px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #0b1528;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+    }
+    #boardWrapper {
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
+    }
+    #activeGameArea > div:last-child {
+      width: 100% !important;
+      max-width: 360px !important;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+      
+    }
+   /* Yalla Ludo Pro Design */
+  /* ================= YARIKURDI ROYAL TEAHOUSE DOMINO 101 ================= */
+    .yk-domino-arena {
+      max-width: 440px;
+      min-height: 96dvh;
+      max-height: 96dvh;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 28px;
+      padding: 12px;
+      overflow: hidden;
+      /* مێزی دارگوێزی تۆخ بە نەخشی ڕەسەن */
+      background:
+        radial-gradient(circle at 50% 45%, rgba(217, 119, 6, 0.14) 0%, rgba(15, 10, 6, 0.88) 85%),
+        repeating-linear-gradient(90deg, #3b2314 0px, #472a18 28px, #2f1b0f 30px, #3f2515 58px);
+      border: 3px solid #d97706;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 0, 0, 0.75);
+    }
+    /* نەخشی فەرشی کوردی لە لێواری سەرەوە و خوارەوە */
+    .yk-domino-arena::before,
+    .yk-domino-arena::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #dc2626 0 12px, #facc15 12px 24px, #059669 24px 36px, #f8fafc 36px 48px);
+      opacity: 0.85;
+      z-index: 2;
+    }
+    .yk-domino-arena::before { top: 0; }
+    .yk-domino-arena::after { bottom: 0; }
+
+    /* شریتی سەرەوەی یاریزان و بۆت */
+    .yk-dom-hud-top {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .yk-dom-opponent-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(18, 13, 10, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      border-radius: 16px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .yk-bot-mini-tiles {
+      display: flex;
+      gap: 3px;
+    }
+    .yk-bot-mini-tile {
+      width: 9px;
+      height: 16px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #ef4444, #991b1b);
+      border: 1px solid #fca5a5;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    /* کەپسوولی بازاڕ (بۆنیا) */
+    .yk-boneyard-pill {
+      margin: 4px auto 0;
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      color: #451a03;
+      border: 2px solid #f59e0b;
+      border-radius: 9999px;
+      padding: 3px 14px;
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .yk-boneyard-pill:hover:not(:disabled) { transform: scale(1.06); }
+    .yk-boneyard-pill:disabled { opacity: 0.7; cursor: default; }
+
+    /* گۆڕەپانی دانانی کاشییەکان */
+    .yk-dom-board-stage {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      margin: 8px 0;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px dashed rgba(251, 191, 36, 0.22);
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: 360px;
+    }
+
+    /* کارتی ڕێنمایی ناوەڕاست */
+    .yk-dom-hint-banner {
+      background: rgba(255, 251, 235, 0.96);
+      color: #1c1917;
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      padding: 12px 16px;
+      max-width: 88%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* کاشیی عاجیی شاهانە بە بزمارە زێڕینەکەوە */
+    .yk-tile {
+      background: linear-gradient(155deg, #ffffff 0%, #fdf8ee 65%, #efe4ce 100%);
+      border: 1.5px solid #d6c5a9;
+      border-radius: 9px;
+      box-shadow: 0 4px 0 #a8967a, 0 7px 14px rgba(0, 0, 0, 0.55);
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      user-select: none;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
+    }
+    .yk-tile.horiz {
+      width: 58px;
+      height: 30px;
+      padding: 0 6px;
+      flex-direction: row;
+    }
+    .yk-tile.vert-double {
+      width: 32px;
+      height: 58px;
+      padding: 6px 0;
+      flex-direction: column;
+    }
+    .yk-tile.in-hand {
+      width: 44px;
+      height: 82px;
+      padding: 7px 0;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .yk-tile.in-hand.can-move {
+      border-color: #facc15;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.9), 0 5px 0 #ca8a04;
+      transform: translateY(-9px);
+    }
+    .yk-tile.in-hand.can-move:hover {
+      transform: translateY(-14px) scale(1.06);
+    }
+    .yk-tile.in-hand.locked-tile {
+      opacity: 0.72;
+      filter: brightness(0.92);
+    }
+
+    /* هێڵ و ئەڵقەی زێڕینی ناوەڕاستی کاشی */
+    .yk-tile-divider-h {
+      width: 1.5px;
+      height: 74%;
+      background: linear-gradient(180deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-divider-v {
+      width: 74%;
+      height: 1.5px;
+      background: linear-gradient(90deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-rivet {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #fde047, #b45309);
+      border: 0.5px solid #78350f;
+    }
+
+    /* خاڵە ڕەنگاوڕەنگەکانی سەر کاشی */
+    .yk-pip-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      width: 22px;
+      height: 22px;
+      place-items: center;
+    }
+    .yk-pip {
+      width: 5.2px;
+      height: 5.2px;
+      border-radius: 9999px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.45), 0 1px 1px rgba(0,0,0,0.35);
+    }
+    .pip-c-1, .pip-c-6 { background: #dc2626; } /* سووری یاقووتی */
+    .pip-c-4, .pip-c-5 { background: #0284c7; } /* شینی فیروزەیی */
+    .pip-c-2, .pip-c-3 { background: #059669; } /* سەوزی زمڕوتی */
+
+    /* پانێڵی خوارەوەی یاریزان */
+    .yk-dom-player-dock {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .yk-dom-player-bar {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9));
+      border: 1.5px solid rgba(250, 204, 21, 0.45);
+      border-radius: 16px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+    .yalla-wood-frame {
+      background: linear-gradient(145deg, #451a03 0%, #78350f 45%, #451a03 100%);
+      padding: 11px;
+      border-radius: 22px;
+      border: 2.5px solid #f59e0b;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), inset 0 2px 4px rgba(254, 240, 138, 0.45), 0 0 25px rgba(245, 158, 11, 0.22);
+    }
+    .ludo-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      grid-template-rows: repeat(15, 1fr);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #fefce8;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #92400e;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
+    }
+    .ludo-cell {
+      border: 0.5px solid rgba(146, 64, 14, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ludo-socket {
+      width: 76%;
+      height: 76%;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(226,232,240,0.95));
+      border: 1.5px solid rgba(146, 64, 14, 0.35);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ludo-token {
+      width: 88%;
+      height: 88%;
+      border-radius: 9999px;
+      border: 2.5px solid #ffffff;
+      cursor: pointer;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.55), inset 0 2px 3px rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ludo-token:hover {
+      transform: scale(1.16) translateY(-2px);
+    }
+    .yalla-dice-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      border: 2px solid #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), inset 0 2px 3px #ffffff;
+      transition: transform 0.15s ease;
+    }
+    .yalla-dice-box:active {
+      transform: scale(0.92);
+    }
+    .ludo-token.yellow-pawn {
+      background: radial-gradient(circle at 32% 30%, #fde047, #eab308 65%, #a16207);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+    .ludo-token.red-pawn {
+      background: radial-gradient(circle at 32% 30%, #fca5a5, #ef4444 65%, #991b1b);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+    .ludo-token.movable {
+      animation: yallaPulse 0.65s infinite alternate;
+      box-shadow: 0 0 14px #facc15, 0 0 4px #ffffff;
+    }
+    @keyframes yallaPulse {
+      from { transform: scale(0.92); }
+      to { transform: scale(1.22); }
+    }
+    .yalla-dice-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 -3px 0 #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #1e293b;
+      cursor: pointer;
+      user-select: none;
+    }
+    .dice-rolling { animation: diceSpin 0.35s ease-in-out; }
+    @keyframes diceSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.16); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .mic-speaking-ring {
+      box-shadow: 0 0 0 3px #22c55e, 0 0 14px #22c55e !important;
+    }
+    ::-webkit-scrollbar-track { background: #070f20; }
+    ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
+    /* شاشەی سەرەتایی شاهانە (Splash Screen) */
+    #royalSplashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 35%, #16284c 0%, #070d1b 65%, #03060d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+    #royalSplashScreen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-crown-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #f3cf65, #d4af37, #9e7e1b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.45), inset 0 2px 6px rgba(255,255,255,0.5);
+      animation: splashPulse 1.8s infinite ease-in-out;
+    }
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(243, 207, 101, 0.75); }
+    }
+  </style>
+</head>
+
+<body>
+<!-- شاشەی سەرەتایی شاهانە (وەک ئەپی مۆبایل) -->
+  <div id="royalSplashScreen">
+    <div class="splash-crown-ring mb-5">
+      <span class="text-5xl">👑</span>
+    </div>
+    <h1 class="text-4xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 mb-2">
+      YariKurdi
+    </h1>
+    <p class="text-xs text-slate-400 mb-6">مەیدانی یارییە کوردییەکان</p>
+    <div class="flex items-center gap-2.5 bg-white/5 border border-yellow-500/25 px-4 py-2 rounded-full">
+      <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping"></span>
+      <span id="splashStatusText" class="text-xs font-bold text-yellow-300">پشکنینی هەژمار...</span>
+    </div>
+  </div>
+  <img id="dragGhost" src="" alt="" style="display:none; pointer-events:none;" />
+
+  <!-- ==================== AUTH GATE MODAL (LOGIN / REGISTER) ==================== -->
+  <div id="authModal" class="hidden inset-0 bg-[#040914]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="royal-card max-w-md w-full rounded-3xl p-6 md:p-8 space-y-6 border-2 border-yellow-500/40">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[#050b18] font-extrabold text-3xl shadow-lg">♔</div>
+        <h2 class="text-2xl font-extrabold gold-text">بەخێربێیت بۆ YariKurdi</h2>
+        <p class="text-xs text-slate-400">ئەکاونتێک دروست بکە یان بچۆرە ناو ئەکاونتەکەت تا خاڵ و هاوڕێکانت پارێزراو بن</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="grid grid-cols-2 gap-2 bg-[#081124] p-1 rounded-xl border border-yellow-500/20">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition">چوونەژوورەوە</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">دروستکردنی ئەکاونت</button>
+      </div>
+<!-- Google Sign-In Button -->
+      <button type="button" onclick="signInWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs flex items-center justify-center gap-2.5 shadow-lg transition">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google" />
+        <span>چوونەژوورەوە بە ئەکاونتی Google (Gmail)</span>
+      </button>
+
+      <div class="relative flex py-1 items-center">
+        <div class="flex-grow border-t border-yellow-500/20"></div>
+        <span class="flex-shrink mx-3 text-[11px] text-slate-400">یان بە ئەکاونتی تایبەت</span>
+        <div class="flex-grow border-t border-yellow-500/20"></div>
+      </div>
+      <div id="authErrorBox" class="hidden p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs text-center font-bold"></div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی بەکارهێنەر (Username):</label>
+          <input id="loginUsername" type="text" required placeholder="نموونە: ahmad_kurd" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی (Password):</label>
+          <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+        </div>
+        <button type="submit" class="gold-btn w-full py-3 rounded-xl text-sm">چوونەژوورەوە بۆ مەیدان ➔</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="hidden space-y-3.5">
+        <div class="flex flex-col items-center gap-2">
+          <label for="regAvatarInput" class="cursor-pointer group relative">
+            <div id="regAvatarPreview" class="w-16 h-16 rounded-2xl bg-[#15284d] border-2 border-dashed border-yellow-400 flex items-center justify-center text-2xl text-yellow-300 overflow-hidden">📷</div>
+            <span class="block text-[10px] text-yellow-300 text-center mt-1 font-bold">هەڵبژاردنی وێنە (ئارەزوومەندانە)</span>
+          </label>
+          <input id="regAvatarInput" type="file" accept="image/*" onchange="previewAvatarFile(this, 'regAvatarPreview', 'reg')" class="hidden" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی نمایشکردن (ناوی تەواو یان نازناو):</label>
+          <input id="regDisplayName" type="text" required placeholder="نموونە: ئەحمەد جاف" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی بەکارهێنەر (Username بە ئینگلیزی):</label>
+          <input id="regUsername" type="text" required placeholder="nmunay_kurd" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی (Password):</label>
+          <input id="regPassword" type="password" required minlength="4" placeholder="لانیکەم ٤ پیت یان ژمارە" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+        </div>
+        <button type="submit" class="gold-btn w-full py-3 rounded-xl text-sm">دروستکردنی ئەکاونت و دەستپێکردن ✓</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== EDIT ACCOUNT MODAL ==================== -->
+  <div id="editProfileModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="royal-card max-w-md w-full rounded-3xl p-6 space-y-5 border-2 border-yellow-400">
+      <div class="flex items-center justify-between border-b border-yellow-500/20 pb-3">
+        <h3 class="text-lg font-extrabold gold-text">⚙️ دەستکاریکردنی پرۆفایل</h3>
+        <button onclick="closeEditProfileModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <form onsubmit="saveProfileEdits(event)" class="space-y-4">
+        <div class="flex flex-col items-center gap-2">
+          <label for="editAvatarInput" class="cursor-pointer relative">
+            <div id="editAvatarPreview" class="w-20 h-20 rounded-2xl bg-[#15284d] border-2 border-yellow-400 flex items-center justify-center text-3xl text-yellow-300 font-extrabold overflow-hidden shadow-lg">ی</div>
+            <span class="block text-[11px] text-yellow-300 text-center mt-1.5 font-bold bg-yellow-500/10 px-3 py-1 rounded-lg border border-yellow-500/30">گۆڕینی وێنەی پرۆفایل 📸</span>
+          </label>
+          <input id="editAvatarInput" type="file" accept="image/*" onchange="previewAvatarFile(this, 'editAvatarPreview', 'edit')" class="hidden" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی نمایشکردن:</label>
+          <input id="editDisplayName" type="text" required class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی نوێ (ئەگەر ناتەوێت بیگۆڕیت بە بەتاڵی جێی بهێڵە):</label>
+          <input id="editNewPassword" type="password" minlength="4" placeholder="وشەی نهێنی نوێ..." class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+        </div>
+
+        <div class="bg-[#081124] p-3 rounded-xl border border-yellow-500/20 flex items-center justify-between text-xs">
+          <span class="text-slate-400">ناوی بەکارهێنەر (Username):</span>
+          <span id="editUsernameReadonly" class="font-mono font-bold text-yellow-300">---</span>
+        </div><!-- Level & XP Progress Box -->
+       <div class="bg-[#081124] p-3.5 rounded-2xl border border-yellow-500/20 space-y-2">
+         <div class="flex items-center justify-between text-xs font-bold">
+           <span id="profileLevelTitle" class="text-yellow-300">Lvl 1 • سەرەتایی</span>
+           <span id="profileXpText" class="text-slate-400 font-mono text-[11px]">0 / 25 XP</span>
+         </div>
+         <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+           <div id="profileXpBar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-300 transition-all duration-500" style="width: 0%"></div>
+         </div>
+       </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="submit" class="gold-btn py-2.5 rounded-xl text-xs">پاشەکەوتکردن ✓</button>
+          <button type="button" onclick="logoutAccount()" class="py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30">چوونەدەرەوە 🚪</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Navbar -->
+  <header class="border-b border-yellow-500/20 bg-[#060d1d]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('hub')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[#050b18] font-extrabold text-xl shadow-lg">♔</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold gold-text tracking-wide">YariKurdi</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 font-bold">PRO</span>
+          <span id="headerLevelBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-300 border border-slate-500/30">Lvl 1 • سەرەتایی</span>
+        </div>
+          <p class="text-[11px] text-slate-400">مەیدانی یارییە کوردییەکان</p>
+        </div>
+      </div>
+
+      <nav class="flex flex-wrap items-center gap-1.5 bg-[#0b1730] p-1 rounded-xl border border-yellow-500/20">
+        <button id="nav-hub" onclick="switchView('hub')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-500 text-[#050b18] transition">ناوەندی یارییەکان</button>
+        <button id="nav-chess" onclick="switchView('chess')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">♔ شەتڕەنج</button>
+        <button id="nav-domino" onclick="switchView('domino')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">🁣 دۆمینە</button>
+        <button id="nav-konkan" onclick="switchView('konkan')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">🃏 کۆنکان</button>
+        <button id="nav-rooms" onclick="switchView('rooms')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">🎙️ ژوورەکان</button>
+        <button id="nav-friends" onclick="switchView('friends')" class="relative px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1">
+          <span>👥</span> هاوڕێ و چات
+          <span id="friendBadgeCount" class="hidden px-1.5 py-0.2 rounded-full bg-red-500 text-white text-[10px] font-extrabold">0</span>
+        </button>
+        <button id="nav-leaderboard" onclick="switchView('leaderboard')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1">
+          <span>🏆</span> ڕیزبەندی
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleSound()" id="soundBtn" title="دەنگ" class="w-9 h-9 rounded-lg bg-[#0e1c38] border border-yellow-500/25 flex items-center justify-center text-yellow-400 hover:bg-yellow-500/10">🔊</button>
+        <div onclick="openEditProfileModal()" title="دەستکاریکردنی پرۆفایل و وێنە" class="cursor-pointer flex items-center gap-2.5 bg-[#0e1c38] border border-yellow-500/35 px-3 py-1.5 rounded-xl hover:border-yellow-400 transition">
+          <div class="text-left">
+            <div id="headerPlayerName" class="text-xs font-bold text-white">یاریزانی کورد</div>
+            <div class="text-[10px] text-yellow-400 font-bold"><span id="headerChessElo">1200</span> ★ • دەستکاری ⚙️</div>
+          </div>
+          <div id="headerAvatar" class="w-9 h-9 rounded-xl bg-yellow-500 text-[#050b18] font-extrabold flex items-center justify-center text-sm overflow-hidden border border-yellow-400">ی</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Incoming Challenge Toast -->
+  <div id="challengeToast" class="hidden fixed bottom-5 left-5 right-5 md:left-auto md:w-96 z-50 royal-card rounded-2xl p-4 border-2 border-yellow-400 shadow-2xl space-y-3">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-yellow-500 text-[#050b18] flex items-center justify-center text-2xl font-extrabold animate-bounce">⚔️</div>
+      <div>
+        <div class="text-xs font-extrabold text-yellow-300">بانگهێشتی یاری!</div>
+        <div id="challengeToastText" class="text-xs text-white mt-0.5">هاوڕێیەک داوای یاریت لێدەکات</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="acceptIncomingChallenge()" class="gold-btn py-2 rounded-xl text-xs">قبوڵکردن ✓</button>
+      <button onclick="declineIncomingChallenge()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">ڕەتکردنەوە ✕</button>
+    </div>
+  </div>
+</section>
+  <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
+<section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-3 pb-32 overflow-y-auto overscroll-contain relative" style="max-height: calc(100dvh - 82px); -webkit-overflow-scrolling: touch;">      <div class="space-y-0.5">
+       
+   <!-- پانێڵی پشتگیریمان بکە بە ئاڵای کوردستان -->
+      <div class="relative overflow-hidden rounded-2xl border border-amber-400/50 shadow-lg mb-3 p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+           style="background: linear-gradient(180deg, rgba(185,28,28,0.88) 0%, rgba(185,28,28,0.88) 33%, rgba(255,255,255,0.92) 33%, rgba(255,255,255,0.92) 66%, rgba(21,128,61,0.88) 66%, rgba(21,128,61,0.88) 100%);">
+        <!-- خۆری کوردستان لە ناوەڕاست -->
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-90">
+          <svg viewBox="0 0 100 100" class="w-24 h-24 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">
+            <circle cx="50" cy="50" r="16" fill="#facc15"/>
+            <g fill="#facc15">
+              <polygon points="50,8 53,34 47,34"/><polygon points="50,92 53,66 47,66"/>
+              <polygon points="8,50 34,53 34,47"/><polygon points="92,50 66,53 66,47"/>
+              <polygon points="20,20 40,36 36,40"/><polygon points="80,80 60,64 64,60"/>
+              <polygon points="80,20 64,40 60,36"/><polygon points="20,80 36,60 40,64"/>
+              <polygon points="34,11 45,35 39,37"/><polygon points="66,89 55,65 61,63"/>
+              <polygon points="66,11 61,37 55,35"/><polygon points="34,89 39,63 45,65"/>
+              <polygon points="11,34 37,39 35,45"/><polygon points="89,66 63,61 65,55"/>
+              <polygon points="89,34 65,45 63,39"/><polygon points="11,66 35,55 37,61"/>
+            </g>
+          </svg>
+        </div>
+        <!-- سێبەرێکی شووشەیی تاریک بۆ خوێندنەوەی نووسینەکان -->
+        <div class="absolute inset-0 bg-gradient-to-l from-[#050a15]/85 via-[#050a15]/45 to-[#050a15]/80 pointer-events-none"></div>
+
+       <!-- نووسینەکان -->
+        <div class="relative z-10 text-center sm:text-right">
+          <div class="text-base sm:text-lg font-black text-amber-300 drop-shadow-[0_2px_6px_rgba(0,0,0,1)]">
+            دەستمان بگرە تا بەردەوام بین 👑
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-white drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">
+            بۆ داهاتوویەکی گەشتر بۆ یارییە کوردییەکان
+          </p>
+        </div>
+        <!-- دوگمەی دیوەخان -->
+        <button onclick="switchView('rooms')" class="relative z-10 gold-btn px-5 py-2 rounded-full text-xs sm:text-sm font-black whitespace-nowrap shadow-xl hover:scale-105 transition-transform">
+          دیوەخان 🎙️
+        </button>
+      </div>
+
+ <!-- Season Pass Progress Banner -->
+    <div class="rounded-2xl bg-gradient-to-l from-[#2b170c] via-[#3b2010] to-[#1f1008] border-2 border-amber-400/60 p-3 space-y-2 shadow-lg">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] px-3 py-0.5 rounded-full bg-amber-400/20 text-yellow-300 border border-amber-400/40 font-black">☀️ دیوەخانی YariKurdi • وەرزی ١</span>
+        <span id="hubSeasonLevelTag" class="text-[11px] font-black text-emerald-400">ئاستی 1</span>
+      </div>
+      <div class="w-full h-3.5 rounded-full bg-black/60 border border-amber-400/40 overflow-hidden p-0.5">
+        <div id="hubSeasonBar" class="h-full rounded-full bg-gradient-to-l from-[#dc2626] via-[#facc15] to-[#15803d] transition-all duration-500" style="width: 35%"></div>
+      </div>
+    </div>
+
+    <!-- یارییە ئامادەکان -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 relative z-10">
+        <!-- ١. شەتڕەنج -->
+        <div onclick="switchView('chess')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=600&q=80" alt="شەتڕەنج" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">شەتڕەنج</span>
+          </div>
+        </div>
+
+        <!-- ٢. لودۆ -->
+        <div onclick="switchView('ludo')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80" alt="لودۆ" />
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">لودۆ</span>
+          </div>
+        </div>
+<!-- ٣. دۆمینە -->
+        <div onclick="switchView('domino')" class="pito-game-card cursor-pointer">
+          <div class="w-full h-full bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#090d16] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute w-32 h-32 rounded-full bg-amber-400/15 blur-2xl"></div>
+            <div class="relative w-16 h-28 rounded-xl shadow-2xl border-2 border-amber-300/70 overflow-hidden transform -rotate-12 -translate-x-2 flex flex-col bg-white">
+              <div class="h-1/3 bg-[#ED2939] flex items-center justify-around px-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+              </div>
+              <div class="h-1/3 bg-white flex items-center justify-center relative border-y border-slate-300">
+                <svg viewBox="0 0 100 100" class="w-8 h-8 drop-shadow">
+                  <circle cx="50" cy="50" r="18" fill="#FEBD11"/>
+                  <g fill="#FEBD11">
+                    <polygon points="50,5 54,28 46,28"/><polygon points="50,95 54,72 46,72"/>
+                    <polygon points="5,50 28,54 28,46"/><polygon points="95,50 72,54 72,46"/>
+                    <polygon points="18,18 36,31 31,36"/><polygon points="82,82 64,69 69,64"/>
+                    <polygon points="82,18 69,36 64,31"/><polygon points="18,82 31,64 36,69"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="h-1/3 bg-[#278E43] flex items-center justify-around px-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+              </div>
+            </div>
+            <div class="relative w-16 h-28 rounded-xl shadow-[0_12px_25px_rgba(0,0,0,0.85)] border-2 border-yellow-400 overflow-hidden transform rotate-12 translate-x-2 translate-y-1 flex flex-col bg-white z-10">
+              <div class="h-1/3 bg-[#ED2939] flex items-center justify-between px-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+              </div>
+              <div class="h-1/3 bg-white flex items-center justify-center relative">
+                <div class="absolute inset-x-2 h-[2px] bg-slate-800/30"></div>
+                <svg viewBox="0 0 100 100" class="w-9 h-9 relative z-10">
+                  <circle cx="50" cy="50" r="19" fill="#FEBD11"/>
+                  <g fill="#FEBD11">
+                    <polygon points="50,2 55,27 45,27"/><polygon points="50,98 55,73 45,73"/>
+                    <polygon points="2,50 27,55 27,45"/><polygon points="98,50 73,55 73,45"/>
+                    <polygon points="16,16 36,30 30,36"/><polygon points="84,84 64,70 70,64"/>
+                    <polygon points="84,16 70,36 64,30"/><polygon points="16,84 30,64 36,70"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="h-1/3 bg-[#278E43] flex items-center justify-between px-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white shadow"></span>
+              </div>
+            </div>
+          </div>
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow z-20">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">دۆمینە</span>
+          </div>
+        </div>
+
+        <!-- ٤. کۆنکان -->
+        <div onclick="switchView('konkan')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=600&q=80" alt="کۆنکان" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow z-20">ئامادەیە</span>
+          <div class="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-black/65 backdrop-blur-md px-2 py-1 rounded-full border border-white/25 shadow-lg">
+            <svg viewBox="0 0 900 600" style="width: 22px; height: 14px; border-radius: 2px; flex-shrink: 0;">
+              <rect width="900" height="200" fill="#ED2939"/>
+              <rect y="200" width="900" height="200" fill="#FFFFFF"/>
+              <rect y="400" width="900" height="200" fill="#278E43"/>
+              <circle cx="450" cy="300" r="85" fill="#FEBD11"/>
+              <g fill="#FEBD11">
+                <polygon points="450,150 462,235 438,235"/><polygon points="450,450 462,365 438,365"/>
+                <polygon points="300,300 385,312 385,288"/><polygon points="600,300 515,312 515,288"/>
+                <polygon points="344,194 405,255 388,272"/><polygon points="556,406 495,345 512,328"/>
+                <polygon points="556,194 512,272 495,255"/><polygon points="344,406 388,328 405,345"/>
+              </g>
+            </svg>
+            <span class="text-[10px] font-black text-white leading-none">کوردی</span>
+          </div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">کۆنکان</span>
+          </div>
+        </div>
+     
+
+      <!-- سەردێڕی یارییە چاوەڕوانکراوەکان -->
+       </div>
+      <div class="pt-4 pb-1 flex items-center justify-between border-t border-white/10 relative z-10">
+        <span class="text-xs font-extrabold text-yellow-400">⏳ یارییەکانی داهاتوو (ئامادە دەکرێن)</span>
+        <span class="text-[10px] text-slate-400">بەم زووانە زیاد دەکرێن</span>
+      </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 relative z-10 pb-8">
+      <!-- تاوڵە -->
+      <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+          <defs>
+            <linearGradient id="woodBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#3e1f0d"/>
+              <stop offset="100%" stop-color="#1c0d05"/>
+            </linearGradient>
+          </defs>
+          <rect width="300" height="400" fill="url(#woodBg)"/>
+          <rect x="16" y="20" width="268" height="360" rx="14" fill="#5c2e14" stroke="#d4af37" stroke-width="4"/>
+          <rect x="28" y="32" width="244" height="336" rx="8" fill="#e6ccb2"/>
+          <line x1="150" y1="32" x2="150" y2="368" stroke="#3e1f0d" stroke-width="6"/>
+          <!-- سێگۆشەکانی سەرەوە -->
+          <polygon points="34,32 52,32 43,165" fill="#7f1d1d"/><polygon points="54,32 72,32 63,165" fill="#1e293b"/>
+          <polygon points="74,32 92,32 83,165" fill="#7f1d1d"/><polygon points="94,32 112,32 103,165" fill="#1e293b"/>
+          <polygon points="114,32 132,32 123,165" fill="#7f1d1d"/><polygon points="168,32 186,32 177,165" fill="#1e293b"/>
+          <polygon points="188,32 206,32 197,165" fill="#7f1d1d"/><polygon points="208,32 226,32 217,165" fill="#1e293b"/>
+          <polygon points="228,32 246,32 237,165" fill="#7f1d1d"/><polygon points="248,32 266,32 257,165" fill="#1e293b"/>
+          <!-- سێگۆشەکانی خوارەوە -->
+          <polygon points="34,368 52,368 43,235" fill="#1e293b"/><polygon points="54,368 72,368 63,235" fill="#7f1d1d"/>
+          <polygon points="74,368 92,368 83,235" fill="#1e293b"/><polygon points="94,368 112,368 103,235" fill="#7f1d1d"/>
+          <polygon points="114,368 132,368 123,235" fill="#1e293b"/><polygon points="168,368 186,368 177,235" fill="#7f1d1d"/>
+          <polygon points="188,368 206,368 197,235" fill="#1e293b"/><polygon points="208,368 226,368 217,235" fill="#7f1d1d"/>
+          <polygon points="228,368 246,368 237,235" fill="#1e293b"/><polygon points="248,368 266,368 257,235" fill="#7f1d1d"/>
+          <!-- پولەکان و زارەکان -->
+          <circle cx="43" cy="48" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
+          <circle cx="43" cy="70" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
+          <circle cx="257" cy="352" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
+          <circle cx="257" cy="330" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
+          <rect x="85" y="182" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="93" cy="190" r="2.5" fill="#0f172a"/><circle cx="105" cy="202" r="2.5" fill="#0f172a"/><circle cx="99" cy="196" r="2.5" fill="#dc2626"/>
+          <rect x="185" y="188" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="193" cy="196" r="2.5" fill="#0f172a"/><circle cx="205" cy="196" r="2.5" fill="#0f172a"/>
+          <circle cx="193" cy="208" r="2.5" fill="#0f172a"/><circle cx="205" cy="208" r="2.5" fill="#0f172a"/>
+        </svg>
+        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">تاوڵە</span>
+        </div>
+      </div>
+
+      <!-- دامەی کوردی -->
+      <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+          <rect width="300" height="400" fill="#0f172a"/>
+          <rect x="20" y="45" width="260" height="260" rx="14" fill="#1e293b" stroke="#d4af37" stroke-width="4"/>
+          <!-- چوارگۆشەکانی تەختەی دامە -->
+          <g transform="translate(30, 55)">
+            <rect x="0" y="0" width="60" height="60" fill="#f8fafc"/><rect x="60" y="0" width="60" height="60" fill="#1e293b"/>
+            <rect x="120" y="0" width="60" height="60" fill="#f8fafc"/><rect x="180" y="0" width="60" height="60" fill="#1e293b"/>
+            <rect x="0" y="60" width="60" height="60" fill="#1e293b"/><rect x="60" y="60" width="60" height="60" fill="#f8fafc"/>
+            <rect x="120" y="60" width="60" height="60" fill="#1e293b"/><rect x="180" y="60" width="60" height="60" fill="#f8fafc"/>
+            <rect x="0" y="120" width="60" height="60" fill="#f8fafc"/><rect x="60" y="120" width="60" height="60" fill="#1e293b"/>
+            <rect x="120" y="120" width="60" height="60" fill="#f8fafc"/><rect x="180" y="120" width="60" height="60" fill="#1e293b"/>
+            <rect x="0" y="180" width="60" height="60" fill="#1e293b"/><rect x="60" y="180" width="60" height="60" fill="#f8fafc"/>
+            <rect x="120" y="180" width="60" height="60" fill="#1e293b"/><rect x="180" y="180" width="60" height="60" fill="#f8fafc"/>
+            <!-- پولە شاهانەکانی دامە -->
+            <circle cx="90" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+            <circle cx="210" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+            <circle cx="30" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+            <circle cx="150" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+            <circle cx="90" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+            <circle cx="210" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+            <circle cx="30" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+            <circle cx="150" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+            <text x="150" y="156" text-anchor="middle" font-size="16" fill="#d4af37">👑</text>
+          </g>
+        </svg>
+        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">دامەی کوردی</span>
+        </div>
+      </div>
+
+     <div onclick="alert('یاریی مار و پەیژە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+          <defs>
+            <radialGradient id="royalBoardBg" cx="50%" cy="42%" r="65%">
+              <stop offset="0%" stop-color="#1e293b"/>
+              <stop offset="60%" stop-color="#0f172a"/>
+              <stop offset="100%" stop-color="#050b18"/>
+            </radialGradient>
+            <linearGradient id="goldMetallic" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fef08a"/>
+              <stop offset="45%" stop-color="#d4af37"/>
+              <stop offset="100%" stop-color="#854d0e"/>
+            </linearGradient>
+            <linearGradient id="emeraldSerpent" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="50%" stop-color="#065f46"/>
+              <stop offset="100%" stop-color="#022c22"/>
+            </linearGradient>
+            <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.75"/>
+            </filter>
+          </defs>
+
+          <!-- پاشبنەمای تاریک و شاهانە -->
+          <rect width="300" height="400" fill="url(#royalBoardBg)"/>
+
+          <!-- تەختەی مەڕمەڕی ٣ ڕەهەندی (Isometric) -->
+          <g transform="translate(150, 185)" filter="url(#deepShadow)">
+            <!-- لێواری زێڕینی تەختەکە -->
+            <polygon points="0,-118 128,0 0,118 -128,0" fill="#1e1b18" stroke="url(#goldMetallic)" stroke-width="5"/>
+            <polygon points="0,-108 116,0 0,108 -116,0" fill="#0f172a" stroke="#d4af37" stroke-width="1.5" opacity="0.9"/>
+
+            <!-- هێڵە ئەندازەییەکانی تەختەی یارییەکە -->
+            <g stroke="#d4af37" stroke-width="1" opacity="0.35">
+              <line x1="-58" y1="-54" x2="58" y2="54"/>
+              <line x1="0" y1="-108" x2="0" y2="108"/>
+              <line x1="58" y1="-54" x2="-58" y2="54"/>
+              <line x1="-58" y1="54" x2="58" y2="-54"/>
+              <line x1="-116" y1="0" x2="116" y2="0"/>
+            </g>
+
+            <!-- خانە زمڕودی و زێڕینەکان -->
+            <polygon points="0,-54 29,-27 0,0 -29,-27" fill="#064e3b" opacity="0.7"/>
+            <polygon points="-58,0 -29,27 -58,54 -87,27" fill="#78350f" opacity="0.65"/>
+            <polygon points="58,0 87,27 58,54 29,27" fill="#064e3b" opacity="0.7"/>
+            <polygon points="0,54 29,81 0,108 -29,81" fill="#78350f" opacity="0.65"/>
+
+            <!-- پەیژەی زێڕینی کانزایی (Metallic Gold Ladder) -->
+            <g filter="url(#deepShadow)">
+              <line x1="-68" y1="38" x2="-15" y2="-75" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
+              <line x1="-44" y1="48" x2="9" y2="-65" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
+              <line x1="-60" y1="20" x2="-36" y2="30" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="-49" y1="-3" x2="-25" y2="7" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="-38" y1="-26" x2="-14" y2="-16" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="-27" y1="-49" x2="-3" y2="-39" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+            </g>
+
+            <!-- ماری شاهانەی زمڕودی بە نەخشی زێڕین -->
+            <g filter="url(#deepShadow)">
+              <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="url(#emeraldSerpent)" stroke-width="11" stroke-linecap="round"/>
+              <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="4,7" stroke-linecap="round"/>
+              <!-- سەری مارەکە -->
+              <polygon points="38,-60 47,-48 38,-43 29,-48" fill="#065f46" stroke="#d4af37" stroke-width="1.5"/>
+              <circle cx="35" cy="-51" r="1.5" fill="#fbbf24"/>
+              <circle cx="41" cy="-51" r="1.5" fill="#fbbf24"/>
+            </g>
+
+            <!-- زاری عاجی و زێڕین لە ناوەڕاستدا -->
+            <g transform="translate(-8, 12)" filter="url(#deepShadow)">
+              <rect x="-14" y="-14" width="28" height="28" rx="5" fill="#f8fafc" stroke="url(#goldMetallic)" stroke-width="2.5"/>
+              <circle cx="-6" cy="-6" r="2.2" fill="#0f172a"/>
+              <circle cx="6" cy="6" r="2.2" fill="#0f172a"/>
+              <circle cx="0" cy="0" r="2.5" fill="#b91c1c"/>
+            </g>
+          </g>
+        </svg>
+        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
+        <div class="pito-card-overlay">
+          <span class="pito-card-title">مار و پەیژە</span>
+        </div>
+      </div>
+  </section>
+<!-- VIEW: LUDO -->
+  <section id="view-ludo" class="hidden max-w-lg mx-auto px-3 py-3">
+    <div class="yalla-ludo-wrap space-y-2.5">
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between px-1">
+        <button onclick="leaveLudoRoom()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-extrabold text-yellow-300 flex items-center gap-1">
+          <span>↩</span><span>دەرچوون</span>
+        </button>
+        <div class="px-3 py-1 rounded-full bg-black/35 border border-white/10 text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
+          <span>👑</span><span id="ludoTurnBadge">نۆرەی تۆیە (زەرد)</span>
+        </div>
+        <button onclick="initLudoGame()" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs text-white" title="یاری نوێ">🔄</button>
+      </div>
+<!-- Online Matchmaking & Room Bar -->
+      <div class="p-2 rounded-2xl bg-black/35 border border-yellow-500/25 space-y-2">
+        <div class="grid grid-cols-3 gap-1.5 text-[11px] font-extrabold">
+          <button onclick="findOnlineLudoMatch()" class="py-2 px-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow hover:brightness-110">🌍 یاریی ئۆنلاین</button>
+          <button onclick="createPrivateLudoRoom()" class="py-2 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-600 text-[#050b18] shadow hover:brightness-110">🔑 ژووری تایبەت</button>
+          <button onclick="initLudoGame()" class="py-2 px-2 rounded-xl bg-slate-700 text-slate-200 hover:bg-slate-600">🤖 لەگەڵ بۆت</button>
+        </div>
+        <div id="ludoOnlineBar" class="hidden flex items-center justify-between gap-2 pt-1 border-t border-white/10 text-[11px]">
+          <span id="ludoRoomCodeText" class="font-bold text-yellow-300">کۆدی ژوور: ----</span>
+          <div class="flex items-center gap-1">
+            <input id="ludoJoinCodeInput" type="text" maxlength="5" placeholder="کۆد بنووسە" class="w-20 px-2 py-1 rounded-lg bg-slate-900 border border-slate-600 text-center text-white uppercase" />
+            <button onclick="joinPrivateLudoRoom()" class="px-2.5 py-1 rounded-lg bg-yellow-500 text-black font-extrabold">چوونەژوور</button>
+          </div>
+        </div>
+      </div>
+      <!-- Top Opponent Strip (Red - Top Right like video) -->
+      <div class="flex items-center justify-end gap-2.5 px-1">
+        <div id="ludoOppDiceBox" class="yalla-dice-box opacity-80">🎲</div>
+        <div class="flex items-center gap-2 bg-black/30 px-2.5 py-1.5 rounded-2xl border border-red-500/30">
+          <div class="text-right">
+            <div id="ludoOppName" class="text-xs font-extrabold text-white">بۆتی YariKurdi</div>
+            <div id="ludoRedHome" class="text-[10px] text-red-300 font-bold">تاج: 0/4</div>
+          </div>
+          <div id="ludoOppAvatar" class="w-11 h-11 rounded-full bg-gradient-to-br from-red-500 to-rose-700 border-2 border-yellow-400 flex items-center justify-center text-lg shadow">🤖</div>
+        </div>
+      </div>
+
+      <!-- Classic Wooden Framed Ludo Board -->
+      <div class="yalla-wood-frame">
+<div id="ludoBoard" dir="ltr" class="w-full aspect-square rounded-xl overflow-hidden"></div>      </div>
+
+      <!-- Bottom My Player Strip (Yellow - Bottom Left like video) -->
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-2 bg-black/30 px-2.5 py-1.5 rounded-2xl border border-yellow-400/40">
+            <div id="ludoMyAvatar" class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center text-lg shadow">👑</div>
+            <div class="text-left">
+              <div id="ludoMyName" class="text-xs font-extrabold text-white">تۆ (زەرد)</div>
+              <div id="ludoYellowHome" class="text-[10px] text-yellow-300 font-bold">تاج: 0/4</div>
+            </div>
+          </div>
+          <div id="ludoDiceBox" onclick="rollLudoDice()" class="yalla-dice-box ring-2 ring-yellow-400">🎲</div>
+        </div>
+        <div id="ludoStatusText" class="text-[11px] text-yellow-200 font-bold max-w-[135px] text-right leading-tight">کلیک لە زارەکە بکە</div>
+      </div>
+
+      <!-- Bottom Yalla-style Controls: Mic, Emoji, Quick Chat -->
+      <div class="flex items-center justify-between pt-1.5 border-t border-white/10 px-1">
+        <div class="flex items-center gap-2">
+          <button id="ludoMicBtn" onclick="toggleLiveVoiceMic('ludo-global-room', 'ludoMicBtn', 'ludoMyAvatar')" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-lg shadow-lg border border-white/20 transition-all" title="کردنەوەی مایکرۆفۆن">🎙️</button>
+          <button onclick="sendLudoQuickReaction('👏 دەستخۆش!')" class="w-10 h-10 rounded-full bg-amber-500/20 hover:bg-amber-500/35 text-yellow-300 flex items-center justify-center text-lg border border-yellow-400/30">😊</button>
+          <button onclick="sendLudoQuickReaction('🎲 بەختێکی باش!')" class="w-10 h-10 rounded-full bg-amber-500/20 hover:bg-amber-500/35 text-yellow-300 flex items-center justify-center text-lg border border-yellow-400/30">💬</button>
+        </div>
+        <span id="ludoVoiceStatus" class="text-[11px] text-slate-300 font-bold">🔇 مایک داخراوە</span>
+      </div>
+    </div>
+  </section>
+  <!-- VIEW 2: CHESS -->
+  <section id="view-chess" class="hidden max-w-6xl mx-auto px-4 py-6">
+    <div class="mb-3 flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+        <span>↩</span>
+        <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+    </div>
+    <div id="chessSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
+      <div class="text-center space-y-1">
+        <h2 class="text-2xl font-extrabold gold-text">مەیدانی شەتڕەنجی خێرا</h2>
+        <p class="text-xs text-slate-400">کاتی یاری هەڵبژێرە و یاری ئۆنلاین یان ڕاهێنان لەگەڵ بۆت دەستپێبکە</p>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-300">کاتی یاری:</label>
+        <div class="grid grid-cols-4 gap-2" id="timeButtons">
+          <button onclick="selectTime(60, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">1+0</button>
+          <button onclick="selectTime(180, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400">3+0</button>
+          <button onclick="selectTime(180, 2, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">3+2</button>
+          <button onclick="selectTime(300, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">5+0</button>
+        </div>
+      </div>
+      <div class="p-4 rounded-2xl bg-[#091326] border border-emerald-500/30 space-y-3">
+        <div class="flex items-center justify-between"><span class="text-sm font-extrabold text-emerald-400">🌐 یاریکردنی ئۆنلاین (Elo)</span><span class="text-[11px] text-slate-400" id="onlineBadge">سەرهێڵ: ١</span></div>
+        <button onclick="startOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕان بەدوای یاریزاندا</button>
+      </div>
+      <div class="p-4 rounded-2xl bg-[#091326] border border-yellow-500/20 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-extrabold text-yellow-300">🤖 ڕاهێنان لەگەڵ بۆت</span>
+          <select id="botLevelSelect" class="bg-[#101e3b] border border-yellow-500/30 rounded-lg px-2 py-1 text-xs text-white">
+            <option value="1">ئاستی ئاسان</option>
+            <option value="2" selected>ئاستی مامناوەند</option>
+            <option value="3">ئاستی بەهێز</option>
+          </select>
+        </div>
+        <button onclick="startBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#16274b] text-white border border-yellow-500/30">دەستپێکردن</button>
+      </div>
+    </div>
+
+    <div id="matchmakingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-6">
+      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border-2 border-yellow-400 radar-ring"></div>
+        <div class="w-16 h-16 rounded-full bg-yellow-500/20 border border-yellow-400 flex items-center justify-center text-3xl">♔</div>
+      </div>
+      <h3 class="text-lg font-extrabold text-yellow-300">چاوەڕێی یاریزانی کوردین...</h3>
+      <button onclick="cancelMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40">هەڵوەشاندنەوە</button>
+    </div>
+
+   <div id="activeGameArea" class="hidden chesscom-arena">
+      <div class="chesscom-board-col">
+<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center font-bold text-white overflow-hidden" id="oppAvatar">ب</div>
+            <div>
+              <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="oppName">بەرامبەر</span><span id="oppEloBadge" class="text-[11px] text-yellow-400">(1200)</span><button id="inGameAddFriendBtn" onclick="sendFriendRequestFromGame()" class="hidden text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">+ هاوڕێیەتی</button></div>
+            </div>
+          </div>
+          <div id="oppClock" class="px-3.5 py-1.5 rounded-lg bg-[#070f20] border border-slate-700 font-mono text-lg font-extrabold text-slate-300">03:00</div>
+        </div>
+
+        <div id="boardWrapper" class="board-wrapper" oncontextmenu="return false;">
+<div id="chessBoard" class="w-full h-full"></div>          <canvas id="arrowCanvas" width="480" height="480"></canvas>
+        </div>
+
+<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-yellow-500 text-[#050b18] flex items-center justify-center font-extrabold overflow-hidden" id="selfAvatar">ی</div>
+            <div>
+              <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="selfName">یاریزانی کورد</span><span id="selfEloBadge" class="text-[11px] text-yellow-400">(1200)</span></div>
+            </div>
+          </div>
+          <div id="selfClock" class="px-3.5 py-1.5 rounded-lg bg-[#070f20] border border-yellow-500/40 font-mono text-lg font-extrabold text-yellow-300">03:00</div>
+        </div>
+      </div>
+
+      <div class="w-full max-w-[480px] lg:w-80 royal-card rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-yellow-500/20 pb-2"><span id="gameModeBadge" class="text-xs font-extrabold text-emerald-400">● ئۆنلاین</span><span id="turnIndicator" class="text-xs font-bold text-yellow-300">نۆرەی سپییە</span></div>
+        <div class="bg-[#070f20] rounded-xl p-2.5 h-32 overflow-y-auto text-xs font-mono space-y-1" id="moveHistoryBox"></div>
+        <div class="bg-[#070f20] rounded-xl p-2.5 border border-yellow-500/15 space-y-2">
+          <div class="flex items-center justify-between text-[11px] text-yellow-300 font-bold">
+            <span>💬 چاتی ناو یاری</span>
+            <div class="flex gap-1">
+              <button onclick="sendQuickChat('سڵاو! 👋')" class="px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10">سڵاو</button>
+              <button onclick="sendQuickChat('دەستخۆش! 👏')" class="px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10">دەستخۆش</button>
+            </div>
+          </div>
+          <div id="inGameChatMessages" class="h-24 overflow-y-auto space-y-1.5 text-xs p-1"></div>
+          <form onsubmit="submitInGameChat(event)" class="flex gap-1.5">
+           <input id="matchChatInput" type="text" onkeydown="if(event.key==='Enter') sendMatchChat()" placeholder="نامەیەک بنووسە..." class="min-w-0 flex-1 px-3 py-2 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none" />
+            <button onclick="sendMatchChat()" class="gold-btn px-3.5 py-2 rounded-xl text-xs shrink-0">ناردن</button>
+          </form>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="clearArrows()" class="py-2 rounded-xl text-xs font-bold bg-[#142547] text-slate-200">سڕینەوەی سەهم</button>
+          <button onclick="resignGame()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">خۆبەدەستەوەدان</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 3: DOMINO ARENA -->
+ <!-- VIEW: DOMINOES 101 PRO -->
+  <!-- VIEW: YARIKURDI ROYAL TEAHOUSE DOMINO 101 -->
+  <section id="view-domino" class="hidden max-w-md mx-auto px-2 py-2">
+    <div class="yk-domino-arena">
+      <!-- سەرەوە: دوگمەی دەرچوون + نیشاندەری نۆرە + یاری نوێ -->
+      <div class="space-y-2">
+       <div class="yk-dom-hud-top">
+          <button onclick="confirmLeaveTeahouseDomino()" class="px-3 py-1.5 rounded-full bg-rose-600/90 hover:bg-rose-500 border border-rose-300/40 text-white font-black shadow-lg flex items-center gap-1 text-[11px]">
+            <span>🏳️</span><span>وازهێنان</span>
+          </button>
+
+          <div id="ykDomTurnPill" class="px-4 py-1.5 rounded-full bg-red-600 border-2 border-yellow-300 text-white text-xs font-black shadow-lg flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-yellow-300 animate-ping"></span>
+            <span id="ykDomTurnText">نۆرەی تۆیە</span>
+          </div>
+
+          <button onclick="switchView('hub')" class="px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-slate-900 font-black shadow-lg flex items-center gap-1 text-[11px]">
+            <span>↩</span><span>گەڕانەوە</span>
+          </button>
+        </div>
+        <!-- شریتی بۆت و ژمارەی کاشییەکانی -->
+        <div class="yk-dom-opponent-bar">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-base">🤖</div>
+            <div>
+              <div class="text-[11px] font-black text-amber-200">ژیریی دەستکرد • چایخانە</div>
+              <div class="text-[10px] text-slate-300">خاڵی بۆت: <strong id="ykDomBotScore" class="text-rose-400">0</strong> / 101</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div id="ykDomBotMiniTiles" class="yk-bot-mini-tiles"></div>
+            <span id="ykDomBotCountBadge" class="text-xs font-black text-white bg-white/10 px-2 py-0.5 rounded-md">7</span>
+          </div>
+        </div>
+
+        <!-- دوگمەی بازاڕ (بۆنیا) -->
+        <div class="text-center">
+          <button id="ykDomBoneyardBtn" onclick="drawTeahouseBoneyard()" class="yk-boneyard-pill">
+            <span>🁣</span>
+            <span><span id="ykDomBoneyardNum">14</span> پوول ماوە (بازاڕ)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ناوەڕاست: مێزی دانانی کاشییەکان و هەڵبژاردنی چەپ/ڕاست -->
+      <div class="relative flex-1 flex flex-col justify-center">
+        <!-- دوگمەی هەڵبژاردنی لای چەپ یان ڕاست (کاتێک کاشییەک لە هەردوو سەر دەبێت) -->
+        <div id="ykDomSideChooser" class="hidden absolute top-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-slate-950/95 border-2 border-yellow-400 px-3 py-1.5 rounded-full shadow-2xl">
+          <button onclick="confirmChosenSide('left')" class="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-[11px] font-black">⬅️ لای چەپ (<span id="ykLeftValHint">0</span>)</button>
+          <button onclick="confirmChosenSide('right')" class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black">لای ڕاست (<span id="ykRightValHint">0</span>) ➡️</button>
+        </div>
+
+<div id="ykDomBoardStage" dir="ltr" class="w-full flex-1 my-1 rounded-2xl overflow-hidden" style="min-height: 430px;"></div>      </div>
+
+      <!-- خوارەوە: دەستی یاریزان و شریتی خاڵەکانت -->
+      <div class="yk-dom-player-dock">
+        <div id="ykDomPlayerHand" dir="ltr" class="flex items-center justify-center gap-1.5 min-h-[92px] px-1"></div>
+
+        <div class="yk-dom-player-bar">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-yellow-400 text-slate-950 font-black flex items-center justify-center text-xs shadow">تۆ</div>
+            <div>
+              <div id="ykDomPlayerName" class="text-xs font-black text-white">یاریزان</div>
+              <div id="ykDomEndsLabel" class="text-[10px] text-amber-300 font-bold">سەرەکان: کراوە</div>
+            </div>
+          </div>
+          <div class="px-3 py-1 rounded-full bg-yellow-400/15 border border-yellow-400/40 text-xs font-black text-yellow-300">
+            خاڵ: <span id="ykDomMyScore">0</span> / 101
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+ <!-- VIEW: KONKAN (ROYAL 4K ARENA) -->
+<section id="view-konkan" class="hidden max-w-4xl mx-auto px-3 py-3 space-y-3">
+  <div class="flex items-center justify-between">
+    <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#2b170c] hover:bg-[#3b2010] border border-amber-400/40 text-xs font-black text-amber-300 flex items-center gap-1.5 shadow-lg">
+      <span>↩</span><span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+    </button>
+    <h2 class="text-lg sm:text-xl font-black gold-text">🃏 مەیدانی کۆنکانی شاهانە</h2>
+    <div class="text-xs font-bold text-amber-200">Elo: <span id="konkanMyEloLabel" class="text-yellow-400 font-black">1200</span></div>
+  </div>
+
+  <!-- Setup Panel -->
+  <div id="konkanSetupPanel" class="max-w-lg mx-auto royal-card rounded-3xl p-6 space-y-5">
+    <div class="text-center space-y-1">
+      <h3 class="text-xl font-black text-white">هەڵبژاردنی جۆری یاری</h3>
+      <p class="text-xs text-amber-200/80">ژمارەی کارتەکان دیاری بکە و ئۆنلاین یان لەگەڵ بۆت یاری بکە</p>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)" class="py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0d06] border border-amber-300 shadow">🃏 کۆنکانی ١٠ کارتی</button>
+      <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)" class="py-2.5 rounded-xl text-xs font-bold bg-[#1a0d06] text-amber-100 border border-amber-500/30">🃏 کۆنکانی ٨ کارتی</button>
+    </div>
+    <button onclick="startKonkanOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">🌐 یاریکردنی ئۆنلاین (Elo)</button>
+    <button onclick="startKonkanBotGame()" class="w-full py-3 rounded-xl text-xs font-black bg-[#1a0d06] hover:bg-black/60 text-amber-200 border border-amber-400/40">🤖 ڕاهێنان لەگەڵ بۆتی شاهانە</button>
+  </div>
+
+  <!-- Searching Panel -->
+  <div id="konkanSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-5">
+    <div class="text-4xl animate-bounce">🃏</div>
+    <h3 class="text-base font-black text-yellow-300">چاوەڕێی یاریزانێکی تر دەکەین...</h3>
+    <button onclick="cancelKonkanMatchmaking()" class="px-5 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40">هەڵوەشاندنەوە</button>
+  </div>
+
+  <!-- Active Konkan Game Area -->
+  <div id="konkanActiveArea" class="hidden space-y-2.5">
+    <!-- Opponent & Turn Bar -->
+    <div class="royal-card rounded-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🤖</span>
+        <div>
+          <div class="text-xs font-black text-white"><span id="konkOppName">بۆت</span> <span id="konkOppElo" class="text-yellow-400">(1300)</span></div>
+          <div id="konkActionLog" class="text-[10px] text-amber-200/80">ئامادەیە</div>
+        </div>
+      </div>
+      <div id="konkTurnBanner" class="px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black">نۆرەی تۆیە</div>
+      <div class="flex items-center gap-2">
+        <span id="konkOppCountBadge" class="px-2.5 py-1 rounded-lg bg-black/40 text-xs font-bold text-amber-200">10 کارت</span>
+        <button onclick="exitKonkanGame()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 text-white text-xs font-bold">دەرچوون</button>
+      </div>
+    </div>
+
+    <!-- Phaser 3 4K Konkan Table -->
+    <div id="konkanPhaserStage" dir="ltr" class="w-full rounded-2xl overflow-hidden shadow-2xl" style="height: 440px;"></div>
+
+    <!-- Action Buttons Bar -->
+    <div class="royal-card rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5">
+        <button onclick="konkanSortHand('rank')" class="px-3 py-2 rounded-xl bg-[#1a0d06] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: ژمارە</button>
+        <button onclick="konkanSortHand('suit')" class="px-3 py-2 rounded-xl bg-[#1a0d06] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: جۆر</button>
+        <span class="text-xs text-amber-300 font-bold px-2">دەستت: <strong id="konkMyCount">10</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="konkanLayDownMeld()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow">⬇️ داگرتنی سێت</button>
+        <button onclick="konkanDiscardSelected()" class="gold-btn px-4 py-2 rounded-xl text-xs">🗑️ فڕێدانی کارت</button>
+      </div>
+    </div>
+  </div>
+</section>
+  <!-- VIEW 3.8: ROYAL VOICE ROOMS -->
+  <section id="view-rooms" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Lobby: List & Create Room -->
+    <div id="roomsLobbyPanel" class="space-y-6">
+      <div class="royal-card rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold gold-text">🎙️ دیوەخان و ژوورە زیندووەکان</h2>
+          <p class="text-xs text-slate-400 mt-1">بە دەنگی ڕاستەوخۆ (Live Mic) لەگەڵ یاریزانانی کوردستان قسە بکە و یاری بکە</p>
+        </div>
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+          <input id="newRoomTitleInput" type="text" placeholder="ناوی ژوورەکەت (بۆ نموونە: دیوەخانی کەلار)..." class="px-4 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none flex-1 md:w-64" />
+          <select id="newRoomGameSelect" class="px-3 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-yellow-300 font-bold">
+            <option value="chat">🎙️ تەنها دیوەخان</option>
+            <option value="konkan">🃏 ژووری کۆنکان</option>
+            <option value="domino">🁣 ژووری دۆمینە</option>
+            <option value="chess">♟️ ژووری شەتڕەنج</option>
+          </select>
+          <button onclick="createVoiceRoom()" class="gold-btn px-5 py-2.5 rounded-xl text-xs whitespace-nowrap">+ دروستکردنی ژوور</button>
+        </div>
+      </div>
+
+      <div id="activeRoomsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p class="text-xs text-slate-400">چاوەڕێی بارکردنی ژوورەکانین...</p>
+      </div>
+    </div>
+
+    <!-- Inside Active Voice Room -->
+    <div id="insideRoomPanel" class="hidden space-y-5">
+      <div class="royal-card rounded-3xl p-5 flex flex-wrap items-center justify-between gap-3 border-emerald-500/40">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-2xl">🎙️</div>
+          <div>
+            <h3 id="currentRoomTitle" class="text-lg font-extrabold text-white">ناوی ژوور</h3>
+            <span id="currentRoomBadge" class="text-[11px] text-emerald-400 font-bold">پەخشی دەنگی زیندوو چالاکە</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="roomMicToggleBtn" onclick="toggleRoomMicrophone()" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-500 text-[#050b18] shadow-lg transition">🎙️ مایک کراوەیە</button>
+          <button id="roomSpeakerToggleBtn" onclick="toggleRoomSpeaker()" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#15284d] text-white border border-yellow-500/30">🔊 دەنگ</button>
+          <button onclick="leaveVoiceRoom()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">دەرچوون</button>
+        </div>
+      </div>
+
+      <!-- Seats / Speakers Grid -->
+      <div class="royal-card rounded-3xl p-6">
+        <h4 class="text-xs font-extrabold text-yellow-300 mb-4">👥 ئەندامانی ناو ژوورەکە (ئەوەی قسە دەکات بازنەی سەوزی دەردەکەوێت):</h4>
+        <div id="roomSeatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+      </div>
+
+      <!-- Room Live Text Chat -->
+      <div class="royal-card rounded-3xl p-5 space-y-3">
+        <div id="roomChatMessages" class="h-44 overflow-y-auto space-y-2 p-3 rounded-2xl bg-[#060e1f] border border-yellow-500/15 text-xs"></div>
+        <div class="flex gap-2">
+          <input id="roomChatInput" type="text" onkeydown="if(event.key==='Enter') sendRoomChatMessage()" placeholder="نامەیەک بنووسە بۆ ناو ژوورەکە..." class="flex-1 px-4 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none" />
+          <button onclick="sendRoomChatMessage()" class="gold-btn px-5 py-2.5 rounded-xl text-xs">ناردن</button>
+        </div>
+      </div>
+    </div>
+    <div id="remoteAudiosContainer" class="hidden"></div>
+  </section>
+  <!-- VIEW 4: FRIENDS -->
+  <section id="view-friends" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-5 space-y-4">
+        <div class="royal-card rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-slate-400">ناوی بەکارهێنەری تۆ (بۆ زیادکردن):</div>
+            <div id="myFullIdDisplay" class="text-sm font-mono font-extrabold text-yellow-300 mt-0.5">---</div>
+          </div>
+          <button onclick="copyMyPlayerId()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-500/20 text-yellow-300">کۆپیکردن</button>
+        </div>
+        <div class="royal-card rounded-2xl p-4 space-y-3">
+          <h3 class="text-sm font-extrabold text-white">🔍 گەڕان و ناردنی داواکاری</h3>
+          <input id="friendSearchInput" type="text" oninput="searchPlayersForFriend()" placeholder="ناوی یاریزان یان Username بنووسە..." class="w-full bg-[#091326] border border-yellow-500/25 rounded-xl px-3 py-2 text-xs text-white" />
+          <div id="friendSearchResults" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+        </div>
+        <div id="incomingRequestsCard" class="hidden royal-card rounded-2xl p-4 space-y-3 border border-emerald-500/40">
+          <h3 class="text-sm font-extrabold text-emerald-400">📩 داواکارییە هاتووەکان</h3>
+          <div id="incomingRequestsList" class="space-y-2"></div>
+        </div>
+        <div class="royal-card rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between"><h3 class="text-sm font-extrabold text-yellow-300">👥 لیستی هاوڕێکانم</h3><span id="friendsCountLabel" class="text-xs text-slate-400">٠</span></div>
+          <div id="friendsListContainer" class="space-y-2 max-h-72 overflow-y-auto"><div class="text-xs text-slate-400 text-center py-6">هیچ هاوڕێیەکت نییە.</div></div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 royal-card rounded-3xl flex flex-col h-[540px] overflow-hidden">
+        <div id="privateChatHeader" class="p-4 border-b border-yellow-500/20 bg-[#0b1730] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="chatFriendAvatar" class="w-10 h-10 rounded-xl bg-[#16274b] text-yellow-300 font-extrabold flex items-center justify-center text-base overflow-hidden">💬</div>
+            <div>
+              <div id="chatFriendName" class="text-sm font-extrabold text-white">چاتی تایبەت</div>
+              <div id="chatFriendStatus" class="text-[11px] text-slate-400">هاوڕێیەک هەڵبژێرە</div>
+            </div>
+          </div>
+          <div id="challengeButtonsGroup" class="hidden flex gap-1.5">
+            <button onclick="sendChallengeToActiveFriend('chess')" class="gold-btn px-3 py-1.5 rounded-xl text-xs">♔ شەتڕەنج</button>
+            <button onclick="sendChallengeToActiveFriend('domino')" class="gold-btn px-3 py-1.5 rounded-xl text-xs">🁣 دۆمینە</button>
+          </div>
+        </div>
+        <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-2.5 bg-[#070f20]/70">
+          <div class="h-full flex items-center justify-center text-center text-slate-400 text-xs">هاوڕێیەک هەڵبژێرە بۆ گفتوگۆ یان یاری.</div>
+        </div>
+        <form id="privateChatForm" onsubmit="submitPrivateChat(event)" class="hidden p-3 bg-[#0b1730] border-t border-yellow-500/20 flex gap-2">
+          <input id="privateChatInput" type="text" placeholder="نامەکەت بنووسە..." class="flex-1 bg-[#091326] border border-yellow-500/25 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+          <button type="submit" class="gold-btn px-5 py-2.5 rounded-xl text-xs">ناردن</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 5: LEADERBOARD -->
+<section id="view-leaderboard" class="hidden max-w-4xl mx-auto px-4 pt-3 pb-24 space-y-4">    <div class="text-center space-y-2">
+      <h2 class="text-3xl font-extrabold gold-text">🏆 ڕیزبەندی پاڵەوانانی YariKurdi</h2>
+      <p class="text-xs text-slate-400">بەپێی سیستەمی Elo</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-2 bg-[#0a1428] p-2 rounded-2xl border border-yellow-500/25">
+      <button onclick="loadLeaderboard('chess')" id="lb-tab-chess" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18]">♔ شەتڕەنج</button>
+      <button onclick="loadLeaderboard('domino')" id="lb-tab-domino" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold text-slate-300">🁣 دۆمینە</button>
+      <button onclick="loadLeaderboard('overall')" id="lb-tab-overall" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold text-yellow-300">👑 گشتی</button>
+    </div>
+    <div class="royal-card rounded-3xl overflow-hidden">
+      <div class="p-4 border-b border-yellow-500/20 flex items-center justify-between bg-[#0c1830]">
+        <span id="lbCurrentTitle" class="text-sm font-extrabold text-yellow-300">ڕیزبەندی</span>
+      </div>
+<div id="leaderboardList" class="divide-y divide-slate-800/80 max-h-[50vh] overflow-y-auto overscroll-contain pb-6" style="-webkit-overflow-scrolling: touch;">        <div class="p-8 text-center text-sm text-slate-400">داتاکان دەهێنرێن...</div>
+    </div>
+  </section>
+
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="royal-card max-w-sm w-full rounded-3xl p-6 text-center space-y-5 border-2 border-yellow-400">
+      <div id="modalIcon" class="text-5xl">🏆</div>
+      <div class="space-y-1">
+        <h3 id="modalTitle" class="text-2xl font-extrabold gold-text">سەرکەوتن!</h3>
+        <p id="modalSubtitle" class="text-xs text-slate-300">یارییەکەت بردەوە</p>
+      </div>
+      <div id="eloChangeBox" class="bg-[#091326] p-3 rounded-2xl border border-yellow-500/30">
+        <div class="text-xs text-slate-400">گۆڕانکاری خاڵی Elo:</div>
+        <div id="eloChangeText" class="text-xl font-extrabold text-emerald-400 mt-1">1200</div>
+      </div>
+      <button onclick="closeGameOverModal()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕانەوە</button>
+    </div>
+  </div>
+
+<script>
+  let myFriendsMap = {}, incomingRequestsMap = {}, activeChatFriendId = null, activePrivateChatRef = null, pendingChallengeData = null;
+ const firebaseConfig = {
+    apiKey: "AIzaSyDdqs1jA9TOwO1QGxzru9YXCMWVAEP-u0E",
+    authDomain: "yarikurdi-dc836.firebaseapp.com",
+    databaseURL: "https://yarikurdi-dc836-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "yarikurdi-dc836",
+    storageBucket: "yarikurdi-dc836.firebasestorage.app",
+    messagingSenderId: "1098103715400",
+    appId: "1:1098103715400:web:cffd2b6c3a5401c4624a7d"
   };
-}
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
 
-class RoyalKonkanScene extends Phaser.Scene {
-  constructor() {
-    super({ key: 'RoyalKonkanScene' });
-    this.meldZones = [];
-    this.discardZone = null;
-    this.steamParticles = [];
-    this.magicMotes = [];
+  function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => {
+        const user = result.user;
+        const uid = 'g_' + user.uid;
+        db.ref('players/' + uid).once('value', snap => {
+          if (snap.exists()) {
+            completeAuthSession(uid, snap.val());
+          } else {
+            const emailPrefix = (user.email || 'user').split('@')[0].replace(/[^a-z0-9_]/gi, '').toLowerCase();
+            const newProfile = {
+              username: emailPrefix + '_' + uid.slice(-4),
+              name: user.displayName || emailPrefix,
+              email: user.email || '',
+              password: '',
+              avatar: user.photoURL || '',
+              elo: { ...DEFAULT_ELOS },
+              wins: { ...DEFAULT_STATS },
+              games: { ...DEFAULT_STATS },
+              createdAt: Date.now()
+            };
+            db.ref('players/' + uid).set(newProfile).then(() => {
+              completeAuthSession(uid, newProfile);
+            });
+          }
+        });
+      })
+      .catch(err => {
+        showAuthError("هەڵە لە چوونەژوورەوەی Google: " + err.message);
+      });
   }
 
-  create() {
-    konkanSceneRef = this;
-    const w = this.scale.width;
-    const h = this.scale.height;
+  // ==================== ACCOUNT, AUTH & AVATAR ENGINE ====================
+  let playerId = localStorage.getItem('yk_auth_uid') || null;
+  let playerName = '';
+  const OWNER_EMAIL = 'ah6753038@gmail.com';
 
-    // دروستکردنی پاشبنەمای چایخانەی فۆلکلۆری و ئاڵای کوردستان بە دیقەی 4K
-    this.bakeTeahouseTableTexture(w, h);
-    this.add.image(w / 2, h / 2, 'yk_konkan_teahouse_bg').setDisplaySize(w, h);
-
-    // دروستکردنی نەخشی پشتی کارتی شاهانە
-    this.bakeRoyalCardBackTexture();
-
-    // تەنۆلکەی سحراویی بریسکە و هەڵمی چا
-    this.ambientLayer = this.add.container(0, 0);
-    this.tableLayer = this.add.container(0, 0);
-    this.meldsLayer = this.add.container(0, 0);
-    this.handLayer = this.add.container(0, 0);
-    this.fxLayer = this.add.container(0, 0);
-
-    this.initMagicalAmbientFX(w, h);
-    this.renderAll();
-  }
-
-  // کێشانی مێزی چایخانەی کوردی بە Canvas 2D (دارگوێز، جاجم، مەدالیای ئاڵای کوردستان، چا و قۆری)
-  bakeTeahouseTableTexture(w, h) {
-    const key = 'yk_konkan_teahouse_bg';
-    if (this.textures.exists(key)) this.textures.remove(key);
-
-    const canvasTex = this.textures.createCanvas(key, w, h);
-    const ctx = canvasTex.getContext();
-    const S = KONK_DPR;
-
-    // ١. تەختەی دارگوێزی چایخانەی کوردی (Walnut Wood Planks)
-    const woodGrad = ctx.createLinearGradient(0, 0, 0, h);
-    woodGrad.addColorStop(0, '#3b1d0d');
-    woodGrad.addColorStop(0.5, '#261107');
-    woodGrad.addColorStop(1, '#170903');
-    ctx.fillStyle = woodGrad;
-    ctx.fillRect(0, 0, w, h);
-
-    // هێڵی تەختە دارینەکان و دەمارەکانی دار
-    const plankCount = 10;
-    const pw = w / plankCount;
-    for (let i = 0; i < plankCount; i++) {
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 190, 120, 0.035)' : 'rgba(0, 0, 0, 0.14)';
-      ctx.fillRect(i * pw, 0, pw - 1.5 * S, h);
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
-      ctx.lineWidth = 1.5 * S;
-      ctx.beginPath();
-      ctx.moveTo(i * pw, 0);
-      ctx.lineTo(i * pw, h);
-      ctx.stroke();
+    function isOwnerEmail(email) {
+      return !!(email && email.trim().toLowerCase() === OWNER_EMAIL);
     }
 
-    // ٢. چوارچێوەی نەخشی جاجم و فەرشی فۆلکلۆری کوردی لە دەوری مێزەکە
-    const pad = 10 * S;
-    const innerW = w - pad * 2;
-    const innerH = h - pad * 2;
+    function getVerifiedBadgeHTML(email) {
+      if (!isOwnerEmail(email)) return '';
+      return `<span title="خاوەنی پلاتفۆرم • Verified Owner" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[10px] font-black shadow-md shadow-sky-500/40 mr-1 align-middle">✓</span>`;
+    }
+  let playerAvatarData = ''; // Base64 compressed image or empty
+  let pendingRegAvatar = '';
+  let pendingEditAvatar = null;
 
-    ctx.save();
-    this.roundRectPath(ctx, pad, pad, innerW, innerH, 22 * S);
-    ctx.clip();
+  const DEFAULT_ELOS = { chess: 1200, domino: 1200, konkan: 1200, backgammon: 1200, dama: 1200, deza: 1200 };
+  const DEFAULT_STATS = { chess: 0, domino: 0, konkan: 0, backgammon: 0, dama: 0, deza: 0 };
+// ==================== LEVEL & XP ENGINE (2-YEAR CURVE TO LVL 100) ====================
+  function getLevelInfo(totalXp = 0) {
+    let xp = Math.max(0, Number(totalXp) || 0);
+    let level = 1;
+    while (level < 100) {
+      let req = level * level * 25;
+      if (xp >= req) {
+        xp -= req;
+        level++;
+      } else {
+        break;
+      }
+    }
+    let nextReq = level < 100 ? (level * level * 25) : 0;
+    let percent = level >= 100 ? 100 : Math.min(100, Math.round((xp / nextReq) * 100));
 
-    // مەخمەڵی شاهانەی ناوەوەی مێز (تێکەڵەی سووری مەخمەڵی/ئەزمڕی چایخانەی شاهانە)
-    const feltGrad = ctx.createRadialGradient(w / 2, h * 0.36, 20 * S, w / 2, h * 0.45, Math.max(w, h) * 0.65);
-    feltGrad.addColorStop(0, '#0f5c43');
-    feltGrad.addColorStop(0.52, '#093b2c');
-    feltGrad.addColorStop(0.88, '#06261d');
-    feltGrad.addColorStop(1, '#041711');
-    ctx.fillStyle = feltGrad;
-    ctx.fillRect(pad, pad, innerW, innerH);
-
-    // نەخشی شەبەکەی ناسک لەسەر مەخمەڵەکە بۆ هەستی قووڵایی
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.05)';
-    ctx.lineWidth = 1 * S;
-    const step = 28 * S;
-    for (let x = -h; x < w + h; x += step) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x + h, h);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x + h, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
+    let title = 'سەرەتایی';
+    let badgeClass = 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    if (level >= 100) {
+      title = 'ئەفسانەی YariKurdi 👑';
+      badgeClass = 'bg-gradient-to-r from-red-600/30 to-yellow-500/30 text-yellow-300 border-yellow-400 shadow-md';
+    } else if (level >= 75) {
+      title = 'مامۆستا';
+      badgeClass = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+    } else if (level >= 50) {
+      title = 'پێشەنگ';
+      badgeClass = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+    } else if (level >= 25) {
+      title = 'شارەزا';
+      badgeClass = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
+    } else if (level >= 10) {
+      title = 'جەنگاوەر';
+      badgeClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
     }
 
-    // ٣. ڕووناکیی فانۆسی زێڕینی چایخانە لە سەرەوە
-    const lanternGlow = ctx.createRadialGradient(w / 2, h * 0.14, 10 * S, w / 2, h * 0.25, w * 0.55);
-    lanternGlow.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
-    lanternGlow.addColorStop(0.5, 'rgba(245, 158, 11, 0.07)');
-    lanternGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = lanternGlow;
-    ctx.fillRect(pad, pad, innerW, innerH);
+    return { level, currentXp: xp, nextReq, percent, title, badgeClass, isMax: level >= 100 };
+  }
 
-    // ٤. پۆرترێت و مەدالیای شاهانەی ئاڵای کوردستان لە ناوەڕاستی مێزەکە
-    const cx = w / 2;
-    const cy = h * 0.43;
-    const medR = Math.min(w * 0.17, 74 * S);
+  function awardGameXp(resultType) {
+    if (!playerId || playerId.startsWith('guest_')) return 0;
+    const gain = resultType === 'win' ? 50 : (resultType === 'draw' ? 25 : 15);
+    const oldInfo = getLevelInfo(playerProfile.xp || 0);
+    const newTotalXp = (playerProfile.xp || 0) + gain;
+    playerProfile.xp = newTotalXp;
+    const newInfo = getLevelInfo(newTotalXp);
 
-    // هالەی زێڕینی دەوری مەدالیاکە
-    const halo = ctx.createRadialGradient(cx, cy, medR * 0.6, cx, cy, medR * 1.45);
-    halo.addColorStop(0, 'rgba(250, 204, 21, 0.34)');
-    halo.addColorStop(1, 'rgba(250, 204, 21, 0)');
-    ctx.fillStyle = halo;
-    ctx.beginPath();
-    ctx.arc(cx, cy, medR * 1.45, 0, Math.PI * 2);
-    ctx.fill();
+    db.ref('players/' + playerId + '/xp').set(newTotalXp);
+    updateLevelUI();
 
-    // کێشانی ئاڵای کوردستان لە ناو مەدالیا بازنەییەکەدا (Portrait Crest)
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, medR, 0, Math.PI * 2);
-    ctx.clip();
-
-    const fTop = cy - medR;
-    const fBand = (medR * 2) / 3;
-    ctx.fillStyle = 'rgba(220, 38, 38, 0.52)'; // سوور
-    ctx.fillRect(cx - medR, fTop, medR * 2, fBand);
-    ctx.fillStyle = 'rgba(255, 253, 245, 0.45)'; // سپی
-    ctx.fillRect(cx - medR, fTop + fBand, medR * 2, fBand);
-    ctx.fillStyle = 'rgba(21, 128, 61, 0.52)'; // سەوز
-    ctx.fillRect(cx - medR, fTop + fBand * 2, medR * 2, fBand);
-
-    // خۆری کوردستان (٢١ تیشک) بە درەوشانەوەی زێڕین
-    const innerSunR = medR * 0.25;
-    const outerSunR = medR * 0.48;
-    const sunGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, outerSunR);
-    sunGrad.addColorStop(0, '#fef08a');
-    sunGrad.addColorStop(0.65, '#facc15');
-    sunGrad.addColorStop(1, '#d97706');
-    ctx.fillStyle = sunGrad;
-    ctx.beginPath();
-    const rays = 21;
-    for (let i = 0; i < rays * 2; i++) {
-      const r = i % 2 === 0 ? outerSunR : innerSunR;
-      const a = (i * Math.PI) / rays - Math.PI / 2;
-      const px = cx + Math.cos(a) * r;
-      const py = cy + Math.sin(a) * r;
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
+    if (newInfo.level > oldInfo.level) {
+      setTimeout(() => {
+        alert(`🎉 پیرۆزە! ئاستت بەرزبووەوە بۆ Level ${newInfo.level} (${newInfo.title})!`);
+      }, 600);
     }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+    return gain;
+  }
 
-    // چوارچێوەی زێڕینی دوو-هێڵی دەوری مەدالیای ئاڵای کوردستان
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
-    ctx.lineWidth = 2.6 * S;
-    ctx.beginPath();
-    ctx.arc(cx, cy, medR, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(254, 240, 138, 0.42)';
-    ctx.lineWidth = 1.2 * S;
-    ctx.setLineDash([5 * S, 4 * S]);
-    ctx.beginPath();
-    ctx.arc(cx, cy, medR + 7 * S, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // ٥. نەخشی جاجمی کوردی لە سەرەوە و خوارەوەی مێزەکە
-    const rugColors = ['#dc2626', '#facc15', '#15803d', '#fffbeb'];
-    const segW = 16 * S;
-    for (let x = pad + 18 * S; x < w - pad - 24 * S; x += segW) {
-      const col = rugColors[Math.floor(x / segW) % rugColors.length];
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.85;
-      ctx.fillRect(x, pad + 3 * S, segW - 2 * S, 4.5 * S);
-      ctx.fillRect(x, h - pad - 7.5 * S, segW - 2 * S, 4.5 * S);
+  function updateLevelUI() {
+    const info = getLevelInfo(playerProfile.xp || 0);
+    const headerBadge = document.getElementById('headerLevelBadge');
+    if (headerBadge) {
+      headerBadge.textContent = `Lvl ${info.level} • ${info.title}`;
+      headerBadge.className = `text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${info.badgeClass}`;
     }
-    ctx.globalAlpha = 1;
+    const pTitle = document.getElementById('profileLevelTitle');
+    const pText = document.getElementById('profileXpText');
+    const pBar = document.getElementById('profileXpBar');
+    if (pTitle) pTitle.textContent = `Lvl ${info.level} • ${info.title}`;
+    if (pText) pText.textContent = info.isMax ? 'MAX LEVEL (100)' : `${info.currentXp.toLocaleString()} / ${info.nextReq.toLocaleString()} XP`;
+    if (pBar) pBar.style.width = info.percent + '%';
+  }
+  let playerProfile = {
+    username: '',
+    name: '',
+    password: '',
+    avatar: '',
+    elo: { ...DEFAULT_ELOS },
+    wins: { ...DEFAULT_STATS },
+    games: { ...DEFAULT_STATS },
+    xp: 0
+  };
 
-    // ٦. ئیستکانە چای کەمەرباریک و قۆریی چایخانە لە گۆشەکاندا
-    this.drawKurdishTeacup(ctx, w - 42 * S, 46 * S, S);
-    this.drawCopperTeapot(ctx, 44 * S, 46 * S, S);
+  let allPlayersCache = {}, onlineUsersMap = {};
 
-    // ٧. ناوچەی تایبەتی دەستی یاریزان لە خوارەوە (شووشەی تاریکی شاهانە)
-    const trayY = h - 148 * S;
-    const trayH = 132 * S;
-    const trayGrad = ctx.createLinearGradient(0, trayY, 0, h);
-    trayGrad.addColorStop(0, 'rgba(20, 9, 4, 0.72)');
-    trayGrad.addColorStop(1, 'rgba(10, 4, 2, 0.94)');
-    ctx.fillStyle = trayGrad;
-    this.roundRectPath(ctx, pad + 8 * S, trayY, innerW - 16 * S, trayH, 18 * S);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.45)';
-    ctx.lineWidth = 1.6 * S;
-    ctx.stroke();
+  function switchAuthTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const regForm = document.getElementById('registerForm');
+    const tabLogin = document.getElementById('tab-login');
+    const tabReg = document.getElementById('tab-register');
+    document.getElementById('authErrorBox').classList.add('hidden');
 
-    ctx.restore();
-
-    // چوارچێوەی زێڕینی دەرەوەی مێزەکە
-    const borderGrad = ctx.createLinearGradient(0, 0, w, h);
-    borderGrad.addColorStop(0, '#fde047');
-    borderGrad.addColorStop(0.5, '#d97706');
-    borderGrad.addColorStop(1, '#fef08a');
-    ctx.strokeStyle = borderGrad;
-    ctx.lineWidth = 3.2 * S;
-    this.roundRectPath(ctx, pad, pad, innerW, innerH, 22 * S);
-    ctx.stroke();
-
-    canvasTex.refresh();
+    if (tab === 'login') {
+      loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
+      tabLogin.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition';
+      tabReg.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+    } else {
+      regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
+      tabReg.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition';
+      tabLogin.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+    }
   }
 
-  drawKurdishTeacup(ctx, x, y, S) {
-    ctx.save();
-    // سێبەر
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.beginPath();
-    ctx.ellipse(x + 2 * S, y + 12 * S, 19 * S, 7 * S, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // ژێرپیاڵەی سپی و سوور (فۆلکلۆری چایخانە)
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath();
-    ctx.ellipse(x, y + 10 * S, 18 * S, 6.5 * S, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 1.5 * S;
-    ctx.beginPath();
-    ctx.ellipse(x, y + 10 * S, 14 * S, 4.5 * S, 0, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // چای ڕەشی گەرمی ناو ئیستکانە کەمەرباریکەکە
-    const teaGrad = ctx.createLinearGradient(x - 7 * S, y - 10 * S, x + 7 * S, y + 8 * S);
-    teaGrad.addColorStop(0, '#b91c1c');
-    teaGrad.addColorStop(0.5, '#7c2d12');
-    teaGrad.addColorStop(1, '#431407');
-    ctx.fillStyle = teaGrad;
-    ctx.beginPath();
-    ctx.moveTo(x - 7.5 * S, y - 9 * S);
-    ctx.quadraticCurveTo(x - 4.5 * S, y - 1 * S, x - 8 * S, y + 8 * S);
-    ctx.lineTo(x + 8 * S, y + 8 * S);
-    ctx.quadraticCurveTo(x + 4.5 * S, y - 1 * S, x + 7.5 * S, y - 9 * S);
-    ctx.closePath();
-    ctx.fill();
-
-    // بریقەی شووشەی ئیستکانەکە
-    ctx.strokeStyle = 'rgba(255,255,255,0.82)';
-    ctx.lineWidth = 1.4 * S;
-    ctx.stroke();
-
-    // کڵۆ قەندی سپی لە تەنیشت ئیستکانەکە
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x - 13 * S, y + 7 * S, 4.5 * S, 4 * S);
-    ctx.restore();
+  function showAuthError(msg) {
+    const box = document.getElementById('authErrorBox');
+    box.textContent = msg;
+    box.classList.remove('hidden');
   }
 
-  drawCopperTeapot(ctx, x, y, S) {
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.beginPath();
-    ctx.ellipse(x + 2 * S, y + 12 * S, 16 * S, 6 * S, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    const potGrad = ctx.createRadialGradient(x - 4 * S, y - 2 * S, 2 * S, x, y + 2 * S, 16 * S);
-    potGrad.addColorStop(0, '#fde68a');
-    potGrad.addColorStop(0.45, '#d97706');
-    potGrad.addColorStop(1, '#78350f');
-    ctx.fillStyle = potGrad;
-    ctx.beginPath();
-    ctx.arc(x, y + 2 * S, 13 * S, 0, Math.PI * 2);
-    ctx.fill();
-
-    // سەرقاپ و دەسک
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath();
-    ctx.arc(x, y - 11 * S, 4 * S, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 2.2 * S;
-    ctx.beginPath();
-    ctx.arc(x - 13 * S, y + 1 * S, 6 * S, Math.PI * 0.4, Math.PI * 1.6);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(x + 11 * S, y + 2 * S);
-    ctx.quadraticCurveTo(x + 19 * S, y - 4 * S, x + 20 * S, y - 10 * S);
-    ctx.stroke();
-    ctx.restore();
+  // Compress uploaded image to small 120x120 JPEG Base64 for instant Firebase sync
+  function previewAvatarFile(inputEl, previewId, targetType) {
+    const file = inputEl.files && inputEl.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const size = 120;
+        canvas.width = size; canvas.height = size;
+        const ctx2 = canvas.getContext('2d');
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2;
+        const sy = (img.height - minSide) / 2;
+        ctx2.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.72);
+        document.getElementById(previewId).innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover" />`;
+        if (targetType === 'reg') pendingRegAvatar = compressedBase64;
+        else pendingEditAvatar = compressedBase64;
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
-  bakeRoyalCardBackTexture() {
-    const key = 'yk_royal_card_back';
-    if (this.textures.exists(key)) return;
-    const S = KONK_DPR;
-    const cw = Math.round(70 * S);
-    const ch = Math.round(102 * S);
-    const cTex = this.textures.createCanvas(key, cw, ch);
-    const ctx = cTex.getContext();
-
-    // لێواری سپی عاجی
-    this.roundRectPath(ctx, 1 * S, 1 * S, cw - 2 * S, ch - 2 * S, 9 * S);
-    ctx.fillStyle = '#fffdf7';
-    ctx.fill();
-
-    // ناوەوەی سووری شاهانەی فەرشی کوردی
-    const g = ctx.createLinearGradient(0, 0, cw, ch);
-    g.addColorStop(0, '#991b1b');
-    g.addColorStop(0.5, '#7f1d1d');
-    g.addColorStop(1, '#450a0a');
-    this.roundRectPath(ctx, 5 * S, 5 * S, cw - 10 * S, ch - 10 * S, 6 * S);
-    ctx.fillStyle = g;
-    ctx.fill();
-
-    ctx.strokeStyle = '#facc15';
-    ctx.lineWidth = 1.6 * S;
-    ctx.stroke();
-
-    // نەخشی ئەندازەیی و خۆری زێڕین لە ناوەڕاستی پشتی کارتەکە
-    const cx = cw / 2;
-    const cy = ch / 2;
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
-    ctx.lineWidth = 1.2 * S;
-    ctx.beginPath();
-    ctx.moveTo(cx, 13 * S);
-    ctx.lineTo(cw - 13 * S, cy);
-    ctx.lineTo(cx, ch - 13 * S);
-    ctx.lineTo(13 * S, cy);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.fillStyle = '#facc15';
-    ctx.beginPath();
-    ctx.arc(cx, cy, 9 * S, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#7f1d1d';
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4.5 * S, 0, Math.PI * 2);
-    ctx.fill();
-
-    cTex.refresh();
+  function renderAvatarContent(elId, avatarUrl, fallbackLetter) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (avatarUrl && (avatarUrl.startsWith('data:image') || avatarUrl.startsWith('http'))) {
+      el.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover" />`;
+    } else {
+      el.textContent = (fallbackLetter || 'ی').charAt(0);
+    }
   }
 
-  roundRectPath(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
+  function getAvatarBadgeHTML(avatarUrl, name, sizeClass = 'w-9 h-9') {
+    if (avatarUrl && (avatarUrl.startsWith('data:image') || avatarUrl.startsWith('http'))) {
+      return `<div class="${sizeClass} rounded-xl overflow-hidden border border-yellow-500/40 shrink-0"><img src="${avatarUrl}" class="w-full h-full object-cover" /></div>`;
+    }
+    return `<div class="${sizeClass} rounded-xl bg-[#16274b] text-yellow-300 font-extrabold flex items-center justify-center text-sm shrink-0">${(name || 'ی').charAt(0)}</div>`;
   }
 
-  // هەڵمی گەرمی چا و بریسکەی زێڕینی سحراوی
-  initMagicalAmbientFX(w, h) {
-    const S = KONK_DPR;
-    // هەڵمی چایخانە لەسەر ئیستکانەکە
-    this.time.addEvent({
-      delay: 650,
-      loop: true,
-      callback: () => {
-        if (!this.scene || !this.scene.isActive()) return;
-        const puff = this.add.circle(w - 42 * S + Phaser.Math.Between(-4, 4) * S, 32 * S, 4.5 * S, 0xffffff, 0.24);
-        this.ambientLayer.add(puff);
-        this.tweens.add({
-          targets: puff,
-          y: puff.y - 26 * S,
-          x: puff.x + Phaser.Math.Between(-8, 8) * S,
-          scale: 2.2,
-          alpha: 0,
-          duration: 1800,
-          ease: 'Sine.easeOut',
-          onComplete: () => puff.destroy()
+  function handleRegister(e) {
+    e.preventDefault();
+    const displayName = document.getElementById('regDisplayName').value.trim();
+    const rawUser = document.getElementById('regUsername').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const pass = document.getElementById('regPassword').value;
+
+    if (rawUser.length < 3) { showAuthError("ناوی بەکارهێنەر دەبێت لانیکەم ٣ پیت یان ژمارەی ئینگلیزی بێت"); return; }
+
+    const uid = 'u_' + rawUser;
+    db.ref('players/' + uid).once('value', snap => {
+      if (snap.exists()) {
+        showAuthError("ئەم ناوی بەکارهێنەرە پێشتر تۆمار کراوە، ناوێکی تر هەڵبژێرە!");
+      } else {
+        const newProfile = {
+          username: rawUser,
+          name: displayName,
+          password: btoa(unescape(encodeURIComponent(pass))),
+          avatar: pendingRegAvatar || '',
+          elo: { ...DEFAULT_ELOS },
+          wins: { ...DEFAULT_STATS },
+          games: { ...DEFAULT_STATS },
+          createdAt: Date.now()
+        };
+        db.ref('players/' + uid).set(newProfile).then(() => {
+          completeAuthSession(uid, newProfile);
         });
       }
     });
-
-    // تەنۆلکە زێڕینە سحراوییەکان لە ناو ڕووناکیی چایخانەکەدا
-    for (let i = 0; i < 14; i++) {
-      const mote = this.add.circle(
-        Phaser.Math.Between(30 * S, w - 30 * S),
-        Phaser.Math.Between(25 * S, h - 160 * S),
-        Phaser.Math.FloatBetween(1.4, 2.8) * S,
-        0xfde047,
-        Phaser.Math.FloatBetween(0.15, 0.45)
-      );
-      this.ambientLayer.add(mote);
-      this.tweens.add({
-        targets: mote,
-        y: mote.y - Phaser.Math.Between(12, 28) * S,
-        alpha: { from: 0.1, to: 0.55 },
-        duration: Phaser.Math.Between(2400, 4200),
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
-    }
   }
 
-  spawnGoldBurst(x, y) {
-    const S = KONK_DPR;
-    for (let i = 0; i < 14; i++) {
-      const p = this.add.circle(x, y, Phaser.Math.FloatBetween(2, 4) * S, i % 2 === 0 ? 0xfacc15 : 0xffffff, 1);
-      this.fxLayer.add(p);
-      const ang = Phaser.Math.FloatBetween(0, Math.PI * 2);
-      const dist = Phaser.Math.FloatBetween(24, 65) * S;
-      this.tweens.add({
-        targets: p,
-        x: x + Math.cos(ang) * dist,
-        y: y + Math.sin(ang) * dist,
-        alpha: 0,
-        scale: 0.2,
-        duration: 550,
-        ease: 'Cubic.easeOut',
-        onComplete: () => p.destroy()
-      });
-    }
-  }
+  function handleLogin(e) {
+    e.preventDefault();
+    const rawUser = document.getElementById('loginUsername').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const pass = document.getElementById('loginPassword').value;
+    const uid = 'u_' + rawUser;
 
-  // دروستکردنی کارتی کۆنکانی شاهانە بە دیقەی 4K و بریقەی زێڕین
-  createPlayingCard(card, scale = 1, isSelected = false, isFaceDown = false) {
-    const S = KONK_DPR * scale;
-    const cw = 70 * S;
-    const ch = 102 * S;
-    const rad = 9 * S;
-    const container = this.add.container(0, 0);
-
-    if (isFaceDown) {
-      const shadow = this.add.graphics();
-      shadow.fillStyle(0x000000, 0.55);
-      shadow.fillRoundedRect(-cw / 2 + 3 * S, -ch / 2 + 5 * S, cw, ch, rad);
-      container.add(shadow);
-
-      const backImg = this.add.image(0, 0, 'yk_royal_card_back').setDisplaySize(cw, ch);
-      container.add(backImg);
-
-      if (isSelected) {
-        const glow = this.add.graphics();
-        glow.lineStyle(3 * S, 0xfacc15, 1);
-        glow.strokeRoundedRect(-cw / 2, -ch / 2, cw, ch, rad);
-        container.add(glow);
+    db.ref('players/' + uid).once('value', snap => {
+      if (!snap.exists()) {
+        showAuthError("هیچ ئەکاونتێک بەم ناوی بەکارهێنەرە نەدۆزرایەوە!");
+        return;
       }
-
-      container.setSize(cw, ch);
-      return container;
-    }
-
-    const gfx = this.add.graphics();
-
-    // هالەی زێڕین بۆ کارتی هەڵبژێردراو
-    if (isSelected) {
-      gfx.fillStyle(0xfacc15, 0.35);
-      gfx.fillRoundedRect(-cw / 2 - 4 * S, -ch / 2 - 4 * S, cw + 8 * S, ch + 8 * S, rad + 3 * S);
-    }
-
-    // سێبەری قووڵ
-    gfx.fillStyle(0x000000, 0.52);
-    gfx.fillRoundedRect(-cw / 2 + 3 * S, -ch / 2 + 5.5 * S, cw, ch, rad);
-
-    // ڕووی عاجیی شاهانە
-    gfx.fillStyle(0xfffdf9, 1);
-    gfx.fillRoundedRect(-cw / 2, -ch / 2, cw, ch, rad);
-
-    // چوارچێوەی ناسکی ناوەوەی کارت
-    gfx.lineStyle(1 * S, 0xe2e8f0, 0.9);
-    gfx.strokeRoundedRect(-cw / 2 + 4 * S, -ch / 2 + 4 * S, cw - 8 * S, ch - 8 * S, rad * 0.65);
-
-    if (isSelected) {
-      gfx.lineStyle(3.2 * S, 0xf59e0b, 1);
-    } else {
-      gfx.lineStyle(1.6 * S, 0xcbd5e1, 1);
-    }
-    gfx.strokeRoundedRect(-cw / 2, -ch / 2, cw, ch, rad);
-    container.add(gfx);
-
-    const suitIcons = { S: '♠', H: '♥', D: '♦', C: '♣' };
-    const rankLabels = { 1: 'A', 11: 'J', 12: 'Q', 13: 'K' };
-    const isRed = card.s === 'H' || card.s === 'D';
-    const hexColor = isRed ? '#dc2626' : '#0f172a';
-    const rTxt = rankLabels[card.r] || String(card.r);
-    const sTxt = suitIcons[card.s];
-    const isRoyal = card.r === 1 || card.r >= 11;
-
-    // تاجی زێڕین لە پشت هێمای ناوەڕاستی کارتە شاهانەکان (A, J, Q, K)
-    if (isRoyal) {
-      const badge = this.add.graphics();
-      badge.fillStyle(isRed ? 0xfee2e2 : 0xf1f5f9, 0.9);
-      badge.fillCircle(0, 3 * S, 18 * S);
-      badge.lineStyle(1.5 * S, 0xd97706, 0.7);
-      badge.strokeCircle(0, 3 * S, 18 * S);
-      container.add(badge);
-    }
-
-    const topRank = this.add.text(-cw / 2 + 7 * S, -ch / 2 + 5 * S, rTxt, {
-      fontFamily: 'Georgia, serif',
-      fontSize: `${Math.round(16 * S)}px`,
-      fontStyle: 'bold',
-      color: hexColor
+      const data = snap.val();
+      const encodedInput = btoa(unescape(encodeURIComponent(pass)));
+      if (data.password !== encodedInput) {
+        showAuthError("وشەی نهێنی هەڵەیە!");
+        return;
+      }
+      completeAuthSession(uid, data);
     });
-    const topSuit = this.add.text(-cw / 2 + 7.5 * S, -ch / 2 + 22 * S, sTxt, {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: `${Math.round(14 * S)}px`,
-      color: hexColor
-    });
-
-    const centerSuit = this.add.text(0, 3 * S, isRoyal && card.r >= 11 ? `${rTxt}${sTxt}` : sTxt, {
-      fontFamily: 'Georgia, serif',
-      fontSize: `${Math.round((isRoyal && card.r >= 11 ? 22 : 34) * S)}px`,
-      fontStyle: 'bold',
-      color: hexColor
-    }).setOrigin(0.5);
-
-    const botRank = this.add.text(cw / 2 - 7 * S, ch / 2 - 5 * S, rTxt, {
-      fontFamily: 'Georgia, serif',
-      fontSize: `${Math.round(16 * S)}px`,
-      fontStyle: 'bold',
-      color: hexColor
-    }).setOrigin(0, 0).setRotation(Math.PI);
-
-    container.add([topRank, topSuit, centerSuit, botRank]);
-    container.setSize(cw, ch);
-    return container;
   }
 
-  // دروستکردنی کەپسوولی نووسینی زەق و ڕوون (هەرگیز کاڵ نابێت!)
-  createCrispPillLabel(x, y, text, accentColor = '#fef08a') {
-    const S = KONK_DPR;
-    const grp = this.add.container(x, y);
-    const txt = this.add.text(0, 0, text, {
-      fontFamily: 'Noto Kufi Arabic, sans-serif',
-      fontSize: `${Math.round(11.5 * S)}px`,
-      fontStyle: 'bold',
-      color: accentColor,
-      stroke: '#000000',
-      strokeThickness: Math.round(3 * S)
-    }).setOrigin(0.5);
+  function completeAuthSession(uid, data) {
+    playerId = uid;
+    localStorage.setItem('yk_auth_uid', uid);
+    playerProfile = {
+      username: data.username || uid.replace('u_', ''),
+      name: data.name || 'یاریزان',
+      password: data.password || '',
+      avatar: data.avatar || '',
+      elo: { ...DEFAULT_ELOS, ...(data.elo || {}) },
+      wins: { ...DEFAULT_STATS, ...(data.wins || {}) },
+      games: { ...DEFAULT_STATS, ...(data.games || {}) }
+    };
+    playerName = playerProfile.name;
+    playerAvatarData = playerProfile.avatar;
 
-    const bw = txt.width + 20 * S;
-    const bh = txt.height + 8 * S;
-    const bg = this.add.graphics();
-    bg.fillStyle(0x0c0704, 0.85);
-    bg.fillRoundedRect(-bw / 2, -bh / 2, bw, bh, bh / 2);
-    bg.lineStyle(1.3 * S, 0xf59e0b, 0.75);
-    bg.strokeRoundedRect(-bw / 2, -bh / 2, bw, bh, bh / 2);
-
-    grp.add([bg, txt]);
-    return grp;
+    document.getElementById('authModal').classList.add('hidden');
+    updateProfileUI();
+    const kLbl = document.getElementById('konkanMyEloLabel');
+    if (kLbl) kLbl.textContent = playerProfile.elo.konkan || 1200;
+    updateLevelUI();
+    initRealtimeListenersAfterLogin();
+    const splash = document.getElementById('royalSplashScreen');
+      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
   }
 
-  renderAll() {
-    if (!konkState) return;
-    const S = KONK_DPR;
-    const w = this.scale.width;
-    const h = this.scale.height;
+  function openEditProfileModal() {
+    pendingEditAvatar = null;
+    document.getElementById('editDisplayName').value = playerProfile.name;
+    document.getElementById('editNewPassword').value = '';
+    document.getElementById('editUsernameReadonly').textContent = playerProfile.username;
+    renderAvatarContent('editAvatarPreview', playerProfile.avatar, playerProfile.name);
+    updateLevelUI();
+    document.getElementById('editProfileModal').classList.remove('hidden');
+  }
 
-    this.tableLayer.removeAll(true);
-    this.meldsLayer.removeAll(true);
-    this.handLayer.removeAll(true);
-    this.meldZones = [];
+  function closeEditProfileModal() {
+    document.getElementById('editProfileModal').classList.add('hidden');
+  }
 
-    const myHand = konkMyRole === 'p1' ? konkState.p1Hand : konkState.p2Hand;
-    const isMyTurn = konkState.turn === konkMyRole;
-    const drawPhase = isMyTurn && konkState.phase === 'draw';
+  function saveProfileEdits(e) {
+    e.preventDefault();
+    const newName = document.getElementById('editDisplayName').value.trim();
+    const newPass = document.getElementById('editNewPassword').value;
+    if (newName.length < 2) return;
 
-    // ١. شوێنی Deck و Discard لە سەرەوەی مێزەکە
-    const topRowY = 74 * S;
-    const deckX = w / 2 - 66 * S;
-    const discardX = w / 2 + 66 * S;
+    const updates = { name: newName };
+    playerProfile.name = newName;
+    playerName = newName;
 
-    // کۆمەڵە کارتی ژێر Deck بۆ هەستی ٣ ڕەهەندی
-    for (let layer = 2; layer >= 1; layer--) {
-      const stackGhost = this.add.image(deckX - layer * 2 * S, topRowY + layer * 2 * S, 'yk_royal_card_back')
-        .setDisplaySize(70 * 0.9 * S, 102 * 0.9 * S)
-        .setAlpha(0.75);
-      this.tableLayer.add(stackGhost);
+    if (pendingEditAvatar !== null) {
+      updates.avatar = pendingEditAvatar;
+      playerProfile.avatar = pendingEditAvatar;
+      playerAvatarData = pendingEditAvatar;
+    }
+    if (newPass && newPass.length >= 4) {
+      const enc = btoa(unescape(encodeURIComponent(newPass)));
+      updates.password = enc;
+      playerProfile.password = enc;
     }
 
-    const deckCard = this.createPlayingCard(null, 0.9, drawPhase, true);
-    deckCard.setPosition(deckX, topRowY);
-    deckCard.setInteractive({ useHandCursor: true });
-    deckCard.on('pointerup', () => konkanDrawFromDeck());
+    db.ref('players/' + playerId).update(updates).then(() => {
+      db.ref('presence/' + playerId).update({ name: playerName });
+      updateProfileUI();
+      closeEditProfileModal();
+      playChessSound('msg');
+    });
+  }
 
-    if (drawPhase) {
-      this.tweens.add({
-        targets: deckCard,
-        scale: { from: 1, to: 1.04 },
-        duration: 700,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
+  function logoutAccount() {
+    if (playerId) db.ref('presence/' + playerId).remove();
+    localStorage.removeItem('yk_auth_uid');
+    location.reload();
+  }
+
+function updateProfileUI() {
+      const hName = document.getElementById('headerPlayerName');
+      if (hName) hName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
+
+      const hElo = document.getElementById('headerChessElo');
+      if (hElo) hElo.textContent = playerProfile.elo.chess;
+
+      const dElo = document.getElementById('dominoMyEloLabel');
+      if (dElo) dElo.textContent = playerProfile.elo.domino;
+
+      const fId = document.getElementById('myFullIdDisplay');
+      if (fId) fId.textContent = playerProfile.username;
+
+      renderAvatarContent('headerAvatar', playerAvatarData, playerName);
+
+      const sName = document.getElementById('selfName');
+      if (sName) sName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
+
+      renderAvatarContent('selfAvatar', playerAvatarData, playerName);
+
+      const sBadge = document.getElementById('selfEloBadge');
+      if (sBadge) sBadge.textContent = `(${playerProfile.elo.chess})`;
+    }
+  function copyMyPlayerId() {
+    navigator.clipboard.writeText(playerProfile.username);
+    alert("ناوی بەکارهێنەرەکەت کۆپی کرا: " + playerProfile.username);
+  }
+
+  // Auto-restore session if logged in previously
+    function finishSplashAndShowAuth() {
+      document.getElementById('authModal').classList.remove('hidden');
+      const splash = document.getElementById('royalSplashScreen');
+      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
     }
 
-    const deckLbl = this.createCrispPillLabel(deckX, topRowY + 58 * S, `Deck (${konkState.deck.length})`, '#ffffff');
-    this.tableLayer.add([deckCard, deckLbl]);
-
-    // شوێنی کارتی فڕێدراو (Discard Pile)
-    const dFrame = this.add.graphics();
-    dFrame.fillStyle(0x000000, 0.28);
-    dFrame.fillRoundedRect(discardX - 35 * S, topRowY - 50 * S, 70 * S, 100 * S, 10 * S);
-    dFrame.lineStyle(2.2 * S, 0xfacc15, 0.8);
-    dFrame.strokeRoundedRect(discardX - 35 * S, topRowY - 50 * S, 70 * S, 100 * S, 10 * S);
-    this.tableLayer.add(dFrame);
-    this.discardZone = { x: discardX, y: topRowY, w: 78 * S, h: 106 * S };
-
-    if (konkState.discard.length > 0) {
-      const topDiscard = konkState.discard[konkState.discard.length - 1];
-      const dSprite = this.createPlayingCard(topDiscard, 0.9, drawPhase, false);
-      dSprite.setPosition(discardX, topRowY);
-      dSprite.setInteractive({ useHandCursor: true });
-      dSprite.on('pointerup', () => konkanTakeDiscard());
-      this.tableLayer.add(dSprite);
-    }
-
-    const disLbl = this.createCrispPillLabel(discardX, topRowY + 58 * S, 'فڕێدراوەکان', '#fef08a');
-    this.tableLayer.add(disLbl);
-
-    // ٢. سێتە داگیراوەکانی سەر مێز (Melds)
-    const meldsStartY = 165 * S;
-    if (konkState.melds.length === 0) {
-      const emptyPill = this.createCrispPillLabel(w / 2, h * 0.61, '✨ سێتە داگیراوەکان لێرە دەردەکەون ✨', '#fef08a');
-      this.meldsLayer.add(emptyPill);
-    } else {
-      let curX = 28 * S;
-      let curY = meldsStartY + 34 * S;
-      const mScale = 0.62;
-      const cardStep = 24 * S;
-
-      konkState.melds.forEach((m, mIdx) => {
-        const groupW = (m.cards.length - 1) * cardStep + 46 * S;
-        if (curX + groupW > w - 24 * S) {
-          curX = 28 * S;
-          curY += 72 * S;
+    if (playerId) {
+      const st = document.getElementById('splashStatusText');
+      if (st) st.textContent = 'پشکنینی پڕۆفایل...';
+      db.ref('players/' + playerId).once('value', snap => {
+        if (snap.exists()) {
+          completeAuthSession(playerId, snap.val());
+        } else {
+          localStorage.removeItem('yk_auth_uid');
+          finishSplashAndShowAuth();
         }
-
-        const bg = this.add.graphics();
-        bg.fillStyle(0x0c0704, 0.55);
-        bg.fillRoundedRect(curX - 8 * S, curY - 34 * S, groupW + 16 * S, 68 * S, 10 * S);
-        bg.lineStyle(1.6 * S, 0xfacc15, 0.75);
-        bg.strokeRoundedRect(curX - 8 * S, curY - 34 * S, groupW + 16 * S, 68 * S, 10 * S);
-        this.meldsLayer.add(bg);
-
-        const zoneRect = new Phaser.Geom.Rectangle(curX - 8 * S, curY - 34 * S, groupW + 16 * S, 68 * S);
-        this.meldZones.push({ idx: mIdx, rect: zoneRect });
-
-        m.cards.forEach((c, cIdx) => {
-          const cs = this.createPlayingCard(c, mScale, false, false);
-          cs.setPosition(curX + 20 * S + cIdx * cardStep, curY);
-          cs.setInteractive({ useHandCursor: true });
-          cs.on('pointerup', () => konkanLayOffToMeld(mIdx));
-          this.meldsLayer.add(cs);
-        });
-
-        curX += groupW + 20 * S;
       });
-    }
-
-    // ٣. دەستی یاریزان بە شێوەی کەوانەی شاهانە (Curved Royal Fan)
-    const count = myHand.length;
-    if (count > 0) {
-      const availW = w - 64 * S;
-      const cardScale = count > 9 ? 0.86 : 0.96;
-      const cardW = 70 * S * cardScale;
-      const stepX = count > 1 ? Math.min(cardW * 0.76, (availW - cardW) / (count - 1)) : 0;
-      const totalSpan = cardW + stepX * (count - 1);
-      const startX = (w - totalSpan) / 2 + cardW / 2;
-      const baseY = h - 78 * S;
-      const midIdx = (count - 1) / 2;
-
-      myHand.forEach((c, idx) => {
-        const isSel = konkSelectedIds.includes(c.id);
-        const normOffset = count > 1 ? (idx - midIdx) / Math.max(midIdx, 1) : 0;
-        const arcDrop = Math.pow(normOffset, 2) * 14 * S;
-        const fanAngle = normOffset * 0.14; // خواربوونەوەی نەرمی کەوانەیی
-
-        const restX = startX + idx * stepX;
-        const restY = baseY + arcDrop - (isSel ? 22 * S : 0);
-
-        const sprite = this.createPlayingCard(c, cardScale, isSel, false);
-        sprite.setPosition(restX, restY);
-        sprite.setRotation(isSel ? 0 : fanAngle);
-        sprite.setInteractive({ draggable: true, useHandCursor: true });
-
-        let moved = false;
-        sprite.on('dragstart', () => {
-          moved = false;
-          sprite.setDepth(300);
-          sprite.setRotation(0);
-          sprite.setScale(1.1);
-        });
-
-        sprite.on('drag', (pointer, dragX, dragY) => {
-          if (Phaser.Math.Distance.Between(pointer.downX, pointer.downY, pointer.x, pointer.y) > 8 * S) {
-            moved = true;
-          }
-          sprite.setPosition(dragX, dragY);
-        });
-
-        sprite.on('dragend', (pointer) => {
-          if (!moved) {
-            toggleKonkanCardSelect(c.id);
-            return;
-          }
-
-          if (isMyTurn && konkState.phase === 'play' && this.discardZone) {
-            const distDiscard = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.discardZone.x, this.discardZone.y);
-            if (distDiscard < 62 * S) {
-              konkSelectedIds = [c.id];
-              this.spawnGoldBurst(this.discardZone.x, this.discardZone.y);
-              konkanDiscardSelected();
-              return;
-            }
-          }
-
-          if (isMyTurn && konkState.phase === 'play') {
-            for (const mz of this.meldZones) {
-              if (mz.rect.contains(pointer.x, pointer.y)) {
-                konkSelectedIds = [c.id];
-                this.spawnGoldBurst(pointer.x, pointer.y);
-                konkanLayOffToMeld(mz.idx);
-                return;
-              }
-            }
-          }
-
-          this.renderAll();
-        });
-
-        this.handLayer.add(sprite);
-      });
-    }
-  }
-}
-
-function initKonkanPhaser() {
-  const container = document.getElementById('konkanPhaserStage');
-  if (!container) return;
-
-  container.style.height = '490px';
-
-  if (!konkanPhaserGame) {
-    container.innerHTML = '';
-    const cssW = container.clientWidth || 720;
-    const cssH = 490;
-
-    konkanPhaserGame = new Phaser.Game({
-      type: Phaser.AUTO,
-      width: Math.round(cssW * KONK_DPR),
-      height: Math.round(cssH * KONK_DPR),
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: Math.round(cssW * KONK_DPR),
-        height: Math.round(cssH * KONK_DPR)
-      },
-      antialias: true,
-      parent: 'konkanPhaserStage',
-      transparent: true,
-      scene: [RoyalKonkanScene]
-    });
-  } else if (konkanSceneRef) {
-    konkanSceneRef.renderAll();
-  }
-}
-
-function startKonkanBotGame() {
-  konkIsOnline = false;
-  konkMyRole = 'p1';
-  konkSelectedIds = [];
-  konkOppInfo = { id: null, name: 'بۆتی کۆنکانی شاهانە', elo: 1300, avatar: '' };
-  konkState = initNewKonkanGame(konkCardsPerPlayer);
-
-  document.getElementById('konkanSetupPanel').classList.add('hidden');
-  document.getElementById('konkanActiveArea').classList.remove('hidden');
-  document.getElementById('konkOppName').textContent = konkOppInfo.name;
-  document.getElementById('konkOppElo').textContent = `(${konkOppInfo.elo})`;
-  renderKonkanTable();
-}
-
-function startKonkanOnlineMatchmaking() {
-  document.getElementById('konkanSetupPanel').classList.add('hidden');
-  document.getElementById('konkanSearchingPanel').classList.remove('hidden');
-  const qBase = db.ref('konkanQueue_' + konkCardsPerPlayer);
-  konkQueueRef = qBase.child(playerId);
-  konkQueueRef.onDisconnect().remove();
-
-  qBase.once('value', snap => {
-    let opp = null;
-    snap.forEach(c => { if (c.key !== playerId && !c.val().roomId) opp = { id: c.key, ...c.val() }; });
-    if (opp) {
-      const rId = 'konk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-      const st = initNewKonkanGame(konkCardsPerPlayer);
-      db.ref('konkanRooms/' + rId).set({
-        p1: { id: opp.id, name: opp.name, elo: opp.elo, avatar: opp.avatar || '' },
-        p2: { id: playerId, name: playerName, elo: playerProfile.elo.konkan || 1200, avatar: playerAvatarData },
-        state: st
-      });
-      qBase.child(opp.id).update({ roomId: rId });
-      joinKonkanOnlineRoom(rId, 'p2', { id: opp.id, name: opp.name, elo: opp.elo, avatar: opp.avatar || '' });
     } else {
-      konkQueueRef.set({
-        name: playerName,
-        elo: playerProfile.elo.konkan || 1200,
-        avatar: playerAvatarData,
-        roomId: null,
-        ts: firebase.database.ServerValue.TIMESTAMP
+      setTimeout(finishSplashAndShowAuth, 900);
+    }
+
+  // Global players & presence listeners
+  db.ref('players').on('value', snap => {
+    allPlayersCache = snap.val() || {};
+    if (playerId) renderFriendsList();
+  });
+
+  db.ref('presence').on('value', snap => {
+    onlineUsersMap = snap.val() || {};
+    const count = snap.numChildren() || 1;
+   const ocText = document.getElementById('onlineCountText');
+      if (ocText) ocText.textContent = `${count} یاریزان ئێستا لە سەرهێڵن`;
+      const oBadge = document.getElementById('onlineBadge');
+      if (oBadge) oBadge.textContent = `سەرهێڵ: ${count}`;
+    if (playerId) renderFriendsList();
+  });
+
+  // ==================== SOUND ENGINE ====================
+  let soundEnabled = true;
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇'; }
+
+  function playChessSound(type) {
+    if (!soundEnabled) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime, osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    if (type === 'move' || type === 'domino') {
+      osc.type = type === 'domino' ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(type === 'domino' ? 420 : 190, now);
+      osc.frequency.exponentialRampToValueAtTime(type === 'domino' ? 110 : 75, now + 0.08);
+      gain.gain.setValueAtTime(0.32, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.09);
+    } else if (type === 'capture') {
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(240, now); osc.frequency.exponentialRampToValueAtTime(55, now + 0.13);
+      gain.gain.setValueAtTime(0.35, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.13);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.14);
+    } else if (type === 'check' || type === 'msg') {
+      osc.type = 'sine'; osc.frequency.setValueAtTime(580, now);
+      gain.gain.setValueAtTime(0.22, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.16);
+    } else if (type === 'end') {
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(440, now); osc.frequency.setValueAtTime(659, now + 0.2);
+      gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.52);
+    }
+  }
+
+ function switchView(view, subTab = 'chess') {
+      ['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => {
+        const sec = document.getElementById('view-' + v);
+        if (sec) sec.classList.add('hidden');
+        const nav = document.getElementById('nav-' + v);
+        if (nav) {
+          nav.classList.remove('bg-yellow-500', 'text-[#050b18]');
+          nav.classList.add('text-slate-300');
+        }
       });
-      konkQueueRef.on('value', qSnap => {
-        const val = qSnap.val();
-        if (val && val.roomId) {
-          const rId = val.roomId;
-          konkQueueRef.off();
-          konkQueueRef.remove();
-          db.ref('konkanRooms/' + rId).once('value', rSnap => {
-            const rData = rSnap.val();
-            if (rData) joinKonkanOnlineRoom(rId, 'p1', { id: rData.p2.id, name: rData.p2.name, elo: rData.p2.elo, avatar: rData.p2.avatar || '' });
+
+      const targetViewEl = document.getElementById('view-' + view);
+      if (targetViewEl) targetViewEl.classList.remove('hidden');
+
+      const activeNav = document.getElementById('nav-' + view);
+      if (activeNav) {
+        activeNav.classList.add('bg-yellow-500', 'text-[#050b18]');
+        activeNav.classList.remove('text-slate-300');
+      }
+
+      document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+      const dockKey = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo') ? 'hub' : view;
+      const activeDock = document.getElementById('dock-' + dockKey);
+      if (activeDock) activeDock.classList.add('active');
+
+      if (view === 'domino' && typeof teahouseDom !== 'undefined' && teahouseDom.myHand.length === 0) {
+        startRoyalTeahouseDomino();
+      } else if (view === 'leaderboard' && typeof loadLeaderboard === 'function') {
+        loadLeaderboard(subTab);
+      } else if (view === 'friends' && typeof renderFriendsList === 'function') {
+        renderFriendsList();
+      } else if (view === 'rooms' && typeof loadActiveVoiceRooms === 'function') {
+        loadActiveVoiceRooms();
+       } const isGameView = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');
+      const topHeader = document.querySelector('header');
+      if (topHeader) topHeader.style.display = isGameView ? 'none' : '';
+      const bottomDock = document.querySelector('.floating-bottom-dock');
+      if (bottomDock) bottomDock.style.display = isGameView ? 'none' : '';
+      document.querySelectorAll('.fixed.bottom-4, .fixed.bottom-3, .fixed.bottom-5, nav.fixed, .mobile-dock').forEach(el => {
+        if (el.id !== 'challengeToast' && el.id !== 'gameOverModal') {
+          el.style.display = isGameView ? 'none' : '';
+        }
+      });
+      
+    }
+  // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
+
+  function initRealtimeListenersAfterLogin() {
+    const presenceRef = db.ref('presence/' + playerId);
+    presenceRef.onDisconnect().remove();
+    presenceRef.set({ name: playerName, ts: firebase.database.ServerValue.TIMESTAMP });
+
+    db.ref('friends/' + playerId).on('value', snap => {
+      myFriendsMap = snap.val() || {};
+      renderFriendsList();
+    });
+
+    db.ref('friendRequests/' + playerId).on('value', snap => {
+      incomingRequestsMap = snap.val() || {};
+      const reqKeys = Object.keys(incomingRequestsMap);
+      const badge = document.getElementById('friendBadgeCount'), card = document.getElementById('incomingRequestsCard'), list = document.getElementById('incomingRequestsList');
+      if (reqKeys.length > 0) {
+        badge.textContent = reqKeys.length; badge.classList.remove('hidden'); card.classList.remove('hidden');
+        list.innerHTML = reqKeys.map(senderId => {
+          const req = incomingRequestsMap[senderId];
+          const sProfile = allPlayersCache[senderId] || {};
+          return `<div class="flex items-center justify-between bg-[#091326] p-2.5 rounded-xl border border-emerald-500/30">
+            <div class="flex items-center gap-2">
+              ${getAvatarBadgeHTML(sProfile.avatar, req.name, 'w-8 h-8')}
+              <div class="text-xs font-extrabold text-white">${req.name}</div>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="acceptFriendRequest('${senderId}', '${req.name.replace(/'/g, "")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500 text-[#050b18]">قبوڵ</button>
+              <button onclick="rejectFriendRequest('${senderId}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-red-500/20 text-red-300">✕</button>
+            </div>
+          </div>`;
+        }).join('');
+      } else { badge.classList.add('hidden'); card.classList.add('hidden'); }
+    });
+
+    db.ref('challenges/' + playerId).on('value', snap => {
+      const ch = snap.val();
+      if (ch && ch.roomId) {
+        pendingIncomingChallenge = ch;
+        const gLabel = ch.game === 'domino' ? 'دۆمینەی کوردی 🁣' : 'شەتڕەنج ♔';
+        document.getElementById('challengeToastText').textContent = `${ch.fromName} بانگهێشتی یاری ${gLabel}ـت دەکات!`;
+        document.getElementById('challengeToast').classList.remove('hidden');
+        playChessSound('check');
+      } else {
+        pendingIncomingChallenge = null;
+        document.getElementById('challengeToast').classList.add('hidden');
+      }
+    });
+  }
+
+  function searchPlayersForFriend() {
+    const q = document.getElementById('friendSearchInput').value.trim().toLowerCase();
+    const resBox = document.getElementById('friendSearchResults');
+    if (q.length < 1) { resBox.innerHTML = ''; return; }
+    const matches = Object.entries(allPlayersCache).filter(([id, data]) => id !== playerId && ((data.name || '').toLowerCase().includes(q) || (data.username || '').toLowerCase().includes(q))).slice(0, 8);
+    resBox.innerHTML = matches.map(([id, data]) => `
+      <div class="flex items-center justify-between bg-[#091326] px-3 py-2 rounded-xl border border-yellow-500/15">
+        <div class="flex items-center gap-2">
+          ${getAvatarBadgeHTML(data.avatar, data.name, 'w-7 h-7')}
+          <div>
+            <div class="text-xs font-bold text-white">${data.name || 'یاریزان'}</div>
+            <div class="text-[10px] text-slate-400 font-mono">@${data.username || id}</div>
+          </div>
+        </div>
+        ${myFriendsMap[id] ? `<button onclick="openPrivateChat('${id}')" class="text-xs text-yellow-300 font-bold">چات</button>` : `<button onclick="sendFriendRequest('${id}', this)" class="text-xs text-emerald-300 font-bold">+ هاوڕێ</button>`}
+      </div>
+    `).join('');
+  }
+
+  function sendFriendRequest(targetId, btn) {
+    db.ref(`friendRequests/${targetId}/${playerId}`).set({ name: playerName, ts: firebase.database.ServerValue.TIMESTAMP });
+    if (btn) { btn.textContent = 'نێردرا ✓'; btn.disabled = true; }
+  }
+
+  function sendFriendRequestFromGame() {
+    if (opponentInfo && opponentInfo.id) sendFriendRequest(opponentInfo.id, document.getElementById('inGameAddFriendBtn'));
+  }
+
+  function acceptFriendRequest(senderId, senderName) {
+    db.ref(`friends/${playerId}/${senderId}`).set({ name: senderName, since: Date.now() });
+    db.ref(`friends/${senderId}/${playerId}`).set({ name: playerName, since: Date.now() });
+    db.ref(`friendRequests/${playerId}/${senderId}`).remove();
+  }
+
+  function rejectFriendRequest(senderId) { db.ref(`friendRequests/${playerId}/${senderId}`).remove(); }
+
+  function renderFriendsList() {
+    const container = document.getElementById('friendsListContainer'), friendIds = Object.keys(myFriendsMap);
+    document.getElementById('friendsCountLabel').textContent = friendIds.length;
+    if (friendIds.length === 0) { container.innerHTML = '<div class="text-xs text-slate-400 text-center py-6">هیچ هاوڕێیەکت نییە.</div>'; return; }
+    container.innerHTML = friendIds.map(fid => {
+      const fProfile = allPlayersCache[fid] || {};
+      const fName = fProfile.name || myFriendsMap[fid].name || 'هاوڕێ';
+      const isOnline = !!onlineUsersMap[fid];
+      return `<div onclick="openPrivateChat('${fid}')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#091326] border border-yellow-500/15 hover:border-yellow-500/40 transition">
+        <div class="flex items-center gap-2.5">
+          ${getAvatarBadgeHTML(fProfile.avatar, fName, 'w-9 h-9')}
+          <div>
+            <div class="text-xs font-extrabold text-white">${fName}</div>
+            <div class="text-[10px] ${isOnline ? 'text-emerald-400' : 'text-slate-400'}">${isOnline ? '● لە سەرهێڵە' : 'دەرەوەی هێڵ'}</div>
+          </div>
+        </div>
+        <span class="text-xs text-yellow-300 font-bold">چات ➔</span>
+      </div>`;
+    }).join('');
+  }
+
+  function openPrivateChat(friendId) {
+    activeChatFriendId = friendId;
+    const fProfile = allPlayersCache[friendId] || {};
+    const fName = fProfile.name || 'هاوڕێ';
+    document.getElementById('chatFriendName').textContent = fName;
+    renderAvatarContent('chatFriendAvatar', fProfile.avatar, fName);
+    document.getElementById('challengeButtonsGroup').classList.remove('hidden');
+    document.getElementById('privateChatForm').classList.remove('hidden');
+    if (activePrivateChatRef) activePrivateChatRef.off();
+    activePrivateChatRef = db.ref('privateChats/' + [playerId, friendId].sort().join('__'));
+    const msgBox = document.getElementById('privateChatMessages');
+    activePrivateChatRef.limitToLast(50).on('value', snap => {
+      const msgs = []; snap.forEach(c => msgs.push(c.val()));
+      msgBox.innerHTML = msgs.map(m => `<div class="flex ${m.from === playerId ? 'justify-start' : 'justify-end'}"><div class="px-3.5 py-2 rounded-2xl text-xs ${m.from === playerId ? 'bg-yellow-500 text-[#050b18] font-bold' : 'bg-[#15284d] text-white'}">${escapeHtml(m.text)}</div></div>`).join('');
+      msgBox.scrollTop = msgBox.scrollHeight;
+    });
+  }
+
+  function submitPrivateChat(e) {
+    e.preventDefault();
+    const input = document.getElementById('privateChatInput'), text = input.value.trim();
+    if (!text || !activeChatFriendId) return;
+    db.ref('privateChats/' + [playerId, activeChatFriendId].sort().join('__')).push({ from: playerId, name: playerName, text, ts: firebase.database.ServerValue.TIMESTAMP });
+    input.value = '';
+    playChessSound('msg');
+  }
+
+  function sendChallengeToActiveFriend(gameType) {
+    if (!activeChatFriendId) return;
+    const friendId = activeChatFriendId, fProfile = allPlayersCache[friendId] || {}, fName = fProfile.name || 'هاوڕێ';
+    if (gameType === 'domino') {
+      const rId = 'dom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      db.ref('dominoRooms/' + rId).set({ p1: { id: playerId, name: playerName, elo: playerProfile.elo.domino, avatar: playerAvatarData }, p2: { id: friendId, name: fName, elo: (fProfile.elo && fProfile.elo.domino) || 1200, avatar: fProfile.avatar || '' }, state: initNewDominoRound(0, 0, 1) });
+      db.ref('challenges/' + friendId).set({ game: 'domino', fromId: playerId, fromName: playerName, fromElo: playerProfile.elo.domino, fromAvatar: playerAvatarData, roomId: rId });
+      switchView('domino'); joinDominoOnlineRoom(rId, 'p1', { id: friendId, name: fName, elo: (fProfile.elo && fProfile.elo.domino) || 1200, avatar: fProfile.avatar || '' });
+    } else {
+      const rId = 'room_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      db.ref('rooms/' + rId).set({ white: { id: playerId, name: playerName, elo: playerProfile.elo.chess, avatar: playerAvatarData }, black: { id: friendId, name: fName, elo: (fProfile.elo && fProfile.elo.chess) || 1200, avatar: fProfile.avatar || '' }, baseTime: selectedBaseTime, inc: selectedIncrement, status: 'playing', lastMove: null, winner: null });
+      db.ref('challenges/' + friendId).set({ game: 'chess', fromId: playerId, fromName: playerName, fromElo: playerProfile.elo.chess, fromAvatar: playerAvatarData, roomId: rId, baseTime: selectedBaseTime, inc: selectedIncrement });
+      switchView('chess'); startOnlineGameSession(rId, 'w', { id: friendId, name: fName, elo: (fProfile.elo && fProfile.elo.chess) || 1200, avatar: fProfile.avatar || '' });
+    }
+  }
+
+  function acceptIncomingChallenge() {
+    if (!pendingIncomingChallenge) return;
+    const ch = pendingIncomingChallenge;
+    db.ref('challenges/' + playerId).remove();
+    document.getElementById('challengeToast').classList.add('hidden');
+    if (ch.game === 'domino') {
+      switchView('domino'); joinDominoOnlineRoom(ch.roomId, 'p2', { id: ch.fromId, name: ch.fromName, elo: ch.fromElo, avatar: ch.fromAvatar || '' });
+    } else {
+      selectedBaseTime = ch.baseTime || 180; selectedIncrement = ch.inc || 0;
+      switchView('chess'); startOnlineGameSession(ch.roomId, 'b', { id: ch.fromId, name: ch.fromName, elo: ch.fromElo, avatar: ch.fromAvatar || '' });
+    }
+  }
+
+  function declineIncomingChallenge() { db.ref('challenges/' + playerId).remove(); document.getElementById('challengeToast').classList.add('hidden'); }
+  function escapeHtml(str) { return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+
+
+  // ==================== ROYAL VOICE ROOMS & WEBRTC MIC ENGINE ====================
+  let currentVoiceRoomId = null, localAudioStream = null, isMicMuted = false, isSpeakerMuted = false;
+  let rtcPeers = {}, roomMembersRef = null, roomSignalsRef = null, roomChatRef = null, voiceAnalyserInterval = null;
+  const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+
+  function loadActiveVoiceRooms() {
+    db.ref('voiceRooms').on('value', snap => {
+      const grid = document.getElementById('activeRoomsGrid');
+      if (!grid) return;
+      const rooms = [];
+      snap.forEach(c => {
+        const val = c.val();
+        if (val && val.members) rooms.push({ id: c.key, ...val, count: Object.keys(val.members).length });
+      });
+      if (rooms.length === 0) {
+        grid.innerHTML = '<div class="col-span-full text-center py-8 text-xs text-slate-400">لەم کاتەدا هیچ ژوورێکی کراوە نییە — تۆ یەکەم ژوور دروست بکە! 🎙️</div>';
+        return;
+      }
+      const gameIcons = { chat: '🎙️ دیوەخان', konkan: '🃏 کۆنکان', domino: '🁣 دۆمینە', chess: '♟️ شەتڕەنج' };
+      grid.innerHTML = rooms.map(r => `
+        <div class="royal-card rounded-2xl p-5 flex flex-col justify-between gap-4 border-emerald-500/25">
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">${gameIcons[r.game] || '🎙️ دیوەخان'}</span>
+              <span class="text-xs font-extrabold text-yellow-300">👥 ${r.count} / 8</span>
+            </div>
+            <h3 class="text-base font-extrabold text-white">${r.title}</h3>
+            <p class="text-[11px] text-slate-400">سەرپەرشتیار: ${r.hostName || 'یاریزان'}</p>
+          </div>
+          <button onclick="joinVoiceRoom('${r.id}')" class="gold-btn w-full py-2.5 rounded-xl text-xs">چوونە ژوورەوە و کردنەوەی مایک</button>
+        </div>
+      `).join('');
+    });
+  }
+
+  async function createVoiceRoom() {
+    const titleInput = document.getElementById('newRoomTitleInput');
+    const title = (titleInput.value || '').trim() || `دیوەخانی ${playerName}`;
+    const game = document.getElementById('newRoomGameSelect').value;
+    const rId = 'vroom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
+    await db.ref('voiceRooms/' + rId).set({
+      title, game, hostId: playerId, hostName: playerName, createdAt: firebase.database.ServerValue.TIMESTAMP
+    });
+    titleInput.value = '';
+    joinVoiceRoom(rId);
+  }
+
+  async function joinVoiceRoom(rId) {
+    try {
+      localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    } catch (e) {
+      alert("تکایە ڕێگە بە مایکرۆفۆن (Microphone) بدە لە بڕاوزەرەکەتدا تا دەنگت بڕوات!");
+      localAudioStream = null;
+    }
+
+    currentVoiceRoomId = rId;
+    isMicMuted = false;
+    updateMicButtonsUI();
+    document.getElementById('roomsLobbyPanel').classList.add('hidden');
+    document.getElementById('insideRoomPanel').classList.remove('hidden');
+
+    const rSnap = await db.ref('voiceRooms/' + rId).once('value');
+    const rInfo = rSnap.val() || {};
+    document.getElementById('currentRoomTitle').textContent = rInfo.title || 'ژووری دەنگی';
+
+    const myMemberRef = db.ref(`voiceRooms/${rId}/members/${playerId}`);
+    myMemberRef.onDisconnect().remove();
+    await myMemberRef.set({ name: playerName, avatar: playerAvatarData || '', muted: !localAudioStream, speaking: false });
+
+    startLocalVoiceActivityDetector();
+
+    roomSignalsRef = db.ref(`voiceRooms/${rId}/signals/${playerId}`);
+    roomSignalsRef.onDisconnect().remove();
+    roomSignalsRef.on('child_added', async snap => {
+      const sig = snap.val();
+      snap.ref.remove();
+      if (!sig || !sig.from) return;
+      await handleWebRTCSignal(sig.from, sig);
+    });
+
+    roomMembersRef = db.ref(`voiceRooms/${rId}/members`);
+    roomMembersRef.on('value', snap => {
+      const members = snap.val() || {};
+      renderRoomSeats(members);
+      Object.keys(members).forEach(peerId => {
+        if (peerId !== playerId && !rtcPeers[peerId] && playerId < peerId) {
+          initiatePeerConnection(peerId);
+        }
+      });
+      Object.keys(rtcPeers).forEach(peerId => {
+        if (!members[peerId]) { rtcPeers[peerId].close(); delete rtcPeers[peerId]; }
+      });
+    });
+
+    roomChatRef = db.ref(`voiceRooms/${rId}/chat`);
+    roomChatRef.limitToLast(40).on('value', snap => {
+      const box = document.getElementById('roomChatMessages');
+      if (!box) return;
+      const msgs = [];
+      snap.forEach(c => msgs.push(c.val()));
+      box.innerHTML = msgs.map(m => `<div><span class="font-extrabold text-yellow-300">${m.name}:</span> <span class="text-slate-200">${m.text}</span></div>`).join('');
+      box.scrollTop = box.scrollHeight;
+    });
+  }
+
+  function renderRoomSeats(members) {
+    const grid = document.getElementById('roomSeatsGrid');
+    if (!grid) return;
+    grid.innerHTML = Object.entries(members).map(([uid, m]) => `
+      <div class="p-4 rounded-2xl bg-[#081226] border border-yellow-500/20 flex flex-col items-center text-center gap-2">
+        <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center text-lg font-extrabold text-white overflow-hidden border-2 border-yellow-400/50 ${m.speaking && !m.muted ? 'mic-speaking' : ''}">
+          ${m.avatar ? `<img src="${m.avatar}" class="w-full h-full object-cover" />` : (m.name || 'ی')[0]}
+        </div>
+        <div class="text-xs font-extrabold text-white truncate w-full">${m.name}</div>
+        <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold ${m.muted ? 'bg-red-500/20 text-red-300' : 'bg-emerald-500/20 text-emerald-300'}">
+          ${m.muted ? '🔇 مایک داخراوە' : (m.speaking ? '🗣️ قسە دەکات...' : '🎙️ ئامادەیە')}
+        </span>
+      </div>
+    `).join('');
+  }
+
+  function startLocalVoiceActivityDetector() {
+    if (voiceAnalyserInterval) clearInterval(voiceAnalyserInterval);
+    if (!localAudioStream) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ctx.createMediaStreamSource(localAudioStream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      src.connect(analyser);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      let lastSpeaking = false;
+      voiceAnalyserInterval = setInterval(() => {
+        if (!currentVoiceRoomId || isMicMuted) return;
+        analyser.getByteFrequencyData(data);
+        const avg = data.reduce((a, b) => a + b, 0) / data.length;
+        const speaking = avg > 18;
+        if (speaking !== lastSpeaking) {
+          lastSpeaking = speaking;
+          db.ref(`voiceRooms/${currentVoiceRoomId}/members/${playerId}/speaking`).set(speaking);
+        }
+      }, 250);
+    } catch (e) {}
+  }
+
+  async function initiatePeerConnection(peerId) {
+    const pc = createPeerConnection(peerId);
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    db.ref(`voiceRooms/${currentVoiceRoomId}/signals/${peerId}`).push({ from: playerId, type: 'offer', sdp: offer.sdp });
+  }
+
+  function createPeerConnection(peerId) {
+    const pc = new RTCPeerConnection(rtcConfig);
+    rtcPeers[peerId] = pc;
+    if (localAudioStream) localAudioStream.getTracks().forEach(t => pc.addTrack(t, localAudioStream));
+    pc.onicecandidate = e => {
+      if (e.candidate && currentVoiceRoomId) {
+        db.ref(`voiceRooms/${currentVoiceRoomId}/signals/${peerId}`).push({ from: playerId, type: 'ice', candidate: e.candidate.toJSON() });
+      }
+    };
+    pc.ontrack = e => {
+      let audio = document.getElementById('audio_' + peerId);
+      if (!audio) {
+        audio = document.createElement('audio');
+        audio.id = 'audio_' + peerId;
+        audio.autoplay = true;
+        document.getElementById('remoteAudiosContainer').appendChild(audio);
+      }
+      audio.srcObject = e.streams[0];
+      audio.muted = isSpeakerMuted;
+    };
+    return pc;
+  }
+
+  async function handleWebRTCSignal(peerId, sig) {
+    let pc = rtcPeers[peerId] || createPeerConnection(peerId);
+    if (sig.type === 'offer') {
+      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.sdp }));
+      const ans = await pc.createAnswer();
+      await pc.setLocalDescription(ans);
+      db.ref(`voiceRooms/${currentVoiceRoomId}/signals/${peerId}`).push({ from: playerId, type: 'answer', sdp: ans.sdp });
+    } else if (sig.type === 'answer') {
+      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sig.sdp }));
+    } else if (sig.type === 'ice' && sig.candidate) {
+      await pc.addIceCandidate(new RTCIceCandidate(sig.candidate));
+    }
+  }
+
+  function toggleRoomMicrophone() {
+    if (!localAudioStream) { alert("مایکرۆفۆن بەردەست نییە!"); return; }
+    isMicMuted = !isMicMuted;
+    localAudioStream.getAudioTracks().forEach(t => t.enabled = !isMicMuted);
+    if (currentVoiceRoomId) db.ref(`voiceRooms/${currentVoiceRoomId}/members/${playerId}`).update({ muted: isMicMuted, speaking: false });
+    updateMicButtonsUI();
+  }
+
+  function toggleRoomSpeaker() {
+    isSpeakerMuted = !isSpeakerMuted;
+    document.querySelectorAll('#remoteAudiosContainer audio').forEach(a => a.muted = isSpeakerMuted);
+    document.getElementById('roomSpeakerToggleBtn').textContent = isSpeakerMuted ? '🔇 بێدەنگ' : '🔊 دەنگ';
+  }
+
+  function updateMicButtonsUI() {
+    const btn = document.getElementById('roomMicToggleBtn');
+    if (!btn) return;
+    if (isMicMuted || !localAudioStream) {
+      btn.textContent = '🔇 مایک داخراوە';
+      btn.className = 'px-4 py-2.5 rounded-xl text-xs font-extrabold bg-red-500/80 text-white shadow-lg transition';
+    } else {
+      btn.textContent = '🎙️ مایک کراوەیە';
+      btn.className = 'px-4 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-500 text-[#050b18] shadow-lg transition';
+    }
+  }
+
+  function sendRoomChatMessage() {
+    const inp = document.getElementById('roomChatInput');
+    const txt = (inp.value || '').trim();
+    if (!txt || !currentVoiceRoomId) return;
+    inp.value = '';
+    db.ref(`voiceRooms/${currentVoiceRoomId}/chat`).push({ name: playerName, text: txt, ts: firebase.database.ServerValue.TIMESTAMP });
+  }
+
+  function leaveVoiceRoom() {
+    if (voiceAnalyserInterval) { clearInterval(voiceAnalyserInterval); voiceAnalyserInterval = null; }
+    if (roomMembersRef) { roomMembersRef.off(); roomMembersRef = null; }
+    if (roomSignalsRef) { roomSignalsRef.off(); roomSignalsRef = null; }
+    if (roomChatRef) { roomChatRef.off(); roomChatRef = null; }
+    Object.values(rtcPeers).forEach(pc => pc.close());
+    rtcPeers = {};
+    document.getElementById('remoteAudiosContainer').innerHTML = '';
+    if (localAudioStream) { localAudioStream.getTracks().forEach(t => t.stop()); localAudioStream = null; }
+    if (currentVoiceRoomId) {
+      const rId = currentVoiceRoomId;
+      currentVoiceRoomId = null;
+      db.ref(`voiceRooms/${rId}/members/${playerId}`).remove().then(() => {
+        db.ref(`voiceRooms/${rId}/members`).once('value', s => { if (!s.exists()) db.ref(`voiceRooms/${rId}`).remove(); });
+      });
+    }
+    document.getElementById('insideRoomPanel').classList.add('hidden');
+    document.getElementById('roomsLobbyPanel').classList.remove('hidden');
+  }
+  // ==================== LEADERBOARD ====================
+  function loadLeaderboard(gameKey) {
+    document.querySelectorAll('.lb-tab').forEach(btn => { btn.classList.remove('bg-yellow-500', 'text-[#050b18]'); btn.classList.add('text-slate-300'); });
+    const tabBtn = document.getElementById('lb-tab-' + gameKey);
+    if (tabBtn) tabBtn.classList.add('bg-yellow-500', 'text-[#050b18]');
+    const listEl = document.getElementById('leaderboardList');
+    db.ref('players').once('value', snap => {
+      const players = [];
+      snap.forEach(child => {
+        const d = child.val();
+        const score = gameKey === 'overall'
+          ? Math.round(((d.elo && d.elo.chess) || 1200 + (d.elo && d.elo.domino) || 1200) / 2)
+          : (d.elo && d.elo[gameKey]) || 1200;
+        players.push({ id: child.key, name: d.name || 'یاریزان', avatar: d.avatar || '', score });
+      });
+      players.sort((a, b) => b.score - a.score);
+      listEl.innerHTML = players.slice(0, 20).map((p, idx) => `
+        <div class="px-5 py-3.5 flex items-center justify-between ${p.id === playerId ? 'bg-yellow-500/10' : ''}">
+          <div class="flex items-center gap-3">
+            <span class="font-extrabold text-yellow-400 w-6">#${idx + 1}</span>
+            ${getAvatarBadgeHTML(p.avatar, p.name, 'w-9 h-9')}
+            <span class="text-white font-bold text-sm">${p.name}</span>
+          </div>
+          <span class="gold-text font-extrabold text-base">${p.score}</span>
+        </div>
+      `).join('');
+    });
+  }
+
+  function calculateAndSaveElo(gameKey, opponentElo, resultScore) {
+    const oldElo = playerProfile.elo[gameKey] || 1200;
+    const expected = 1 / (1 + Math.pow(10, (opponentElo - oldElo) / 400));
+    const delta = Math.round(32 * (resultScore - expected));
+    const newElo = Math.max(400, oldElo + delta);
+    playerProfile.elo[gameKey] = newElo;
+    playerProfile.games[gameKey] = (playerProfile.games[gameKey] || 0) + 1;
+    if (resultScore === 1) playerProfile.wins[gameKey] = (playerProfile.wins[gameKey] || 0) + 1;
+    db.ref('players/' + playerId).update({ elo: playerProfile.elo, wins: playerProfile.wins, games: playerProfile.games });
+    updateProfileUI();
+    awardGameXp(resultScore === 1 ? 'win' : (resultScore === 0.5 ? 'draw' : 'loss'));
+    return { oldElo, newElo, delta };
+  }
+
+    // ================= REAL-TIME LIVE VOICE ENGINE (WebRTC + Firebase) =================
+    let localVoiceStream = null;
+    let voicePeers = {};
+    let activeVoiceChannel = null;
+    const ICE_SERVERS = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    async function toggleLiveVoiceMic(roomId = 'global-voice-room', btnId = 'ludoMicBtn', avatarId = 'ludoMyAvatar') {
+      const btn = document.getElementById(btnId);
+      const statusEl = document.getElementById('ludoVoiceStatus');
+      const avatarEl = document.getElementById(avatarId);
+
+      if (localVoiceStream) {
+        stopLiveVoiceMic();
+        if (btn) { btn.classList.remove('bg-emerald-600', 'mic-speaking-ring'); btn.classList.add('bg-slate-700'); }
+        if (avatarEl) avatarEl.classList.remove('mic-speaking-ring');
+        if (statusEl) statusEl.textContent = '🔇 مایک داخراوە';
+        return;
+      }
+
+      try {
+        localVoiceStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        activeVoiceChannel = roomId;
+        if (btn) { btn.classList.remove('bg-slate-700'); btn.classList.add('bg-emerald-600', 'mic-speaking-ring'); }
+        if (avatarEl) avatarEl.classList.add('mic-speaking-ring');
+        if (statusEl) statusEl.textContent = '🎙️ مایک کراوەیە (دەنگت دەڕوات)';
+
+        if (typeof db !== 'undefined' && typeof playerId !== 'undefined') {
+          const roomRef = db.ref(`webrtc_voice/${roomId}`);
+          const myMemberRef = roomRef.child(`members/${playerId}`);
+          myMemberRef.set({ name: playerName || 'User', online: true });
+          myMemberRef.onDisconnect().remove();
+
+          // بەستنەوە بە هەموو ئەندامانی ناو ڕۆمەکە
+          roomRef.child('members').on('child_added', async (snap) => {
+            const peerId = snap.key;
+            if (peerId === playerId || voicePeers[peerId]) return;
+            const pc = createVoicePeerConnection(roomId, peerId, true);
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            roomRef.child(`signals/${peerId}/${playerId}`).set({ type: 'offer', sdp: offer.sdp });
+          });
+
+          // وەرگرتنی پەیوەندی و دەنگی بەرامبەر
+          roomRef.child(`signals/${playerId}`).on('child_added', async (snap) => {
+            const senderId = snap.key;
+            const data = snap.val();
+            if (!data) return;
+            if (data.type === 'offer') {
+              const pc = createVoicePeerConnection(roomId, senderId, false);
+              await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: data.sdp }));
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
+              roomRef.child(`signals/${senderId}/${playerId}`).set({ type: 'answer', sdp: answer.sdp });
+            } else if (data.type === 'answer' && voicePeers[senderId]) {
+              await voicePeers[senderId].setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
+            } else if (data.candidate && voicePeers[senderId]) {
+              await voicePeers[senderId].addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+            snap.ref.remove();
           });
         }
-      });
-    }
-  });
-}
-
-function cancelKonkanMatchmaking() {
-  if (konkQueueRef) { konkQueueRef.off(); konkQueueRef.remove(); konkQueueRef = null; }
-  document.getElementById('konkanSearchingPanel').classList.add('hidden');
-  document.getElementById('konkanSetupPanel').classList.remove('hidden');
-}
-
-function joinKonkanOnlineRoom(rId, role, opp) {
-  document.getElementById('konkanSearchingPanel').classList.add('hidden');
-  document.getElementById('konkanActiveArea').classList.remove('hidden');
-  konkIsOnline = true;
-  konkMyRole = role;
-  konkOppInfo = opp;
-  konkSelectedIds = [];
-  document.getElementById('konkOppName').textContent = opp.name;
-  document.getElementById('konkOppElo').textContent = `(${opp.elo})`;
-
-  konkRoomRef = db.ref('konkanRooms/' + rId);
-  konkRoomRef.on('value', snap => {
-    const data = snap.val();
-    if (!data || !data.state) return;
-    konkState = {
-      ...data.state,
-      deck: data.state.deck || [],
-      discard: data.state.discard || [],
-      p1Hand: data.state.p1Hand || [],
-      p2Hand: data.state.p2Hand || [],
-      melds: data.state.melds || []
-    };
-    renderKonkanTable();
-    if (konkState.winner) {
-      const iWon = konkState.winner === konkMyRole;
-      finishKonkanMatch(iWon, iWon ? 'کۆنکان! یارییەکەت بردەوە 🏆' : 'بەرامبەر کۆنکانی کرد!');
-    }
-  });
-}
-
-function exitKonkanGame() {
-  if (konkRoomRef) { konkRoomRef.off(); konkRoomRef = null; }
-  konkState = null;
-  konkSelectedIds = [];
-  document.getElementById('konkanActiveArea').classList.add('hidden');
-  document.getElementById('konkanSetupPanel').classList.remove('hidden');
-}
-
-function validateKonkanMeld(cards) {
-  if (!cards || cards.length < 3) return null;
-  if (cards.length <= 4) {
-    const sameRank = cards.every(c => c.r === cards[0].r);
-    const uniqueSuits = new Set(cards.map(c => c.s)).size === cards.length;
-    if (sameRank && uniqueSuits) return { type: 'set', cards: [...cards] };
-  }
-  const sameSuit = cards.every(c => c.s === cards[0].s);
-  if (sameSuit) {
-    const sorted = [...cards].sort((a, b) => a.r - b.r);
-    let isSeq = true;
-    for (let i = 1; i < sorted.length; i++) {
-      if (sorted[i].r !== sorted[i - 1].r + 1) { isSeq = false; break; }
-    }
-    if (isSeq) return { type: 'run', cards: sorted };
-    const hasAce = sorted.some(c => c.r === 1);
-    if (hasAce) {
-      const highSorted = cards.map(c => ({ ...c, sortR: c.r === 1 ? 14 : c.r })).sort((a, b) => a.sortR - b.sortR);
-      let isHighSeq = true;
-      for (let i = 1; i < highSorted.length; i++) {
-        if (highSorted[i].sortR !== highSorted[i - 1].sortR + 1) { isHighSeq = false; break; }
+      } catch (err) {
+        alert('تکایە ڕێگە بە مایکرۆفۆن بدە لە براوزەرەکەتدا تا دەنگت بڕوات.');
       }
-      if (isHighSeq) return { type: 'run', cards: highSorted.map(({ r, s, id }) => ({ r, s, id })) };
     }
-  }
-  return null;
-}
 
-function renderKonkanTable() {
-  if (!konkState) return;
-  const myHand = konkMyRole === 'p1' ? konkState.p1Hand : konkState.p2Hand;
-  const oppHand = konkMyRole === 'p1' ? konkState.p2Hand : konkState.p1Hand;
-  const isMyTurn = konkState.turn === konkMyRole;
-
-  const oppCountEl = document.getElementById('konkOppCountBadge');
-  const myCountEl = document.getElementById('konkMyCount');
-  const logEl = document.getElementById('konkActionLog');
-  const banner = document.getElementById('konkTurnBanner');
-
-  if (oppCountEl) oppCountEl.textContent = `${oppHand.length} کارت`;
-  if (myCountEl) myCountEl.textContent = myHand.length;
-  if (logEl) logEl.textContent = konkState.log || '';
-
-  if (banner) {
-    if (isMyTurn) {
-      banner.textContent = konkState.phase === 'draw'
-        ? '🟢 نۆرەی تۆیە: کلیک لە Deck یان کارتی فڕێدراو بکە'
-        : '🟡 سێت دابگرە یان کارتێک فڕێ بدە';
-      banner.className = 'px-3.5 py-1 rounded-full bg-emerald-500/25 border border-emerald-400 text-emerald-200 text-xs font-black shadow';
-    } else {
-      banner.textContent = '⏳ چاوەڕێی جوڵەی بەرامبەرین...';
-      banner.className = 'px-3.5 py-1 rounded-full bg-amber-500/25 border border-amber-400 text-amber-100 text-xs font-bold';
-    }
-  }
-
-  setTimeout(initKonkanPhaser, 30);
-}
-
-function toggleKonkanCardSelect(cardId) {
-  if (konkSelectedIds.includes(cardId)) konkSelectedIds = konkSelectedIds.filter(id => id !== cardId);
-  else konkSelectedIds.push(cardId);
-  if (typeof playChessSound === 'function') playChessSound('move');
-  renderKonkanTable();
-}
-
-function konkanSortHand(mode) {
-  if (!konkState) return;
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  if (mode === 'rank') {
-    konkState[key].sort((a, b) => a.r - b.r || a.s.localeCompare(b.s));
-  } else {
-    konkState[key].sort((a, b) => a.s.localeCompare(b.s) || a.r - b.r);
-  }
-  renderKonkanTable();
-}
-
-function konkanDrawFromDeck() {
-  if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'draw') return;
-  if (konkState.deck.length === 0) {
-    if (konkState.discard.length <= 1) {
-      finishKonkanMatch(true, 'کارتەکان تەواو بوون و یاری یەکسان بوو!');
-      return;
-    }
-    const top = konkState.discard.pop();
-    konkState.deck = konkState.discard.sort(() => Math.random() - 0.5);
-    konkState.discard = [top];
-  }
-  const card = konkState.deck.pop();
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  konkState[key].push(card);
-  konkState.phase = 'play';
-  konkState.mustMeldCardId = null;
-  konkState.log = `${playerName} کارتێکی لە Deck ڕاکێشا`;
-  if (typeof playChessSound === 'function') playChessSound('move');
-  syncOrRenderKonkan();
-}
-
-function konkanTakeDiscard() {
-  if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'draw') return;
-  if (konkState.discard.length === 0) return;
-  const topCard = konkState.discard[konkState.discard.length - 1];
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  const testHand = [...konkState[key], topCard];
-
-  let canUse = false;
-  for (let i = 0; i < testHand.length; i++) {
-    for (let j = i + 1; j < testHand.length; j++) {
-      for (let k = j + 1; k < testHand.length; k++) {
-        const trio = [testHand[i], testHand[j], testHand[k]];
-        if (trio.some(c => c.id === topCard.id) && validateKonkanMeld(trio)) { canUse = true; break; }
+    function createVoicePeerConnection(roomId, peerId, isInitiator) {
+      const pc = new RTCPeerConnection(ICE_SERVERS);
+      voicePeers[peerId] = pc;
+      if (localVoiceStream) {
+        localVoiceStream.getTracks().forEach(track => pc.addTrack(track, localVoiceStream));
       }
-      if (canUse) break;
-    }
-    if (canUse) break;
-  }
-  if (!canUse) {
-    for (const m of konkState.melds) {
-      if (validateKonkanMeld([...m.cards, topCard])) { canUse = true; break; }
-    }
-  }
-  if (!canUse) {
-    alert('بەپێی یاسای کۆنکان، تەنها کاتێک دەتوانیت کارتی فڕێدراو هەڵبگریتەوە کە یەکسەر سێتێکی پێ دابگریت!');
-    return;
-  }
-
-  konkState.discard.pop();
-  konkState[key].push(topCard);
-  konkState.phase = 'play';
-  konkState.mustMeldCardId = topCard.id;
-  konkSelectedIds = [topCard.id];
-  konkState.log = `${playerName} کارتی فڕێدراوی هەڵگرتەوە (پێویستە دایبگرێت)`;
-  if (typeof playChessSound === 'function') playChessSound('capture');
-  syncOrRenderKonkan();
-}
-
-function konkanLayDownMeld() {
-  if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  const chosenCards = konkState[key].filter(c => konkSelectedIds.includes(c.id));
-  const validMeld = validateKonkanMeld(chosenCards);
-  if (!validMeld) {
-    alert('کارتە هەڵبژێردراوەکان سێت (٣-٤ هاوژمارە) یان ڕیز (٣+ یەک جۆر بە دوای یەکدا) نین!');
-    return;
-  }
-
-  konkState[key] = konkState[key].filter(c => !konkSelectedIds.includes(c.id));
-  konkState.melds.push(validMeld);
-  if (konkState.mustMeldCardId && konkSelectedIds.includes(konkState.mustMeldCardId)) {
-    konkState.mustMeldCardId = null;
-  }
-  konkSelectedIds = [];
-  konkState.log = `${playerName} سێتێکی داگرتە سەر مێز!`;
-  if (typeof playChessSound === 'function') playChessSound('domino');
-  if (konkanSceneRef) konkanSceneRef.spawnGoldBurst(konkanSceneRef.scale.width / 2, konkanSceneRef.scale.height * 0.45);
-
-  if (konkState[key].length === 0) {
-    konkState.winner = konkMyRole;
-    syncOrRenderKonkan();
-    if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! هەموو کارتەکانت داگرت 🏆');
-    return;
-  }
-  syncOrRenderKonkan();
-}
-
-function konkanLayOffToMeld(meldIdx) {
-  if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
-  if (konkSelectedIds.length !== 1) {
-    alert('تەنها ١ کارت هەڵبژێرە بۆ زیادکردن بۆ سەر ئەم سێتە');
-    return;
-  }
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  const card = konkState[key].find(c => c.id === konkSelectedIds[0]);
-  const targetMeld = konkState.melds[meldIdx];
-  const updated = validateKonkanMeld([...targetMeld.cards, card]);
-  if (!updated) {
-    alert('ئەم کارتە ناگونجێت لەگەڵ ئەم سێتە!');
-    return;
-  }
-
-  konkState.melds[meldIdx] = updated;
-  konkState[key] = konkState[key].filter(c => c.id !== card.id);
-  if (konkState.mustMeldCardId === card.id) konkState.mustMeldCardId = null;
-  konkSelectedIds = [];
-  konkState.log = `${playerName} کارتێکی خستە سەر سێتێکی سەر مێز`;
-  if (typeof playChessSound === 'function') playChessSound('domino');
-
-  if (konkState[key].length === 0) {
-    konkState.winner = konkMyRole;
-    syncOrRenderKonkan();
-    if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! هەموو کارتەکانت تەواو کرد 🏆');
-    return;
-  }
-  syncOrRenderKonkan();
-}
-
-function konkanDiscardSelected() {
-  if (!konkState || konkState.turn !== konkMyRole || konkState.phase !== 'play') return;
-  if (konkState.mustMeldCardId) {
-    alert('تۆ کارتی فڕێدراوت هەڵگرتووەتەوە؛ دەبێت سەرەتا سێتەکەی پێ دابگریت!');
-    return;
-  }
-  if (konkSelectedIds.length !== 1) {
-    alert('تەنها ١ کارت دیاری بکە بۆ فڕێدان!');
-    return;
-  }
-  const key = konkMyRole === 'p1' ? 'p1Hand' : 'p2Hand';
-  const oppRole = konkMyRole === 'p1' ? 'p2' : 'p1';
-  const idx = konkState[key].findIndex(c => c.id === konkSelectedIds[0]);
-  if (idx === -1) return;
-
-  const discarded = konkState[key].splice(idx, 1)[0];
-  konkState.discard.push(discarded);
-  konkSelectedIds = [];
-  if (typeof playChessSound === 'function') playChessSound('move');
-
-  if (konkState[key].length === 0) {
-    konkState.winner = konkMyRole;
-    syncOrRenderKonkan();
-    if (!konkIsOnline) finishKonkanMatch(true, 'کۆنکان! دوایین کارتت فڕێ دا و بردتەوە 🏆');
-    return;
-  }
-
-  konkState.turn = oppRole;
-  konkState.phase = 'draw';
-  konkState.log = `${playerName} کارتێکی فڕێ دا`;
-  syncOrRenderKonkan();
-  if (!konkIsOnline && konkState.turn === 'p2') setTimeout(runKonkanBotTurn, 850);
-}
-
-function syncOrRenderKonkan() {
-  if (konkIsOnline && konkRoomRef) konkRoomRef.child('state').set(konkState);
-  else renderKonkanTable();
-}
-
-function runKonkanBotTurn() {
-  if (!konkState || konkIsOnline || konkState.turn !== 'p2' || konkState.winner) return;
-  if (konkState.deck.length === 0 && konkState.discard.length > 1) {
-    const top = konkState.discard.pop();
-    konkState.deck = konkState.discard.sort(() => Math.random() - 0.5);
-    konkState.discard = [top];
-  }
-  if (konkState.deck.length > 0) konkState.p2Hand.push(konkState.deck.pop());
-
-  let foundMeld = true;
-  while (foundMeld && konkState.p2Hand.length >= 3) {
-    foundMeld = false;
-    const h = konkState.p2Hand;
-    for (let i = 0; i < h.length && !foundMeld; i++) {
-      for (let j = i + 1; j < h.length && !foundMeld; j++) {
-        for (let k = j + 1; k < h.length && !foundMeld; k++) {
-          const m = validateKonkanMeld([h[i], h[j], h[k]]);
-          if (m) {
-            const ids = new Set([h[i].id, h[j].id, h[k].id]);
-            konkState.p2Hand = konkState.p2Hand.filter(c => !ids.has(c.id));
-            konkState.melds.push(m);
-            foundMeld = true;
-            if (typeof playChessSound === 'function') playChessSound('domino');
-          }
+      pc.onicecandidate = (e) => {
+        if (e.candidate && typeof db !== 'undefined') {
+          db.ref(`webrtc_voice/${roomId}/signals/${peerId}/${playerId}`).push({ candidate: e.candidate.toJSON() });
         }
-      }
+      };
+      pc.ontrack = (e) => {
+        let audio = document.getElementById('remote-audio-' + peerId);
+        if (!audio) {
+          audio = document.createElement('audio');
+          audio.id = 'remote-audio-' + peerId;
+          audio.autoplay = true;
+          document.body.appendChild(audio);
+        }
+        audio.srcObject = e.streams[0];
+      };
+      return pc;
     }
-  }
 
-  if (konkState.p2Hand.length === 0) {
-    konkState.winner = 'p2';
-    renderKonkanTable();
-    finishKonkanMatch(false, 'بۆت کۆنکانی کرد!');
-    return;
-  }
-
-  konkState.p2Hand.sort((a, b) => b.r - a.r);
-  const botDiscard = konkState.p2Hand.shift();
-  konkState.discard.push(botDiscard);
-  if (typeof playChessSound === 'function') playChessSound('move');
-
-  if (konkState.p2Hand.length === 0) {
-    konkState.winner = 'p2';
-    renderKonkanTable();
-    finishKonkanMatch(false, 'بۆت دوایین کارتی فڕێ دا و کۆنکانی کرد!');
-    return;
-  }
-
-  konkState.turn = 'p1';
-  konkState.phase = 'draw';
-  konkState.log = 'بۆت کارتێکی فڕێ دا — نۆرەی تۆیە';
-  renderKonkanTable();
-}
-
-function finishKonkanMatch(iWon, reason) {
-  if (konkRoomRef) { konkRoomRef.off(); konkRoomRef = null; }
-  if (typeof playChessSound === 'function') playChessSound('end');
-  document.getElementById('modalIcon').textContent = iWon ? '🏆' : '🃏';
-  document.getElementById('modalTitle').textContent = iWon ? 'کۆنکان!' : 'کۆتایی یاری';
-  document.getElementById('modalSubtitle').textContent = reason;
-  if (konkIsOnline) {
-    document.getElementById('eloChangeBox').classList.remove('hidden');
-    const res = calculateAndSaveElo('konkan', konkOppInfo.elo, iWon ? 1 : 0);
-    document.getElementById('eloChangeText').textContent = `${res.oldElo} ➔ ${res.newElo} (${res.delta >= 0 ? '+' : ''}${res.delta})`;
-  } else {
-    document.getElementById('eloChangeBox').classList.add('hidden');
-  }
-  document.getElementById('konkanActiveArea').classList.add('hidden');
-  document.getElementById('konkanSetupPanel').classList.remove('hidden');
-  document.getElementById('gameOverModal').classList.remove('hidden');
-}
+    function stopLiveVoiceMic() {
+      if (localVoiceStream) {
+        localVoiceStream.getTracks().forEach(t => t.stop());
+        localVoiceStream = null;
+      }
+      Object.values(voicePeers).forEach(pc => pc.close());
+      voicePeers = {};
+      if (activeVoiceChannel && typeof db !== 'undefined' && typeof playerId !== 'undefined') {
+        db.ref(`webrtc_voice/${activeVoiceChannel}/members/${playerId}`).remove();
+      }
+      activeVoiceChannel = null;
+    }
+</script>
+<!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
+  <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
+    <button id="dock-hub" onclick="switchView('hub')" class="dock-item active" title="یارییەکان">🎮</button>
+    <button id="dock-rooms" onclick="switchView('rooms')" class="dock-item" title="دیوەخان و مایک">🎙️</button>
+    <button id="dock-friends" onclick="switchView('friends')" class="dock-item" title="چات و هاوڕێیان">💬</button>
+    <button id="dock-leaderboard" onclick="switchView('leaderboard')" class="dock-item" title="ڕیزبەندی">🏆</button>
+    <button id="dock-profile" onclick="openEditProfileModal()" class="dock-item" title="پڕۆفایل">👤</button>
+  </nav>
+</body>
+</html>
