@@ -1,6 +1,6 @@
-// ========================================================
-// YARI KURDI - 4K CRISP ROYAL KURDISH TEAHOUSE DOMINO 101
-// ========================================================
+// =========================================================================
+// YARI KURDI - MAGICAL KURDISH TEAHOUSE DOMINO 101 (4K PROCEDURAL ART)
+// =========================================================================
 
 const teahouseDom = {
   boneyard: [],
@@ -53,115 +53,377 @@ class RoyalDominoScene extends Phaser.Scene {
 
   create() {
     dominoSceneRef = this;
-    this.bgGfx = this.add.graphics();
-    this.folkloreLayer = this.add.container(0, 0);
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    // دروستکردنی پاشبنەمای چایخانەی فۆلکلۆری و ئاڵای کوردستان بە دیقەی 4K
+    this.bakeDominoTeahouseBg(w, h);
+    this.add.image(w / 2, h / 2, 'yk_domino_teahouse_bg').setDisplaySize(w, h);
+
+    this.ambientLayer = this.add.container(0, 0);
     this.boardLayer = this.add.container(0, 0);
     this.slotsLayer = this.add.container(0, 0);
     this.handLayer = this.add.container(0, 0);
+    this.fxLayer = this.add.container(0, 0);
     this.overlayLayer = this.add.container(0, 0);
 
-    this.drawFolkloreTeahouseTable();
+    this.initMagicalAmbientFX(w, h);
     this.renderAll();
   }
 
-  drawFolkloreTeahouseTable() {
+  bakeDominoTeahouseBg(w, h) {
+    const key = 'yk_domino_teahouse_bg';
+    if (this.textures.exists(key)) this.textures.remove(key);
+
+    const canvasTex = this.textures.createCanvas(key, w, h);
+    const ctx = canvasTex.getContext();
     const S = DOM_DPR;
-    const w = this.scale.width;
-    const h = this.scale.height;
-    const tableH = h - 126 * S;
-    this.bgGfx.clear();
-    this.folkloreLayer.removeAll(true);
+    const tableH = h - 122 * S;
 
-    // پاشبنەمای دارگوێزی تۆخی چایخانە
-    this.bgGfx.fillStyle(0x1b0d06, 1);
-    this.bgGfx.fillRect(0, 0, w, h);
+    // ١. تەختەی دارگوێزی چایخانە
+    const woodGrad = ctx.createLinearGradient(0, 0, 0, h);
+    woodGrad.addColorStop(0, '#3b1d0d');
+    woodGrad.addColorStop(0.5, '#261107');
+    woodGrad.addColorStop(1, '#170903');
+    ctx.fillStyle = woodGrad;
+    ctx.fillRect(0, 0, w, h);
 
-    // تەختە دارینەکانی مێزەکە
-    const plankCount = 7;
-    const plankW = (w - 16 * S) / plankCount;
+    const plankCount = 8;
+    const pw = w / plankCount;
     for (let i = 0; i < plankCount; i++) {
-      const shade = i % 2 === 0 ? 0x3f2212 : 0x331b0d;
-      this.bgGfx.fillStyle(shade, 1);
-      this.bgGfx.fillRect(8 * S + i * plankW, 6 * S, plankW - 1.5 * S, tableH - 8 * S);
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 190, 120, 0.04)' : 'rgba(0, 0, 0, 0.14)';
+      ctx.fillRect(i * pw, 0, pw - 1.2 * S, h);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.lineWidth = 1.2 * S;
+      ctx.beginPath();
+      ctx.moveTo(i * pw, 0);
+      ctx.lineTo(i * pw, h);
+      ctx.stroke();
     }
 
-    // ڕووناکی گەرم لە ناوەڕاستی مێزەکە
-    this.bgGfx.fillStyle(0xd97706, 0.12);
-    this.bgGfx.fillCircle(w / 2, tableH / 2, w * 0.44);
+    // ٢. ناوەوەی مێزەکە (مەخمەڵی زمڕودیی چایخانەی شاهانە)
+    const pad = 8 * S;
+    const innerW = w - pad * 2;
+    const innerH = tableH - pad * 1.5;
 
-    // چوارچێوەی زێڕین و نەخشی جاجمی فۆلکلۆری
-    this.bgGfx.lineStyle(3 * S, 0xd97706, 0.88);
-    this.bgGfx.strokeRoundedRect(8 * S, 6 * S, w - 16 * S, tableH - 8 * S, 18 * S);
+    ctx.save();
+    this.roundRectPath(ctx, pad, pad, innerW, innerH, 20 * S);
+    ctx.clip();
 
-    const rugColors = [0xdc2626, 0xfacc15, 0x059669, 0xf8fafc];
-    const segW = 14 * S;
-    for (let x = 18 * S; x < w - 26 * S; x += segW) {
-      const col = rugColors[Math.floor(x / segW) % rugColors.length];
-      this.bgGfx.fillStyle(col, 0.82);
-      this.bgGfx.fillRect(x, 9 * S, segW - 2 * S, 4 * S);
-      this.bgGfx.fillRect(x, tableH - 9 * S, segW - 2 * S, 4 * S);
+    const feltGrad = ctx.createRadialGradient(w / 2, tableH * 0.45, 16 * S, w / 2, tableH * 0.48, Math.max(w, tableH) * 0.65);
+    feltGrad.addColorStop(0, '#0f5c43');
+    feltGrad.addColorStop(0.55, '#093b2c');
+    feltGrad.addColorStop(0.9, '#06261d');
+    feltGrad.addColorStop(1, '#041711');
+    ctx.fillStyle = feltGrad;
+    ctx.fillRect(pad, pad, innerW, innerH);
+
+    // نەخشی شەبەکەی ناسک
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.05)';
+    ctx.lineWidth = 1 * S;
+    const step = 24 * S;
+    for (let x = -tableH; x < w + tableH; x += step) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x + tableH, tableH);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x + tableH, 0);
+      ctx.lineTo(x, tableH);
+      ctx.stroke();
     }
 
-    // ئاڵای کوردستان و خۆرە ٢١ تیشکەکە لە ناوەڕاستی مێزەکە
-    const flagW = Math.min(w * 0.56, 215 * S);
-    const flagH = flagW * 0.62;
-    const fx = (w - flagW) / 2;
-    const fy = (tableH - flagH) / 2;
+    // ٣. ڕووناکیی فانۆسی زێڕین لە سەرەوە
+    const lanternGlow = ctx.createRadialGradient(w / 2, tableH * 0.16, 8 * S, w / 2, tableH * 0.28, w * 0.58);
+    lanternGlow.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
+    lanternGlow.addColorStop(0.55, 'rgba(245, 158, 11, 0.07)');
+    lanternGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = lanternGlow;
+    ctx.fillRect(pad, pad, innerW, innerH);
 
-    const flagGfx = this.add.graphics();
-    flagGfx.fillStyle(0x000000, 0.25);
-    flagGfx.fillRoundedRect(fx - 3 * S, fy - 3 * S, flagW + 6 * S, flagH + 6 * S, 10 * S);
-
-    flagGfx.fillStyle(0xed2939, 0.28);
-    flagGfx.fillRect(fx, fy, flagW, flagH / 3);
-    flagGfx.fillStyle(0xffffff, 0.26);
-    flagGfx.fillRect(fx, fy + flagH / 3, flagW, flagH / 3);
-    flagGfx.fillStyle(0x278e43, 0.28);
-    flagGfx.fillRect(fx, fy + (flagH * 2) / 3, flagW, flagH / 3);
-
-    flagGfx.lineStyle(1.5 * S, 0xfacc15, 0.42);
-    flagGfx.strokeRect(fx, fy, flagW, flagH);
-
+    // ٤. مەدالیا و پۆرترێتی شاهانەی ئاڵای کوردستان لە ناوەڕاستی مێزەکە
     const cx = w / 2;
     const cy = tableH / 2;
-    const innerR = flagH * 0.14;
-    const outerR = flagH * 0.28;
-    flagGfx.fillStyle(0xfebd11, 0.48);
-    flagGfx.beginPath();
+    const medR = Math.min(w * 0.22, 68 * S);
+
+    const halo = ctx.createRadialGradient(cx, cy, medR * 0.6, cx, cy, medR * 1.45);
+    halo.addColorStop(0, 'rgba(250, 204, 21, 0.32)');
+    halo.addColorStop(1, 'rgba(250, 204, 21, 0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(cx, cy, medR * 1.45, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, medR, 0, Math.PI * 2);
+    ctx.clip();
+
+    const fTop = cy - medR;
+    const fBand = (medR * 2) / 3;
+    ctx.fillStyle = 'rgba(220, 38, 38, 0.48)';
+    ctx.fillRect(cx - medR, fTop, medR * 2, fBand);
+    ctx.fillStyle = 'rgba(255, 253, 245, 0.42)';
+    ctx.fillRect(cx - medR, fTop + fBand, medR * 2, fBand);
+    ctx.fillStyle = 'rgba(21, 128, 61, 0.48)';
+    ctx.fillRect(cx - medR, fTop + fBand * 2, medR * 2, fBand);
+
+    // خۆری ٢١ تیشکی کوردستان
+    const innerSunR = medR * 0.24;
+    const outerSunR = medR * 0.46;
+    const sunGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, outerSunR);
+    sunGrad.addColorStop(0, '#fef08a');
+    sunGrad.addColorStop(0.65, '#facc15');
+    sunGrad.addColorStop(1, '#d97706');
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath();
     const rays = 21;
     for (let i = 0; i < rays * 2; i++) {
-      const r = i % 2 === 0 ? outerR : innerR;
-      const angle = (i * Math.PI) / rays - Math.PI / 2;
-      const px = cx + Math.cos(angle) * r;
-      const py = cy + Math.sin(angle) * r;
-      if (i === 0) flagGfx.moveTo(px, py);
-      else flagGfx.lineTo(px, py);
+      const r = i % 2 === 0 ? outerSunR : innerSunR;
+      const a = (i * Math.PI) / rays - Math.PI / 2;
+      const px = cx + Math.cos(a) * r;
+      const py = cy + Math.sin(a) * r;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
     }
-    flagGfx.closePath();
-    flagGfx.fillPath();
-    flagGfx.fillCircle(cx, cy, innerR * 0.92);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
 
-    // کێشانی ئیستکانە چای کەمەرباریک و ژێرپیاڵە لە گۆشەی خوارەوەی مێزەکە (بە گرافیکی Vector، نەک ئیمۆجی!)
-    const tx = w - 34 * S;
-    const ty = tableH - 28 * S;
-    flagGfx.fillStyle(0xe2e8f0, 0.85);
-    flagGfx.fillEllipse(tx, ty + 8 * S, 24 * S, 7 * S);
-    flagGfx.lineStyle(1.2 * S, 0xdc2626, 0.85);
-    flagGfx.strokeEllipse(tx, ty + 8 * S, 20 * S, 5 * S);
-    // چا ڕەشەکەی ناو ئیستکانەکە
-    flagGfx.fillStyle(0x9a3412, 0.92);
-    flagGfx.fillRoundedRect(tx - 6 * S, ty - 7 * S, 12 * S, 14 * S, 4 * S);
-    // شووشەی ئیستکانەکە
-    flagGfx.lineStyle(1.4 * S, 0xffffff, 0.8);
-    flagGfx.strokeRoundedRect(tx - 6.5 * S, ty - 9 * S, 13 * S, 16 * S, 4.5 * S);
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.82)';
+    ctx.lineWidth = 2.4 * S;
+    ctx.beginPath();
+    ctx.arc(cx, cy, medR, 0, Math.PI * 2);
+    ctx.stroke();
 
-    this.folkloreLayer.add(flagGfx);
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.4)';
+    ctx.lineWidth = 1.1 * S;
+    ctx.setLineDash([5 * S, 4 * S]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, medR + 6 * S, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
-    // پانێڵی خوارەوە بۆ دەستی یاریزان
-    this.bgGfx.fillStyle(0x120904, 0.94);
-    this.bgGfx.fillRoundedRect(8 * S, h - 116 * S, w - 16 * S, 110 * S, 18 * S);
-    this.bgGfx.lineStyle(2 * S, 0xf59e0b, 0.6);
-    this.bgGfx.strokeRoundedRect(8 * S, h - 116 * S, w - 16 * S, 110 * S, 18 * S);
+    // ٥. نەخشی جاجمی کوردی لە سەرەوە و خوارەوەی مێزەکە
+    const rugColors = ['#dc2626', '#facc15', '#15803d', '#fffbeb'];
+    const segW = 14 * S;
+    for (let x = pad + 14 * S; x < w - pad - 20 * S; x += segW) {
+      const col = rugColors[Math.floor(x / segW) % rugColors.length];
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(x, pad + 3 * S, segW - 2 * S, 4 * S);
+      ctx.fillRect(x, pad + innerH - 7 * S, segW - 2 * S, 4 * S);
+    }
+    ctx.globalAlpha = 1;
+
+    // ٦. ئیستکانە چای گەرم و قۆریی مسین لە گۆشەکانی مێزەکە
+    this.drawKurdishTeacup(ctx, w - 34 * S, 36 * S, S * 0.88);
+    this.drawCopperTeapot(ctx, 36 * S, 36 * S, S * 0.88);
+
+    ctx.restore();
+
+    // چوارچێوەی زێڕینی دەوری مێزەکە
+    const borderGrad = ctx.createLinearGradient(0, 0, w, tableH);
+    borderGrad.addColorStop(0, '#fde047');
+    borderGrad.addColorStop(0.5, '#d97706');
+    borderGrad.addColorStop(1, '#fef08a');
+    ctx.strokeStyle = borderGrad;
+    ctx.lineWidth = 2.8 * S;
+    this.roundRectPath(ctx, pad, pad, innerW, innerH, 20 * S);
+    ctx.stroke();
+
+    // ٧. پانێڵی خوارەوە بۆ دەستی یاریزان
+    const trayY = h - 114 * S;
+    const trayH = 108 * S;
+    const trayGrad = ctx.createLinearGradient(0, trayY, 0, h);
+    trayGrad.addColorStop(0, 'rgba(20, 9, 4, 0.85)');
+    trayGrad.addColorStop(1, 'rgba(10, 4, 2, 0.98)');
+    ctx.fillStyle = trayGrad;
+    this.roundRectPath(ctx, pad, trayY, innerW, trayH, 18 * S);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
+    ctx.lineWidth = 1.8 * S;
+    ctx.stroke();
+
+    canvasTex.refresh();
+  }
+
+  drawKurdishTeacup(ctx, x, y, S) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.beginPath();
+    ctx.ellipse(x + 2 * S, y + 12 * S, 18 * S, 6.5 * S, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 10 * S, 17 * S, 6 * S, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1.4 * S;
+    ctx.beginPath();
+    ctx.ellipse(x, y + 10 * S, 13 * S, 4 * S, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const teaGrad = ctx.createLinearGradient(x - 7 * S, y - 10 * S, x + 7 * S, y + 8 * S);
+    teaGrad.addColorStop(0, '#b91c1c');
+    teaGrad.addColorStop(0.5, '#7c2d12');
+    teaGrad.addColorStop(1, '#431407');
+    ctx.fillStyle = teaGrad;
+    ctx.beginPath();
+    ctx.moveTo(x - 7 * S, y - 8.5 * S);
+    ctx.quadraticCurveTo(x - 4 * S, y - 1 * S, x - 7.5 * S, y + 8 * S);
+    ctx.lineTo(x + 7.5 * S, y + 8 * S);
+    ctx.quadraticCurveTo(x + 4 * S, y - 1 * S, x + 7 * S, y - 8.5 * S);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.82)';
+    ctx.lineWidth = 1.3 * S;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - 12 * S, y + 7 * S, 4 * S, 3.5 * S);
+    ctx.restore();
+  }
+
+  drawCopperTeapot(ctx, x, y, S) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.beginPath();
+    ctx.ellipse(x + 2 * S, y + 11 * S, 15 * S, 5.5 * S, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const potGrad = ctx.createRadialGradient(x - 4 * S, y - 2 * S, 2 * S, x, y + 2 * S, 15 * S);
+    potGrad.addColorStop(0, '#fde68a');
+    potGrad.addColorStop(0.45, '#d97706');
+    potGrad.addColorStop(1, '#78350f');
+    ctx.fillStyle = potGrad;
+    ctx.beginPath();
+    ctx.arc(x, y + 2 * S, 12 * S, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(x, y - 10 * S, 3.8 * S, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2 * S;
+    ctx.beginPath();
+    ctx.arc(x - 12 * S, y + 1 * S, 5.5 * S, Math.PI * 0.4, Math.PI * 1.6);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 10 * S, y + 2 * S);
+    ctx.quadraticCurveTo(x + 17 * S, y - 4 * S, x + 18 * S, y - 9 * S);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  initMagicalAmbientFX(w, h) {
+    const S = DOM_DPR;
+    // هەڵمی چای گەرم لەسەر ئیستکانەکە
+    this.time.addEvent({
+      delay: 700,
+      loop: true,
+      callback: () => {
+        if (!this.scene || !this.scene.isActive()) return;
+        const puff = this.add.circle(w - 34 * S + Phaser.Math.Between(-3, 3) * S, 24 * S, 3.8 * S, 0xffffff, 0.24);
+        this.ambientLayer.add(puff);
+        this.tweens.add({
+          targets: puff,
+          y: puff.y - 22 * S,
+          x: puff.x + Phaser.Math.Between(-6, 6) * S,
+          scale: 2.1,
+          alpha: 0,
+          duration: 1700,
+          ease: 'Sine.easeOut',
+          onComplete: () => puff.destroy()
+        });
+      }
+    });
+
+    // تەنۆلکە زێڕینە سحراوییەکان
+    for (let i = 0; i < 12; i++) {
+      const mote = this.add.circle(
+        Phaser.Math.Between(24 * S, w - 24 * S),
+        Phaser.Math.Between(22 * S, h - 135 * S),
+        Phaser.Math.FloatBetween(1.3, 2.5) * S,
+        0xfde047,
+        Phaser.Math.FloatBetween(0.15, 0.45)
+      );
+      this.ambientLayer.add(mote);
+      this.tweens.add({
+        targets: mote,
+        y: mote.y - Phaser.Math.Between(10, 24) * S,
+        alpha: { from: 0.1, to: 0.55 },
+        duration: Phaser.Math.Between(2400, 4200),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+      });
+    }
+  }
+
+  spawnGoldBurst(x, y) {
+    const S = DOM_DPR;
+    for (let i = 0; i < 14; i++) {
+      const p = this.add.circle(x, y, Phaser.Math.FloatBetween(2, 3.8) * S, i % 2 === 0 ? 0xfacc15 : 0xffffff, 1);
+      this.fxLayer.add(p);
+      const ang = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const dist = Phaser.Math.FloatBetween(20, 55) * S;
+      this.tweens.add({
+        targets: p,
+        x: x + Math.cos(ang) * dist,
+        y: y + Math.sin(ang) * dist,
+        alpha: 0,
+        scale: 0.2,
+        duration: 500,
+        ease: 'Cubic.easeOut',
+        onComplete: () => p.destroy()
+      });
+    }
+  }
+
+  createCrispPillLabel(x, y, text, accentColor = '#fef08a') {
+    const S = DOM_DPR;
+    const grp = this.add.container(x, y);
+    const txt = this.add.text(0, 0, text, {
+      fontFamily: 'Noto Kufi Arabic, sans-serif',
+      fontSize: `${Math.round(12 * S)}px`,
+      fontStyle: 'bold',
+      color: accentColor,
+      stroke: '#000000',
+      strokeThickness: Math.round(3 * S),
+      align: 'center',
+      wordWrap: { width: this.scale.width - 70 * S }
+    }).setOrigin(0.5);
+
+    const bw = txt.width + 24 * S;
+    const bh = txt.height + 14 * S;
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0c0704, 0.88);
+    bg.fillRoundedRect(-bw / 2, -bh / 2, bw, bh, 14 * S);
+    bg.lineStyle(1.6 * S, 0xf59e0b, 0.85);
+    bg.strokeRoundedRect(-bw / 2, -bh / 2, bw, bh, 14 * S);
+
+    grp.add([bg, txt]);
+    return grp;
   }
 
   createDominoTileContainer(a, b, orientation = 'vertical', scale = 1, playable = false) {
@@ -174,6 +436,11 @@ class RoyalDominoScene extends Phaser.Scene {
 
     const gfx = this.add.graphics();
 
+    if (playable) {
+      gfx.fillStyle(0xfacc15, 0.28);
+      gfx.fillRoundedRect(-tileW / 2 - 3 * S, -tileH / 2 - 3 * S, tileW + 6 * S, tileH + 6 * S, rad + 2 * S);
+    }
+
     // سێبەر و ئەستووری ٣ ڕەهەندی
     gfx.fillStyle(0x000000, 0.55);
     gfx.fillRoundedRect(-tileW / 2 + 2.5 * S, -tileH / 2 + 5 * S, tileW, tileH, rad);
@@ -185,7 +452,7 @@ class RoyalDominoScene extends Phaser.Scene {
     gfx.fillStyle(0xfffdf7, 1);
     gfx.fillRoundedRect(-tileW / 2, -tileH / 2, tileW, tileH, rad);
 
-    gfx.fillStyle(0xffffff, 0.8);
+    gfx.fillStyle(0xffffff, 0.82);
     gfx.fillRoundedRect(-tileW / 2 + 2 * S, -tileH / 2 + 1.5 * S, tileW - 4 * S, tileH * 0.22, rad * 0.7);
 
     if (playable) {
@@ -271,24 +538,15 @@ class RoyalDominoScene extends Phaser.Scene {
 
     const w = this.scale.width;
     const h = this.scale.height;
-    const boardCenterY = (h - 126 * S) / 2;
+    const boardCenterY = (h - 122 * S) / 2;
 
     if (teahouseDom.chain.length === 0) {
       const hint = teahouseDom.firstMoveRule && teahouseDom.requiredOpeningDouble !== null
         ? `گەورەترین جووت (${teahouseDom.requiredOpeningDouble}-${teahouseDom.requiredOpeningDouble}) ڕابکێشە سەر مێزەکە`
         : 'یەکەم پوول ڕابکێشە سەر مێزەکە';
 
-      const txt = this.add.text(w / 2, boardCenterY, hint, {
-        fontFamily: 'Noto Kufi Arabic, sans-serif',
-        fontSize: `${Math.round(13.5 * S)}px`,
-        fontStyle: 'bold',
-        color: '#fef3c7',
-        backgroundColor: 'rgba(15, 23, 42, 0.92)',
-        padding: { x: Math.round(16 * S), y: Math.round(11 * S) },
-        align: 'center',
-        wordWrap: { width: w - 64 * S }
-      }).setOrigin(0.5);
-      this.boardLayer.add(txt);
+      const pill = this.createCrispPillLabel(w / 2, boardCenterY + 68 * S, hint, '#fef08a');
+      this.boardLayer.add(pill);
 
       this.centerSlotZone = { x: w / 2, y: boardCenterY, w: 125 * S, h: 90 * S };
     } else {
@@ -365,7 +623,9 @@ class RoyalDominoScene extends Phaser.Scene {
             fontFamily: 'Noto Kufi Arabic, sans-serif',
             fontSize: `${Math.round(12.5 * S)}px`,
             fontStyle: 'bold',
-            color: '#fef08a'
+            color: '#fef08a',
+            stroke: '#000000',
+            strokeThickness: Math.round(3 * S)
           }).setOrigin(0.5);
           this.slotsLayer.add(lbl);
         };
@@ -387,7 +647,7 @@ class RoyalDominoScene extends Phaser.Scene {
       const stepX = Math.min(45 * handScale * S, maxHandWidth / handCount);
       const totalHandW = stepX * handCount;
       const startHandX = (w - totalHandW) / 2 + stepX / 2;
-      const baseHandY = h - 62 * S;
+      const baseHandY = h - 60 * S;
 
       teahouseDom.myHand.forEach((tile, idx) => {
         const fit = (teahouseDom.turn === 'player' && !teahouseDom.roundOver)
@@ -430,6 +690,7 @@ class RoyalDominoScene extends Phaser.Scene {
 
             if (teahouseDom.chain.length === 0) {
               if (dropY < h - 115 * S) {
+                this.spawnGoldBurst(w / 2, boardCenterY);
                 executePlayerTeahouseMove(idx, 'right');
                 return;
               }
@@ -443,12 +704,17 @@ class RoyalDominoScene extends Phaser.Scene {
 
               if (dropY < h - 110 * S) {
                 if (fit.left && fit.right) {
-                  executePlayerTeahouseMove(idx, distLeft <= distRight ? 'left' : 'right');
+                  const chosen = distLeft <= distRight ? 'left' : 'right';
+                  const z = chosen === 'left' ? this.leftSlotZone : this.rightSlotZone;
+                  if (z) this.spawnGoldBurst(z.x, z.y);
+                  executePlayerTeahouseMove(idx, chosen);
                   return;
                 } else if (fit.left) {
+                  if (this.leftSlotZone) this.spawnGoldBurst(this.leftSlotZone.x, this.leftSlotZone.y);
                   executePlayerTeahouseMove(idx, 'left');
                   return;
                 } else if (fit.right) {
+                  if (this.rightSlotZone) this.spawnGoldBurst(this.rightSlotZone.x, this.rightSlotZone.y);
                   executePlayerTeahouseMove(idx, 'right');
                   return;
                 }
@@ -461,12 +727,16 @@ class RoyalDominoScene extends Phaser.Scene {
           card.on('pointerup', (pointer) => {
             if (Phaser.Math.Distance.Between(pointer.downX, pointer.downY, pointer.upX, pointer.upY) < 8 * S) {
               if (teahouseDom.chain.length === 0) {
+                this.spawnGoldBurst(w / 2, boardCenterY);
                 executePlayerTeahouseMove(idx, 'right');
               } else if (fit.left && !fit.right) {
+                if (this.leftSlotZone) this.spawnGoldBurst(this.leftSlotZone.x, this.leftSlotZone.y);
                 executePlayerTeahouseMove(idx, 'left');
               } else if (fit.right && !fit.left) {
+                if (this.rightSlotZone) this.spawnGoldBurst(this.rightSlotZone.x, this.rightSlotZone.y);
                 executePlayerTeahouseMove(idx, 'right');
               } else if (fit.left && fit.right && teahouseDom.leftEnd === teahouseDom.rightEnd) {
+                if (this.rightSlotZone) this.spawnGoldBurst(this.rightSlotZone.x, this.rightSlotZone.y);
                 executePlayerTeahouseMove(idx, 'right');
               }
             }
@@ -478,17 +748,8 @@ class RoyalDominoScene extends Phaser.Scene {
     }
 
     if (teahouseDom.roundBannerText) {
-      const box = this.add.text(w / 2, boardCenterY, teahouseDom.roundBannerText, {
-        fontFamily: 'Noto Kufi Arabic, sans-serif',
-        fontSize: `${Math.round(14 * S)}px`,
-        fontStyle: 'bold',
-        color: '#fef08a',
-        backgroundColor: '#0f172a',
-        padding: { x: Math.round(16 * S), y: Math.round(12 * S) },
-        align: 'center',
-        wordWrap: { width: w - 44 * S }
-      }).setOrigin(0.5);
-      this.overlayLayer.add(box);
+      const bannerPill = this.createCrispPillLabel(w / 2, boardCenterY, teahouseDom.roundBannerText, '#fef08a');
+      this.overlayLayer.add(bannerPill);
     }
   }
 }
