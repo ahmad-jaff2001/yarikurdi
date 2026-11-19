@@ -20,10 +20,27 @@ const YK_DIAMOND_PACKS = [
   { id: 'yk_d_2500', diamonds: 2500, bonus: 600, coinCost: 38000, tag: 'ئەفسانەیی ✨' }
 ];
 
+const YK_CITY_BACKGROUNDS = [
+  { id: 'city_erbil', name: 'قەڵای هەولێر و مەچکۆ', city: 'هەولێر', price: 1500, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Erbil_Citadel_and_Machko_tea_house.jpg?width=800', grad: 'linear-gradient(135deg,#4c1d95,#9a3412)', desc: 'پاشبنەمای قەڵای دێرینی هەولێر بۆ پڕۆفایلەکەت' },
+  { id: 'city_sulaymaniyah', name: 'شاری سلێمانی و گۆیژە', city: 'سلێمانی', price: 1500, artKey: 'sulaymaniyah', grad: 'linear-gradient(135deg,#0c4a6e,#1e3a8a)', desc: 'دیمەنی شەوی شاری ڕۆشنبیری سلێمانی' },
+  { id: 'city_kalar', name: 'قەڵای شێروانە • کەلار', city: 'کەلار و گەرمیان', price: 1500, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle.jpg?width=800', grad: 'linear-gradient(135deg,#7c2d12,#b45309)', desc: 'وێنەی قەڵای مێژوویی شێروانە لە پاشبنەمای پڕۆفایل' },
+  { id: 'city_duhok', name: 'دهۆک و ئامێدی', city: 'دهۆک', price: 1500, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Amadiya_2009.jpg?width=800', grad: 'linear-gradient(135deg,#065f46,#0f766e)', desc: 'دیمەنی شاخ و سروشتی بادینان و ئامێدی' },
+  { id: 'city_kirkuk', name: 'قەڵای کەرکووک', city: 'کەرکووک', price: 1500, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kirkuk_Citadel.jpg?width=800', grad: 'linear-gradient(135deg,#991b1b,#d97706)', desc: 'وێنەی قەڵای مێژوویی شاری کەرکووک' },
+  { id: 'city_halabja', name: 'هەڵەبجە و ئەحمەدئاوا', city: 'هەڵەبجە', price: 1400, artKey: 'halabja', grad: 'linear-gradient(135deg,#047857,#0284c7)', desc: 'دیمەنی تاڤگەی ئەحمەدئاوا و هەورامان' },
+  { id: 'city_zakho', name: 'پردی دەلالی زاخۆ', city: 'زاخۆ', price: 1400, artKey: 'zakho', grad: 'linear-gradient(135deg,#1e3a8a,#0284c7)', desc: 'پردی مێژوویی دەلال و ڕووباری خابوور' },
+  { id: 'city_akre', name: 'شاری ئاکرێ و نەورۆز', city: 'ئاکرێ', price: 1400, artKey: 'akre', grad: 'linear-gradient(135deg,#7c2d12,#dc2626)', desc: 'دیمەنی پایتەختی نەورۆز و چیاکانی ئاکرێ' },
+  { id: 'city_ranya', name: 'ڕانیە و دەریاچەی دووکان', city: 'ڕانیە', price: 1300, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dokan_Lake.jpg?width=800', grad: 'linear-gradient(135deg,#0369a1,#0d9488)', desc: 'دیمەنی دەریاچەی دووکان و دەروازەی ڕاپەڕین' },
+  { id: 'city_soran', name: 'سۆران و گەلی عەلی بەگ', city: 'سۆران', price: 1300, img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Gali_Ali_Beg_Waterfall.jpg?width=800', grad: 'linear-gradient(135deg,#064e3b,#1e40af)', desc: 'وێنەی تاڤگەی گەلی عەلی بەگ و ڕواندز' },
+  { id: 'city_koya', name: 'کۆیە و هەیبەت سوڵتان', city: 'کۆیە', price: 1200, artKey: 'koya', grad: 'linear-gradient(135deg,#581c87,#b45309)', desc: 'دیمەنی شاری کۆیە و چیای هەیبەت سوڵتان' },
+  { id: 'city_shaqlawa', name: 'شەقڵاوە و چیای سەفین', city: 'شەقڵاوە', price: 1200, artKey: 'shaqlawa', grad: 'linear-gradient(135deg,#0f766e,#1d4ed8)', desc: 'دیمەنی سەرسوڕهێنەری شەقڵاوە و سەفین' },
+  { id: 'city_penjwen', name: 'بەفرستانی پێنجوێن', city: 'پێنجوێن', price: 1200, artKey: 'penjwen', grad: 'linear-gradient(135deg,#1e3a8a,#38bdf8)', desc: 'شاری بەفر و کوێستانەکانی پێنجوێن' },
+  { id: 'city_chamchamal', name: 'چەمچەماڵ و گەرمیان', city: 'چەمچەماڵ', price: 1200, artKey: 'chamchamal', grad: 'linear-gradient(135deg,#92400e,#b91c1c)', desc: 'دیمەنی خۆرئاوابوونی چەمچەماڵ' }
+];
+
 const YK_BAZAAR_ITEMS = {
   profile: [
     { id: 'frame_kurd', type: 'frame', name: 'چوارچێوەی ئاڵای کوردستان', icon: '☀️', price: 1200, preview: 'linear-gradient(135deg,#dc2626,#facc15,#15803d)', desc: 'چوارچێوەیەکی زێڕینی درەوشاوە بە ڕەنگەکانی ئاڵا' },
-    { id: 'frame_sherwana', type: 'frame', name: 'قەڵای شێروانە', icon: '🏰', price: 1800, preview: 'linear-gradient(135deg,#f59e0b,#9a3412,#fde047)', desc: 'نەخشی مێژوویی گەرمیان و کەلار' },
+    { id: 'frame_sherwana', type: 'frame', name: 'چوارچێوەی قەڵای شێروانە', icon: '🏰', price: 1800, preview: 'linear-gradient(135deg,#f59e0b,#9a3412,#fde047)', desc: 'نەخشی مێژوویی گەرمیان و کەلار' },
     { id: 'frame_diamond', type: 'frame', name: 'تاجی ئەڵماس', icon: '💎', price: 3200, preview: 'linear-gradient(135deg,#38bdf8,#818cf8,#e879f9)', desc: 'درەوشانەوەی پاشایانی یاری کوردی' },
     { id: 'name_gold', type: 'nameStyle', name: 'ناوی زێڕینی شاهانە', icon: '✨', price: 1500, css: 'background:linear-gradient(90deg,#fef08a,#f59e0b,#fde047);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە تیشکی زێڕین دەدرەوشێتەوە' },
     { id: 'name_kurd', type: 'nameStyle', name: 'ڕەنگی ئاڵای کوردستان', icon: '🌈', price: 2200, css: 'background:linear-gradient(90deg,#ef4444,#fde047,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'تێکەڵەی سوور و زەرد و سەوز بۆ ناوەکەت' },
@@ -54,9 +71,31 @@ let ykBazaarState = {
   plusBadgeColor: '#38bdf8',
   inventory: {},
   equipped: {},
-  activeTab: 'plus',
+  activeTab: 'cities',
   syncedUid: null
 };
+
+function getCitySvgDataUrl(artKey) {
+  const svgs = {
+    sulaymaniyah: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#071330"/><stop offset="60%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#0f172a"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><circle cx="490" cy="65" r="26" fill="#fef08a"/><path d="M0 210 Q140 110 290 175 Q440 95 600 185 L600 320 L0 320 Z" fill="#0b1d3a"/><path d="M0 225 Q180 155 340 205 Q480 140 600 210 L600 320 L0 320 Z" fill="#132c54"/><circle cx="150" cy="245" r="3" fill="#fde047"/><circle cx="290" cy="240" r="3.5" fill="#fde047"/><circle cx="420" cy="248" r="3" fill="#fde047"/></svg>`,
+    halabja: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#064e3b"/><stop offset="60%" stop-color="#0284c7"/><stop offset="100%" stop-color="#062c22"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><polygon points="0,240 160,95 330,240" fill="#065f46"/><polygon points="220,240 430,80 600,240" fill="#047857"/><path d="M275 135 Q300 210 265 320 L345 320 Q320 210 315 135 Z" fill="#e0f2fe"/></svg>`,
+    zakho: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#172554"/><stop offset="60%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#0f172a"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><rect x="0" y="230" width="600" height="90" fill="#0284c7"/><path d="M40 230 L40 165 Q300 120 560 165 L560 230 L470 230 A45 45 0 0 0 380 230 L345 230 A45 55 0 0 0 255 230 L220 230 A45 45 0 0 0 130 230 Z" fill="#d97706"/></svg>`,
+    akre: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#450a0a"/><stop offset="55%" stop-color="#b91c1c"/><stop offset="100%" stop-color="#1c0a04"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><polygon points="0,320 190,65 420,320" fill="#29120a"/><polygon points="180,320 420,55 600,320" fill="#1f0d07"/><circle cx="300" cy="130" r="6" fill="#fde047"/><circle cx="240" cy="145" r="5" fill="#fde047"/><circle cx="360" cy="142" r="5" fill="#fde047"/></svg>`,
+    koya: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b0764"/><stop offset="60%" stop-color="#9a3412"/><stop offset="100%" stop-color="#1a0905"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><path d="M0 245 Q150 90 310 165 Q460 85 600 190 L600 320 L0 320 Z" fill="#2e1065"/></svg>`,
+    shaqlawa: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0c4a6e"/><stop offset="60%" stop-color="#0284c7"/><stop offset="100%" stop-color="#064e3b"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><polygon points="0,260 280,55 600,260" fill="#1e3a8a"/><polygon points="225,95 280,55 342,95" fill="#ffffff"/></svg>`,
+    penjwen: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="60%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#e0f2fe"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><polygon points="0,270 170,85 360,270" fill="#f8fafc"/><polygon points="230,270 440,75 600,270" fill="#e2e8f0"/></svg>`,
+    chamchamal: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c2d12"/><stop offset="55%" stop-color="#d97706"/><stop offset="100%" stop-color="#1c0a04"/></linearGradient></defs><rect width="600" height="320" fill="url(#g)"/><circle cx="300" cy="135" r="52" fill="#fef08a"/><path d="M0 220 Q160 175 320 215 Q470 175 600 215 L600 320 L0 320 Z" fill="#451a03"/></svg>`
+  };
+  const raw = svgs[artKey] || svgs.sulaymaniyah;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(raw);
+}
+
+function getCityBgResolvedUrl(cityObj) {
+  if (!cityObj) return '';
+  if (cityObj.img) return cityObj.img;
+  if (cityObj.artKey) return getCitySvgDataUrl(cityObj.artKey);
+  return '';
+}
 
 function injectBazaarStyles() {
   if (document.getElementById('ykBazaarStyles')) return;
@@ -192,21 +231,12 @@ function injectBazaarStyles() {
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
       cursor: pointer;
       flex-shrink: 0;
-      transition: transform 0.15s ease;
-    }
-    .yk-plus-circle-btn:active {
-      transform: scale(0.9);
     }
     .yk-hud-stat-box {
       background: linear-gradient(180deg, rgba(46, 22, 10, 0.85) 0%, rgba(22, 10, 4, 0.92) 100%);
       border: 1.5px solid rgba(250, 204, 21, 0.38);
       border-radius: 16px;
       box-shadow: inset 0 1px 1px rgba(254, 240, 138, 0.25), 0 6px 16px rgba(0, 0, 0, 0.55);
-      transition: transform 0.18s ease, border-color 0.2s ease;
-    }
-    .yk-hud-stat-box:hover {
-      border-color: #fde047;
-      transform: translateY(-1px);
     }
     .yk-coin-icon {
       display: inline-flex;
@@ -220,11 +250,10 @@ function injectBazaarStyles() {
       color: #451a03;
       font-size: 11px;
       font-weight: 900;
-      box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
       flex-shrink: 0;
     }
     .yk-glass-panel {
-      background: rgba(12, 10, 18, 0.72);
+      background: rgba(12, 10, 18, 0.76);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1.5px solid rgba(250, 204, 21, 0.28);
@@ -234,6 +263,8 @@ function injectBazaarStyles() {
       border-bottom: 3px solid #facc15 !important;
       font-weight: 900 !important;
     }
+    .yk-no-scrollbar::-webkit-scrollbar { display: none; }
+    .yk-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   `;
   document.head.appendChild(st);
 }
@@ -279,9 +310,38 @@ function getUserCoinsSync() {
 
     if (typeof myUserCoins !== 'undefined') myUserCoins = ykBazaarState.coins;
     updateAllBazaarCoinBadges();
+    applyEquippedCityBgToProfile();
     refreshRoyalTopHudData();
     if (document.getElementById('ykBazaarRoot')) renderBazaarBody();
   });
+}
+
+function applyEquippedCityBgToProfile() {
+  const eqCityId = ykBazaarState.equipped && ykBazaarState.equipped.profileCityBg;
+  const cityObj = YK_CITY_BACKGROUNDS.find(c => c.id === eqCityId);
+  const bgUrl = cityObj ? getCityBgResolvedUrl(cityObj) : '';
+
+  const profileCard = document.querySelector('#editProfileModal .royal-card');
+  if (profileCard) {
+    if (bgUrl) {
+      profileCard.style.backgroundImage = `linear-gradient(180deg, rgba(15, 8, 4, 0.45) 0%, rgba(12, 6, 3, 0.88) 65%, rgba(10, 5, 2, 0.96) 100%), url('${bgUrl}')`;
+      profileCard.style.backgroundSize = 'cover';
+      profileCard.style.backgroundPosition = 'center';
+    } else {
+      profileCard.style.backgroundImage = '';
+    }
+  }
+
+  const topHud = document.querySelector('header.yk-royal-top-hud');
+  if (topHud) {
+    if (bgUrl) {
+      topHud.style.backgroundImage = `linear-gradient(180deg, rgba(20, 9, 4, 0.72) 0%, rgba(14, 6, 3, 0.88) 100%), url('${bgUrl}')`;
+      topHud.style.backgroundSize = 'cover';
+      topHud.style.backgroundPosition = 'center';
+    } else {
+      topHud.style.backgroundImage = '';
+    }
+  }
 }
 
 function updateAllBazaarCoinBadges() {
@@ -364,7 +424,7 @@ function spendUserCoins(cost) {
   return true;
 }
 
-function openBazaarModal(tab = 'plus') {
+function openBazaarModal(tab = 'cities') {
   injectBazaarStyles();
   getUserCoinsSync();
   ykBazaarState.activeTab = tab;
@@ -381,7 +441,7 @@ function openBazaarModal(tab = 'plus') {
   root.innerHTML = `
     ${getKurdistanSunSVG()}
 
-    <div class="sticky top-0 z-30 bg-[#18070a]/90 backdrop-blur-lg border-b border-amber-400/35">
+    <div class="sticky top-0 z-30 bg-[#18070a]/92 backdrop-blur-lg border-b border-amber-400/35">
       <div class="max-w-lg mx-auto px-3 pt-3 pb-2 space-y-2.5" style="padding-top: max(12px, env(safe-area-inset-top));">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5">
@@ -403,7 +463,8 @@ function openBazaarModal(tab = 'plus') {
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-xs font-bold text-slate-300 border-t border-white/10 pt-2 overflow-x-auto gap-1">
+        <div class="yk-no-scrollbar flex items-center justify-between text-xs font-bold text-slate-300 border-t border-white/10 pt-2 overflow-x-auto gap-1.5">
+          <button id="ykBTab-cities" onclick="openBazaarTab('cities')" class="px-2 pb-1.5 whitespace-nowrap transition">🏙️ شارەکان</button>
           <button id="ykBTab-plus" onclick="openBazaarTab('plus')" class="px-2 pb-1.5 whitespace-nowrap transition">پڵەس</button>
           <button id="ykBTab-coins" onclick="openBazaarTab('coins')" class="px-2 pb-1.5 whitespace-nowrap transition">کۆین</button>
           <button id="ykBTab-diamonds" onclick="openBazaarTab('diamonds')" class="px-2 pb-1.5 whitespace-nowrap transition">ئەڵماس</button>
@@ -435,7 +496,7 @@ function openBazaarTab(tab) {
 }
 
 function renderBazaarBody() {
-  const tabs = ['plus', 'coins', 'diamonds', 'profile', 'chat', 'themes', 'gifts'];
+  const tabs = ['cities', 'plus', 'coins', 'diamonds', 'profile', 'chat', 'themes', 'gifts'];
   tabs.forEach(t => {
     const el = document.getElementById('ykBTab-' + t);
     if (!el) return;
@@ -444,6 +505,52 @@ function renderBazaarBody() {
 
   const box = document.getElementById('ykBazaarContent');
   if (!box) return;
+
+  if (ykBazaarState.activeTab === 'cities') {
+    const eqCityId = ykBazaarState.equipped && ykBazaarState.equipped.profileCityBg;
+    const activeCity = YK_CITY_BACKGROUNDS.find(c => c.id === eqCityId) || YK_CITY_BACKGROUNDS[0];
+    const heroBgUrl = getCityBgResolvedUrl(activeCity);
+
+    box.innerHTML = `
+      <div class="rounded-3xl overflow-hidden border-2 border-amber-400/75 shadow-2xl relative"
+           style="background-image: linear-gradient(180deg, rgba(12,6,3,0.3) 0%, rgba(12,6,3,0.92) 100%), url('${heroBgUrl}'); background-size: cover; background-position: center;">
+        <div class="p-5 pt-16 space-y-1 text-right">
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-[#1a0d06] text-[10px] font-black">🏙️ پاشبنەمای پڕۆفایل</span>
+          <h3 class="text-lg font-black text-white drop-shadow">پاشبنەمای شارەکانی کوردستان</h3>
+          <p class="text-xs text-amber-100/90">وێنەی شارەکەت بکڕە و بیکە بە پاشبنەمای سەرەکیی پڕۆفایلەکەت</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        ${YK_CITY_BACKGROUNDS.map(c => {
+          const owned = !!(ykBazaarState.inventory && ykBazaarState.inventory[c.id]);
+          const equipped = eqCityId === c.id;
+          const url = getCityBgResolvedUrl(c);
+          return `
+            <div class="yk-glass-panel rounded-3xl overflow-hidden flex flex-col justify-between border ${equipped ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.45)]' : 'border-amber-400/40'}">
+              <div class="relative h-28 w-full overflow-hidden" style="background:${c.grad};">
+                <img src="${url}" alt="${c.name}" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/25"></div>
+                <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/70 border border-amber-400/40 text-amber-200 text-[10px] font-black">${c.city}</span>
+                ${equipped ? '<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-emerald-500 text-[#050b18] text-[9px] font-black">چالاکە ✓</span>' : ''}
+              </div>
+              <div class="p-3 space-y-2 text-right">
+                <div>
+                  <div class="text-xs font-black text-white truncate">${c.name}</div>
+                  <div class="text-[10px] text-slate-300 line-clamp-1">${c.desc}</div>
+                </div>
+                ${owned
+                  ? `<button onclick="equipBazaarCityBg('${c.id}')" class="w-full py-2 rounded-xl text-xs font-black ${equipped ? 'bg-emerald-500/25 border border-emerald-400 text-emerald-300' : 'bg-white/15 hover:bg-white/25 text-white'}">${equipped ? 'لەسەر پڕۆفایلە ✓' : 'دانان لە پڕۆفایل'}</button>`
+                  : `<button onclick="buyBazaarCityBg('${c.id}')" class="w-full py-2 rounded-xl bg-gradient-to-r from-amber-300 to-amber-500 text-[#1a0d06] text-xs font-black flex items-center justify-center gap-1 shadow"><span>☀️</span><span>${c.price.toLocaleString()}</span></button>`
+                }
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    return;
+  }
 
   if (ykBazaarState.activeTab === 'plus') {
     const pName = (typeof playerName !== 'undefined' && playerName) ? playerName : 'یاریزانی کورد';
@@ -565,7 +672,6 @@ function renderBazaarBody() {
         <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-sky-200 via-sky-400 to-blue-700 border-2 border-sky-100 flex items-center justify-center text-3xl shadow-[0_0_28px_rgba(56,189,248,0.85)]">💎</div>
         <h3 class="text-xl font-black text-sky-300">گەوهەر و ئەڵماسی یاری کوردی</h3>
         <p class="text-xs text-sky-100/90">باڵانسی ئەڵماسەکانت: <strong class="text-sky-300 text-sm">${(ykBazaarState.diamonds || 0).toLocaleString()} 💎</strong></p>
-        <p class="text-[11px] text-slate-300">بە دراوی خۆری زێڕین (YK) ئەڵماس بەدەست بهێنە بۆ شتە دەگمەنەکان</p>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
@@ -616,6 +722,27 @@ function renderBazaarBody() {
       }).join('')}
     </div>
   `;
+}
+
+function buyBazaarCityBg(cityId) {
+  const city = YK_CITY_BACKGROUNDS.find(c => c.id === cityId);
+  if (!city) return;
+  if (!confirm(`کڕینی پاشبنەمای «${city.name}» بە ${city.price.toLocaleString()} ${YK_CURRENCY_SYMBOL}؟`)) return;
+  if (!spendUserCoins(city.price)) return;
+
+  if (typeof db !== 'undefined' && playerId) {
+    db.ref(`players/${playerId}/inventory/${city.id}`).set(true);
+    db.ref(`players/${playerId}/equipped/profileCityBg`).set(city.id);
+  }
+  if (typeof playChessSound === 'function') playChessSound('end');
+  alert(`🏙️ پیرۆزە! پاشبنەمای «${city.name}» کڕدرا و لەسەر پڕۆفایلەکەت دانرا!`);
+}
+
+function equipBazaarCityBg(cityId) {
+  if (typeof db !== 'undefined' && playerId) {
+    db.ref(`players/${playerId}/equipped/profileCityBg`).set(cityId);
+  }
+  if (typeof playChessSound === 'function') playChessSound('move');
 }
 
 function buyDiamondPackWithCoins(packId) {
@@ -696,7 +823,6 @@ function equipBazaarItem(itemId, itemType) {
   if (typeof playChessSound === 'function') playChessSound('move');
 }
 
-// ==================== ڕووکاری هیدەری شاهانەی سەرەوە (وەک وێنەکە: پڕۆفایل + پارە + ئەڵماس + بازاڕ + ڕێکخستن) ====================
 function mountBazaarControlsInUI() {
   injectBazaarStyles();
 
@@ -705,9 +831,7 @@ function mountBazaarControlsInUI() {
     header.className = 'yk-royal-top-hud sticky top-0 z-40';
     header.innerHTML = `
       <div id="ykRoyalTopHudInner" class="max-w-3xl mx-auto px-3 pt-2.5 pb-2.5 space-y-2.5" style="padding-top: max(10px, env(safe-area-inset-top));">
-        <!-- ڕیزی یەکەم: پڕۆفایلی درەوشاوە + پارە + ئەڵماس + بازاڕ + ڕێکخستن -->
         <div class="flex items-center justify-between gap-2">
-          <!-- پڕۆفایل و باجی لیڤڵ (بەشی ڕاست) -->
           <div onclick="openEditProfileModal()" title="دەستکاریکردنی پڕۆفایل" class="cursor-pointer flex items-center gap-2 shrink-0">
             <div class="yk-avatar-aura">
               <div id="ykHudAvatarInner" class="relative z-10 w-[48px] h-[48px] rounded-full bg-[#1a0d06] text-yellow-300 font-black text-lg flex items-center justify-center overflow-hidden border-2 border-[#1a0d06]">ی</div>
@@ -715,16 +839,13 @@ function mountBazaarControlsInUI() {
             </div>
           </div>
 
-          <!-- کەپسوولی پارە (YK) و ئەڵماس (Diamonds) لە ناوەڕاست -->
           <div class="flex items-center gap-2 flex-1 justify-center max-w-[260px]">
-            <!-- کەپسوولی پارە -->
             <div onclick="openBazaarModal('coins')" class="cursor-pointer yk-currency-pill flex-1">
               <div class="yk-coin-orb">☀️</div>
               <span class="yk-bazaar-coin-val text-xs sm:text-sm font-black text-white tracking-wide">${(ykBazaarState.coins || 0).toLocaleString()}</span>
               <button type="button" class="yk-plus-circle-btn">+</button>
             </div>
 
-            <!-- کەپسوولی ئەڵماس -->
             <div onclick="openBazaarModal('diamonds')" class="cursor-pointer yk-currency-pill flex-1">
               <div class="yk-diamond-orb">💎</div>
               <span class="yk-bazaar-diamond-val text-xs sm:text-sm font-black text-white tracking-wide">${(ykBazaarState.diamonds || 0).toLocaleString()}</span>
@@ -732,9 +853,8 @@ function mountBazaarControlsInUI() {
             </div>
           </div>
 
-          <!-- سەبەتەی بازاڕ + دوگمەی دەنگ/ڕێکخستن (بەشی چەپ) -->
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick="openBazaarModal('plus')" title="بازاڕی یاری کوردی"
+            <button onclick="openBazaarModal('cities')" title="بازاڕی یاری کوردی"
               class="w-10 h-10 rounded-2xl bg-gradient-to-b from-amber-300/20 to-amber-600/10 border border-amber-400/45 flex items-center justify-center text-xl shadow-lg hover:scale-105 transition">
               🛒
             </button>
@@ -745,7 +865,6 @@ function mountBazaarControlsInUI() {
           </div>
         </div>
 
-        <!-- ڕیزی دووەم: دوو کارتی خول (League) و ڕیزبەندی (Rank) وەک وێنەکە -->
         <div class="grid grid-cols-2 gap-2.5">
           <div onclick="typeof openSeasonPassModal === 'function' ? openSeasonPassModal() : switchView('hub')"
             class="cursor-pointer yk-hud-stat-box px-3 py-1.5 flex items-center justify-between">
@@ -773,7 +892,7 @@ function mountBazaarControlsInUI() {
   if (dock && !document.getElementById('dock-bazaar')) {
     const dBtn = document.createElement('button');
     dBtn.id = 'dock-bazaar';
-    dBtn.onclick = () => openBazaarModal('plus');
+    dBtn.onclick = () => openBazaarModal('cities');
     dBtn.className = 'dock-item';
     dBtn.title = 'بازاڕی یاری کوردی';
     dBtn.textContent = '🛒';
@@ -782,12 +901,15 @@ function mountBazaarControlsInUI() {
     else dock.appendChild(dBtn);
   }
 
+  applyEquippedCityBgToProfile();
   refreshRoyalTopHudData();
 }
 
 window.openBazaarModal = openBazaarModal;
 window.closeBazaarModal = closeBazaarModal;
 window.openBazaarTab = openBazaarTab;
+window.buyBazaarCityBg = buyBazaarCityBg;
+window.equipBazaarCityBg = equipBazaarCityBg;
 window.buyYariKurdiPlus = buyYariKurdiPlus;
 window.buyBazaarCoinPack = buyBazaarCoinPack;
 window.buyDiamondPackWithCoins = buyDiamondPackWithCoins;
@@ -804,6 +926,7 @@ window.selectPlusBadgeColor = selectPlusBadgeColor;
   else boot();
   setInterval(() => {
     getUserCoinsSync();
+    applyEquippedCityBgToProfile();
     refreshRoyalTopHudData();
   }, 2000);
 })();
