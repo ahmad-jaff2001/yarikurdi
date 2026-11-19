@@ -1454,7 +1454,88 @@ function startAnimatedGiftParticles(animType) {
   loop();
 }
 
-function triggerFullScreenGiftAnimation(g) {
+function triggerFullScreenGiftAnimation(g) {function triggerFullScreenGiftAnimation(g) {
+  const catalogMatch = ROYAL_GIFTS_CATALOG.find(item => item.id === g.giftId);
+  const giftImg = g.giftImg || (catalogMatch && catalogMatch.img) || '';
+  const animType = g.anim || (catalogMatch && catalogMatch.anim) || 'beast';
+
+  const bannerBox = document.getElementById('ykVip_FloatingGiftBanner');
+  if (bannerBox) {
+    const thumb = giftImg
+      ? `<img src="${giftImg}" onerror="this.style.display='none'" class="w-9 h-9 rounded-full object-cover border-2 border-yellow-200 shadow" />`
+      : `<span class="text-2xl">${g.giftIcon || '🎁'}</span>`;
+    bannerBox.innerHTML = `
+      <div style="animation: ykGiftSlideIn 0.35s ease-out;"
+        class="inline-flex items-center gap-2 pl-3.5 pr-1 py-1 rounded-full bg-gradient-to-l from-amber-500 via-orange-500 to-rose-600 border-2 border-yellow-200 shadow-[0_6px_22px_rgba(245,158,11,0.8)]">
+        <div class="w-7 h-7 rounded-full bg-black/40 overflow-hidden flex items-center justify-center text-xs font-black text-white border border-white">
+          ${g.senderAvatar ? `<img src="${g.senderAvatar}" class="w-full h-full object-cover"/>` : escapeRoomHtml((g.senderName || 'ی')[0])}
+        </div>
+        <div class="text-right leading-tight">
+          <div class="text-[10px] font-black text-white">${escapeRoomHtml(g.senderName)}</div>
+          <div class="text-[9px] font-bold text-yellow-100">بۆ @${escapeRoomHtml(g.targetName)}</div>
+        </div>
+        ${thumb}
+        <span class="text-base font-black text-yellow-200 italic">x${g.qty}</span>
+      </div>
+    `;
+  }
+
+  const particleIcons = animType === 'car' ? ['✨', '⚡', '🔥'] : animType === 'romance' ? ['🌹', '❤️', '✨'] : animType === 'ocean' ? ['🌊', '💎', '✨'] : ['👑', '🔥', '✨'];
+  for (let i = 0; i < 12; i++) {
+    setTimeout(() => sendFloatingHeart(particleIcons[i % particleIcons.length]), i * 110);
+  }
+
+  const overlay = document.getElementById('ykVip_FullGiftOverlay');
+  if (!overlay || !giftImg) return;
+
+  const animMap = {
+    car: 'ykCarDriftStage 4.3s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    beast: 'ykBeastSwoopStage 4.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    ocean: 'ykBeastSwoopStage 4.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    romance: 'ykRomanceBloomStage 4.0s ease-out forwards',
+    royal: 'ykRoyalDescentStage 4.3s cubic-bezier(0.22, 1, 0.36, 1) forwards'
+  };
+  const chosenAnim = animMap[animType] || animMap.beast;
+
+  if (activeGiftOverlayTimer) clearTimeout(activeGiftOverlayTimer);
+
+  overlay.classList.remove('hidden');
+  overlay.classList.add('flex');
+  overlay.innerHTML = `
+    <canvas id="ykVip_GiftFxCanvas" style="position:fixed; inset:0; width:100vw; height:100dvh; pointer-events:none; z-index:1;"></canvas>
+    <div style="animation: ${chosenAnim};" class="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-md pointer-events-none">
+      <div style="position:absolute; width:340px; height:220px; border-radius:9999px; background:radial-gradient(circle, rgba(250,204,21,0.55) 0%, rgba(245,158,11,0.18) 55%, transparent 75%); filter:blur(28px);"></div>
+
+      <!-- تەنە جووڵاوەکە بەبێ هیچ چوارچێوە و بۆکسێک (تێکەڵکراو بە شاشەکە) -->
+      <div class="relative z-10 w-[86vw] max-w-[360px] h-56 sm:h-64 flex items-center justify-center">
+        <img src="${giftImg}" alt="${escapeRoomHtml(g.giftName)}"
+          style="
+            animation: ykKenBurnsLive 4.1s ease-in-out forwards;
+            -webkit-mask-image: radial-gradient(ellipse 48% 46% at 50% 50%, #000 58%, rgba(0,0,0,0.45) 78%, transparent 98%);
+            mask-image: radial-gradient(ellipse 48% 46% at 50% 50%, #000 58%, rgba(0,0,0,0.45) 78%, transparent 98%);
+            filter: drop-shadow(0 18px 28px rgba(0,0,0,0.9)) drop-shadow(0 0 22px rgba(250,204,21,0.75)) contrast(1.12) saturate(1.18);
+          "
+          class="w-full h-full object-cover" />
+      </div>
+
+      <!-- ناوی دیارییەکە بە شێوەی شریتێکی تەنکی شەفاف لە ژێرەوە -->
+      <div class="relative z-10 -mt-5 px-5 py-1.5 rounded-full bg-gradient-to-r from-transparent via-black/80 to-transparent border-y border-yellow-300/60">
+        <span class="text-sm sm:text-base font-black gold-text drop-shadow">${escapeRoomHtml(g.giftName)} x${g.qty}</span>
+        <span class="text-[11px] font-bold text-amber-100 mr-2">(${escapeRoomHtml(g.senderName)} ➔ @${escapeRoomHtml(g.targetName)})</span>
+      </div>
+    </div>
+  `;
+
+  startAnimatedGiftParticles(animType);
+  if (typeof playChessSound === 'function') playChessSound('end');
+
+  activeGiftOverlayTimer = setTimeout(() => {
+    if (activeGiftParticleLoop) { cancelAnimationFrame(activeGiftParticleLoop); activeGiftParticleLoop = null; }
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+    overlay.innerHTML = '';
+  }, 4300);
+}
   const catalogMatch = ROYAL_GIFTS_CATALOG.find(item => item.id === g.giftId);
   const giftImg = g.giftImg || (catalogMatch && catalogMatch.img) || '';
   const animType = g.anim || (catalogMatch && catalogMatch.anim) || 'beast';
