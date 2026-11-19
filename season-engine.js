@@ -13,30 +13,22 @@ const YK_SEASON_NAMES = [
 ];
 
 const YK_REAL_SCENES = {
-  erbil_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Erbil_Citadel_and_Machko_tea_house.jpg?width=640',
-  sulaymaniyah_city: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sulaymaniyah.jpg?width=640',
-  kalar_sherwana: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle.jpg?width=640',
-  duhok_amedi: 'https://commons.wikimedia.org/wiki/Special:FilePath/Amadiya_2009.jpg?width=640',
-  kirkuk_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kirkuk_Citadel.jpg?width=640',
-  halabja_ahmadawa: 'https://commons.wikimedia.org/wiki/Special:FilePath/Ahmedawa_waterfall.jpg?width=640',
-  zakho_delal: 'https://commons.wikimedia.org/wiki/Special:FilePath/Delal_Bridge_in_Zakho.jpg?width=640',
-  akre_mountains: 'https://commons.wikimedia.org/wiki/Special:FilePath/Akre_Kurdistan.jpg?width=640',
-  ranya_dukan: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dokan_Lake.jpg?width=640',
-  soran_rawanduz: 'https://commons.wikimedia.org/wiki/Special:FilePath/Rawandiz_canyon.jpg?width=640',
-  koya_haibat: 'https://commons.wikimedia.org/wiki/Special:FilePath/Koya_Kurdistan.jpg?width=640',
-  shaqlawa_safeen: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shaqlawa.jpg?width=640',
-  penjwen_winter: 'https://commons.wikimedia.org/wiki/Special:FilePath/Penjwen.jpg?width=640',
-  chamchamal_garmian: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kalar_View_from_Sherwana_Castle.jpg?width=640'
+  erbil_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Erbil_Citadel_and_Machko_tea_house.jpg?width=800',
+  kalar_sherwana: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle.jpg?width=800',
+  kirkuk_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kirkuk_Citadel.jpg?width=800',
+  duhok_amedi: 'https://commons.wikimedia.org/wiki/Special:FilePath/Amadiya_2009.jpg?width=800',
+  ranya_dukan: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dokan_Lake.jpg?width=800',
+  soran_rawanduz: 'https://commons.wikimedia.org/wiki/Special:FilePath/Gali_Ali_Beg_Waterfall.jpg?width=800'
 };
 
 const YK_CITY_FILTERS = [
   { id: 'all', label: 'هەموو شارەکان' },
   { id: 'erbil', label: 'هەولێر' },
   { id: 'sulaymaniyah', label: 'سلێمانی' },
+  { id: 'kalar', label: 'کەلار و گەرمیان' },
   { id: 'duhok', label: 'دهۆک و ئامێدی' },
   { id: 'kirkuk', label: 'کەرکووک' },
   { id: 'halabja', label: 'هەڵەبجە و هەورامان' },
-  { id: 'kalar', label: 'کەلار و گەرمیان' },
   { id: 'zakho', label: 'زاخۆ' },
   { id: 'akre', label: 'ئاکرێ' },
   { id: 'ranya', label: 'ڕانیە و دووکان' },
@@ -46,6 +38,114 @@ const YK_CITY_FILTERS = [
   { id: 'penjwen', label: 'پێنجوێن' },
   { id: 'chamchamal', label: 'چەمچەماڵ' }
 ];
+
+function getCityIllustratedArtworkSVG(cityKey) {
+  const artMap = {
+    sulaymaniyah: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="sulSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#071330"/><stop offset="55%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#sulSky)"/>
+        <circle cx="490" cy="65" r="26" fill="#fef08a" opacity="0.9"/>
+        <path d="M0 210 Q140 110 290 175 Q440 95 600 185 L600 320 L0 320 Z" fill="#0b1d3a"/>
+        <path d="M0 225 Q180 155 340 205 Q480 140 600 210 L600 320 L0 320 Z" fill="#132c54"/>
+        <g fill="#fde047">
+          <circle cx="95" cy="235" r="2.5"/><circle cx="130" cy="245" r="2"/><circle cx="175" cy="230" r="3"/>
+          <circle cx="220" cy="250" r="2.5"/><circle cx="265" cy="238" r="2"/><circle cx="310" cy="248" r="3"/>
+          <circle cx="355" cy="232" r="2.5"/><circle cx="405" cy="244" r="2"/><circle cx="455" cy="236" r="3"/>
+          <circle cx="505" cy="252" r="2.5"/><circle cx="150" cy="268" r="2.5"/><circle cx="290" cy="272" r="3"/>
+          <circle cx="430" cy="266" r="2.5"/><circle cx="540" cy="260" r="2"/>
+        </g>
+        <rect x="275" y="182" width="50" height="58" rx="4" fill="#1e293b" stroke="#facc15" stroke-width="1.5"/>
+        <rect x="284" y="192" width="12" height="14" fill="#fde047"/><rect x="304" y="192" width="12" height="14" fill="#fde047"/>
+      </svg>`,
+    halabja: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="halSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#064e3b"/><stop offset="60%" stop-color="#0284c7"/><stop offset="100%" stop-color="#062c22"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#halSky)"/>
+        <polygon points="0,240 160,95 330,240" fill="#065f46"/>
+        <polygon points="220,240 430,80 600,240" fill="#047857"/>
+        <path d="M275 135 Q300 210 265 320 L345 320 Q320 210 315 135 Z" fill="#e0f2fe" opacity="0.92"/>
+        <path d="M288 135 Q305 215 280 320 L328 320 Q312 215 305 135 Z" fill="#38bdf8" opacity="0.7"/>
+        <ellipse cx="305" cy="305" rx="135" ry="22" fill="#0ea5e9" opacity="0.75"/>
+      </svg>`,
+    zakho: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="zakSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#172554"/><stop offset="55%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#zakSky)"/>
+        <circle cx="110" cy="70" r="28" fill="#fef08a" opacity="0.88"/>
+        <rect x="0" y="230" width="600" height="90" fill="#0284c7" opacity="0.75"/>
+        <path d="M40 230 L40 165 Q300 120 560 165 L560 230 L470 230 A45 45 0 0 0 380 230 L345 230 A45 55 0 0 0 255 230 L220 230 A45 45 0 0 0 130 230 Z" fill="#d97706" stroke="#fef08a" stroke-width="2"/>
+      </svg>`,
+    akre: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="akrSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#450a0a"/><stop offset="50%" stop-color="#b91c1c"/><stop offset="100%" stop-color="#1c0a04"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#akrSky)"/>
+        <polygon points="0,320 190,65 420,320" fill="#29120a"/>
+        <polygon points="180,320 420,55 600,320" fill="#1f0d07"/>
+        <g fill="#fde047">
+          <circle cx="210" cy="145" r="4"/><circle cx="240" cy="135" r="4"/><circle cx="270" cy="148" r="4"/>
+          <circle cx="300" cy="130" r="5"/><circle cx="335" cy="142" r="4"/><circle cx="370" cy="128" r="4"/>
+          <rect x="195" y="185" width="22" height="18" rx="2"/><rect x="235" y="175" width="26" height="20" rx="2"/>
+          <rect x="280" y="168" width="28" height="22" rx="2"/><rect x="330" y="178" width="24" height="18" rx="2"/>
+          <rect x="370" y="190" width="22" height="18" rx="2"/>
+        </g>
+      </svg>`,
+    koya: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="koySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b0764"/><stop offset="55%" stop-color="#9a3412"/><stop offset="100%" stop-color="#1a0905"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#koySky)"/>
+        <path d="M0 245 Q150 90 310 165 Q460 85 600 190 L600 320 L0 320 Z" fill="#2e1065"/>
+        <path d="M120 140 L150 112 L180 140 Z M280 155 L310 128 L340 155 Z M430 132 L462 104 L492 132 Z" fill="#f8fafc" opacity="0.85"/>
+        <rect x="180" y="235" width="240" height="45" rx="6" fill="#451a03" stroke="#facc15" stroke-width="1.5"/>
+      </svg>`,
+    shaqlawa: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="shaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0c4a6e"/><stop offset="55%" stop-color="#0284c7"/><stop offset="100%" stop-color="#064e3b"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#shaSky)"/>
+        <polygon points="0,260 280,55 600,260" fill="#1e3a8a"/>
+        <polygon points="225,95 280,55 342,95 310,112 280,98 250,112" fill="#ffffff"/>
+        <g fill="#065f46">
+          <polygon points="90,280 115,205 140,280"/><polygon points="150,285 180,195 210,285"/>
+          <polygon points="390,285 420,195 450,285"/><polygon points="460,280 485,205 510,280"/>
+        </g>
+      </svg>`,
+    penjwen: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="penSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="55%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#e0f2fe"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#penSky)"/>
+        <polygon points="0,270 170,85 360,270" fill="#f8fafc"/>
+        <polygon points="230,270 440,75 600,270" fill="#e2e8f0"/>
+        <rect x="0" y="255" width="600" height="65" fill="#ffffff"/>
+        <polygon points="120,275 140,210 160,275" fill="#0f766e"/>
+        <polygon points="450,275 475,200 500,275" fill="#0f766e"/>
+      </svg>`,
+    chamchamal: `
+      <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+        <defs>
+          <linearGradient id="chaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c2d12"/><stop offset="50%" stop-color="#d97706"/><stop offset="100%" stop-color="#1c0a04"/></linearGradient>
+        </defs>
+        <rect width="600" height="320" fill="url(#chaSky)"/>
+        <circle cx="300" cy="135" r="52" fill="#fef08a" opacity="0.9"/>
+        <path d="M0 220 Q160 175 320 215 Q470 175 600 215 L600 320 L0 320 Z" fill="#451a03"/>
+        <path d="M0 245 Q200 205 400 245 Q510 220 600 240 L600 320 L0 320 Z" fill="#290e02"/>
+      </svg>`
+  };
+  return artMap[cityKey] || '';
+}
 
 function getCurrentSeasonCycle() {
   const now = Date.now();
@@ -134,33 +234,33 @@ function getRoyalFrameRingSVG(variant = 'sherwana', size = 82) {
 const YK_SEASON_REWARDS = [
   { lv: 1, track: 'gold', city: 'erbil', cityLabel: 'هەولێر', id: 's_g1', name: 'قەڵای هەولێر و مەچکۆ', kind: 'scene', img: YK_REAL_SCENES.erbil_citadel, fallbackGrad: 'linear-gradient(135deg,#4c1d95,#9a3412)', snow: true, desc: 'وێنەی ڕاستەقینەی قەڵای دێرینی هەولێر بە بەفربارینی زیندوو' },
   { lv: 2, track: 'free', city: 'none', id: 's_f2', name: 'چوارچێوەی بەفر (خۆڕایی)', kind: 'frame', variant: 'frost', desc: 'چوارچێوەی سەهۆڵی بۆ هەموو یاریزانان بەبەلاش' },
-  { lv: 3, track: 'gold', city: 'sulaymaniyah', cityLabel: 'سلێمانی', id: 's_g3', name: 'شاری سلێمانی و گۆیژە', kind: 'scene', img: YK_REAL_SCENES.sulaymaniyah_city, fallbackGrad: 'linear-gradient(135deg,#0c4a6e,#1e3a8a)', snow: true, desc: 'دیمەنی ڕاستەقینەی شاری ڕۆشنبیری سلێمانی بە بەفرەوە' },
+  { lv: 3, track: 'gold', city: 'sulaymaniyah', cityLabel: 'سلێمانی', id: 's_g3', name: 'شاری سلێمانی و چیای گۆیژە', kind: 'scene', artKey: 'sulaymaniyah', fallbackGrad: 'linear-gradient(135deg,#0c4a6e,#1e3a8a)', snow: true, desc: 'دیمەنی شەوی شاری ڕۆشنبیری سلێمانی و چیای گۆیژە بە بەفرەوە' },
   { lv: 4, track: 'gold', city: 'kalar', cityLabel: 'کەلار و گەرمیان', id: 's_g4', name: 'قەڵای شێروانە لە بەفردا', kind: 'scene', img: YK_REAL_SCENES.kalar_sherwana, fallbackGrad: 'linear-gradient(135deg,#7c2d12,#b45309)', snow: true, desc: 'وێنەی ڕاستەقینەی قەڵای شێروانەی کەلار بە بەفربارینی زیندوو' },
   { lv: 5, track: 'free', city: 'none', id: 's_f5', name: '٢٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 250, desc: 'دیاریی خۆڕایی دراوی YK بۆ هەموو یاریزانان' },
-  { lv: 6, track: 'gold', city: 'duhok', cityLabel: 'دهۆک و ئامێدی', id: 's_g6', name: 'ئامێدی و شاخەکانی دهۆک', kind: 'scene', img: YK_REAL_SCENES.duhok_amedi, fallbackGrad: 'linear-gradient(135deg,#065f46,#0f766e)', snow: true, desc: 'دیمەنی سەرسوڕهێنەری ئامێدی و بادینان لە زستاندا' },
+  { lv: 6, track: 'gold', city: 'duhok', cityLabel: 'دهۆک و ئامێدی', id: 's_g6', name: 'ئامێدی و شاخەکانی دهۆک', kind: 'scene', img: YK_REAL_SCENES.duhok_amedi, fallbackGrad: 'linear-gradient(135deg,#065f46,#0f766e)', snow: true, desc: 'دیمەنی ڕاستەقینەی ئامێدی و بادینان لە زستاندا' },
   { lv: 7, track: 'gold', city: 'erbil', cityLabel: 'هەولێر', id: 's_g7', name: 'تاجی پایتەخت (هەولێر)', kind: 'crown', variant: 'gold', desc: 'تاجی زێڕینی ٣ ڕەهەندی بە یاقووتی سوور لە سەرووی وێنەکەت' },
   { lv: 8, track: 'free', city: 'none', id: 's_f8', name: 'چوارچێوەی گڕی نەورۆز', kind: 'frame', variant: 'nowruz', desc: 'چوارچێوەی ئاگرینی خۆڕایی لە دەوری وێنەکەت' },
   { lv: 9, track: 'gold', city: 'kirkuk', cityLabel: 'کەرکووک', id: 's_g9', name: 'قەڵای مێژوویی کەرکووک', kind: 'scene', img: YK_REAL_SCENES.kirkuk_citadel, fallbackGrad: 'linear-gradient(135deg,#991b1b,#d97706)', snow: false, desc: 'وێنەی ڕاستەقینەی قەڵای کەرکووک بۆ پاشبنەما' },
-  { lv: 10, track: 'gold', city: 'halabja', cityLabel: 'هەڵەبجە و هەورامان', id: 's_g10', name: 'تافگەی ئەحمەدئاوا و هەورامان', kind: 'scene', img: YK_REAL_SCENES.halabja_ahmadawa, fallbackGrad: 'linear-gradient(135deg,#047857,#0284c7)', snow: true, desc: 'دیمەنی ڕاستەقینەی ئەحمەدئاوا و هەڵەبجە بە بەفرەوە' },
+  { lv: 10, track: 'gold', city: 'halabja', cityLabel: 'هەڵەبجە و هەورامان', id: 's_g10', name: 'تافگەی ئەحمەدئاوا و هەورامان', kind: 'scene', artKey: 'halabja', fallbackGrad: 'linear-gradient(135deg,#047857,#0284c7)', snow: true, desc: 'دیمەنی تاڤگەی ئەحمەدئاوا و هەورامان بە بەفربارینەوە' },
   { lv: 11, track: 'free', city: 'none', id: 's_f11', name: 'ناوی زێڕینی بریقەدار', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#fef08a,#f59e0b,#fde047);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە تیشکی زێڕین دەنووسرێت (خۆڕایی)' },
-  { lv: 12, track: 'gold', city: 'zakho', cityLabel: 'زاخۆ', id: 's_g12', name: 'پردی دەلالی زاخۆ', kind: 'scene', img: YK_REAL_SCENES.zakho_delal, fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#0284c7)', snow: true, desc: 'وێنەی ڕاستەقینەی پردی مێژوویی دەلال لە زاخۆ' },
+  { lv: 12, track: 'gold', city: 'zakho', cityLabel: 'زاخۆ', id: 's_g12', name: 'پردی دەلالی زاخۆ', kind: 'scene', artKey: 'zakho', fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#0284c7)', snow: true, desc: 'دیمەنی پردی مێژوویی دەلال و ڕووباری خابوور لە زاخۆ' },
   { lv: 14, track: 'gold', city: 'sulaymaniyah', cityLabel: 'سلێمانی', id: 's_g14', name: 'تاجی شاری ڕۆشنبیری', kind: 'crown', variant: 'ice', desc: 'تاجی کریستاڵی شینی سلێمانی لە سەرووی پڕۆفایل' },
   { lv: 15, track: 'free', city: 'none', id: 's_f15', name: 'چوارچێوەی زمڕودی کوردستان', kind: 'frame', variant: 'emerald_city', desc: 'چوارچێوەی سەوز و زێڕینی خۆڕایی بۆ هەمووان' },
-  { lv: 16, track: 'gold', city: 'akre', cityLabel: 'ئاکرێ', id: 's_g16', name: 'شاری ئاکرێ و چیاکان', kind: 'scene', img: YK_REAL_SCENES.akre_mountains, fallbackGrad: 'linear-gradient(135deg,#7c2d12,#dc2626)', snow: true, desc: 'دیمەنی ڕاستەقینەی پایتەختی نەورۆز (ئاکرێ)' },
-  { lv: 18, track: 'gold', city: 'ranya', cityLabel: 'ڕانیە و دووکان', id: 's_g18', name: 'دەریاچەی دووکان و ڕانیە', kind: 'scene', img: YK_REAL_SCENES.ranya_dukan, fallbackGrad: 'linear-gradient(135deg,#0369a1,#0d9488)', snow: false, desc: 'دیمەنی دەریاچەی دووکان و دەروازەی ڕاپەڕین' },
+  { lv: 16, track: 'gold', city: 'akre', cityLabel: 'ئاکرێ', id: 's_g16', name: 'شاری ئاکرێ و مەشخەڵی نەورۆز', kind: 'scene', artKey: 'akre', fallbackGrad: 'linear-gradient(135deg,#7c2d12,#dc2626)', snow: true, desc: 'دیمەنی شاخ و خانووەکانی ئاکرێ لە شەوی نەورۆزدا' },
+  { lv: 18, track: 'gold', city: 'ranya', cityLabel: 'ڕانیە و دووکان', id: 's_g18', name: 'دەریاچەی دووکان و ڕانیە', kind: 'scene', img: YK_REAL_SCENES.ranya_dukan, fallbackGrad: 'linear-gradient(135deg,#0369a1,#0d9488)', snow: false, desc: 'دیمەنی ڕاستەقینەی دەریاچەی دووکان و دەروازەی ڕاپەڕین' },
   { lv: 20, track: 'free', city: 'none', id: 's_f20', name: '٤٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 450, desc: 'پاداشتی خۆڕایی ئاستی ٢٠ بۆ کڕین لە بازاڕدا' },
-  { lv: 22, track: 'gold', city: 'soran', cityLabel: 'سۆران و ڕواندز', id: 's_g22', name: 'خەرەندی ڕواندز و سۆران', kind: 'scene', img: YK_REAL_SCENES.soran_rawanduz, fallbackGrad: 'linear-gradient(135deg,#064e3b,#1e40af)', snow: true, desc: 'دیمەنی ڕاستەقینەی خەرەندی ڕواندز بە بەفربارینەوە' },
+  { lv: 22, track: 'gold', city: 'soran', cityLabel: 'سۆران و ڕواندز', id: 's_g22', name: 'گەلی عەلی بەگ و ڕواندز', kind: 'scene', img: YK_REAL_SCENES.soran_rawanduz, fallbackGrad: 'linear-gradient(135deg,#064e3b,#1e40af)', snow: true, desc: 'وێنەی ڕاستەقینەی تاڤگەی گەلی عەلی بەگ و سۆران' },
   { lv: 24, track: 'gold', city: 'kalar', cityLabel: 'کەلار و گەرمیان', id: 's_g24', name: 'چوارچێوەی زێڕینی شێروانە', kind: 'frame', variant: 'sherwana', desc: 'چوارچێوەی شاهانەی گەرمیان لە دەوری پڕۆفایل' },
   { lv: 25, track: 'free', city: 'none', id: 's_f25', name: 'چوارچێوەی یاقووتی سوور', kind: 'frame', variant: 'ruby_star', desc: 'چوارچێوەی یاقووت و ئەستێرەی زێڕین (خۆڕایی)' },
-  { lv: 27, track: 'gold', city: 'koya', cityLabel: 'کۆیە', id: 's_g27', name: 'کۆیە و چیای هەیبەت سوڵتان', kind: 'scene', img: YK_REAL_SCENES.koya_haibat, fallbackGrad: 'linear-gradient(135deg,#581c87,#b45309)', snow: true, desc: 'دیمەنی شاری کۆیە و هەیبەت سوڵتان لە زستاندا' },
+  { lv: 27, track: 'gold', city: 'koya', cityLabel: 'کۆیە', id: 's_g27', name: 'کۆیە و چیای هەیبەت سوڵتان', kind: 'scene', artKey: 'koya', fallbackGrad: 'linear-gradient(135deg,#581c87,#b45309)', snow: true, desc: 'دیمەنی شاری کۆیە و چیای هەیبەت سوڵتان لە زستاندا' },
   { lv: 29, track: 'gold', city: 'duhok', cityLabel: 'دهۆک و ئامێدی', id: 's_g29', name: 'تاجی زمڕودی بادینان', kind: 'crown', variant: 'emerald', desc: 'تاجی شاهانەی سەوز و زێڕین لە سەرووی وێنەکەت' },
   { lv: 30, track: 'free', city: 'none', id: 's_f30', name: '٦٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 600, desc: 'دیاریی خۆڕایی ئاستی ٣٠ بۆ هەموو یاریزانان' },
-  { lv: 32, track: 'gold', city: 'shaqlawa', cityLabel: 'شەقڵاوە', id: 's_g32', name: 'شەقڵاوە و چیای سەفین', kind: 'scene', img: YK_REAL_SCENES.shaqlawa_safeen, fallbackGrad: 'linear-gradient(135deg,#0f766e,#1d4ed8)', snow: true, desc: 'دیمەنی شەقڵاوە و سەفین بە بەفربارینی زیندوو' },
+  { lv: 32, track: 'gold', city: 'shaqlawa', cityLabel: 'شەقڵاوە', id: 's_g32', name: 'شەقڵاوە و چیای سەفین', kind: 'scene', artKey: 'shaqlawa', fallbackGrad: 'linear-gradient(135deg,#0f766e,#1d4ed8)', snow: true, desc: 'دیمەنی شەقڵاوە و چیای سەفین بە بەفربارینی زیندوو' },
   { lv: 35, track: 'free', city: 'none', id: 's_f35', name: 'ناوی ئاڵای کوردستان', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#ef4444,#fde047,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە سێ ڕەنگە پیرۆزەکە دەدرەوشێتەوە (خۆڕایی)' },
-  { lv: 36, track: 'gold', city: 'penjwen', cityLabel: 'پێنجوێن', id: 's_g36', name: 'بەفرستانی پێنجوێن', kind: 'scene', img: YK_REAL_SCENES.penjwen_winter, fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#38bdf8)', snow: true, desc: 'شاری بەفر و جوانی پێنجوێن بە بەفربارینی زیندوو' },
+  { lv: 36, track: 'gold', city: 'penjwen', cityLabel: 'پێنجوێن', id: 's_g36', name: 'بەفرستانی پێنجوێن', kind: 'scene', artKey: 'penjwen', fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#38bdf8)', snow: true, desc: 'شاری بەفر و جوانی پێنجوێن بە بەفربارینی زیندوو' },
   { lv: 38, track: 'gold', city: 'kirkuk', cityLabel: 'کەرکووک', id: 's_g38', name: 'تاجی یاقووتی کەرکووک', kind: 'crown', variant: 'ruby', desc: 'تاجی ئاگرین و یاقووتی سوور لە سەرووی پڕۆفایل' },
   { lv: 40, track: 'free', city: 'none', id: 's_f40', name: 'چوارچێوەی خۆری ٢١ پەڕ', kind: 'frame', variant: 'kurdistan', desc: 'چوارچێوەی خۆری ٢١ تیشکی کوردستان (خۆڕایی)' },
-  { lv: 42, track: 'gold', city: 'chamchamal', cityLabel: 'چەمچەماڵ', id: 's_g42', name: 'دیمەنی چەمچەماڵ و گەرمیان', kind: 'scene', img: YK_REAL_SCENES.chamchamal_garmian, fallbackGrad: 'linear-gradient(135deg,#92400e,#b91c1c)', snow: true, desc: 'دیمەنی چەمچەماڵ و دەشتی گەرمیان بۆ پاشبنەما' },
+  { lv: 42, track: 'gold', city: 'chamchamal', cityLabel: 'چەمچەماڵ', id: 's_g42', name: 'خۆرئاوابوونی چەمچەماڵ', kind: 'scene', artKey: 'chamchamal', fallbackGrad: 'linear-gradient(135deg,#92400e,#b91c1c)', snow: true, desc: 'دیمەنی خۆرئاوابوونی چەمچەماڵ و دەشتی گەرمیان' },
   { lv: 45, track: 'gold', city: 'all', cityLabel: 'کوردستان', id: 's_g45', name: '١,٥٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 1500, desc: 'گەنجینەی تایبەتی بەشداربووانی ڕێڕەوی زێڕین' },
   { lv: 46, track: 'free', city: 'none', id: 's_f46', name: '٨٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 850, desc: 'پاداشتی خۆڕایی نزیکبوونەوە لە کۆتایی وەرز' },
   { lv: 48, track: 'gold', city: 'all', cityLabel: 'کوردستان', id: 's_g48', name: 'چوارچێوەی پاشای کوردستان', kind: 'frame', variant: 'royal_king', desc: 'بەرزترین و ناوازەترین چوارچێوەی زێڕین و یاقووت' },
@@ -479,6 +579,8 @@ function setSeasonCityFilter(cityId) {
   }
   renderSeasonPassModalBody();
   initAllSnowCanvases();
+  const root = document.getElementById('ykSeasonRoot');
+  if (root) root.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderRewardVisualArtwork(item, sizeMode = 'card') {
@@ -490,14 +592,16 @@ function renderRewardVisualArtwork(item, sizeMode = 'card') {
     : pName.charAt(0);
 
   if (item.kind === 'scene') {
+    const visualContent = item.artKey
+      ? getCityIllustratedArtworkSVG(item.artKey)
+      : `<img src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" class="w-full h-full object-cover ${isHero ? 'scale-105' : ''} transition-transform duration-700" />`;
+
     return `
       <div class="relative w-full h-full overflow-hidden" style="background:${item.fallbackGrad || '#1a0c06'};">
-        <img src="${item.img}" alt="${item.name}"
-          onerror="this.style.display='none'"
-          class="w-full h-full object-cover ${isHero ? 'scale-105' : ''} transition-transform duration-700" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/30"></div>
+        ${visualContent}
+        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none"></div>
         ${item.snow ? '<canvas class="yk-snow-canvas absolute inset-0 w-full h-full pointer-events-none"></canvas>' : ''}
-        <div class="absolute bottom-1.5 right-2 left-2 flex items-center justify-between text-[10px] font-black text-amber-200 drop-shadow">
+        <div class="absolute bottom-1.5 right-2 left-2 flex items-center justify-between text-[10px] font-black text-amber-200 drop-shadow pointer-events-none">
           <span>🏙️ ${item.cityLabel || 'کوردستان'}</span>
           ${item.snow ? '<span class="px-1.5 py-0.2 rounded-full bg-sky-500/45 border border-sky-300/60 text-white">❄️ بەفراوی</span>' : ''}
         </div>
@@ -632,10 +736,10 @@ function renderSeasonPassModalBody() {
 
     <div class="px-3 pt-3 space-y-3.5">
       <div class="rounded-3xl overflow-hidden border-2 border-yellow-400/75 shadow-[0_18px_45px_rgba(0,0,0,0.85)] bg-[#140804]">
-        <div class="relative h-48 w-full">
+        <div class="relative h-56 w-full">
           ${renderRewardVisualArtwork(previewItem, 'hero')}
-          <div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-amber-400/50 text-[11px] font-black text-yellow-300">
-            👁️ پێشاندانی ڕاستەوخۆ • ئاستی ${previewItem.lv}
+          <div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-amber-400/50 text-[11px] font-black text-yellow-300">
+            👁️ پێشاندانی گەورە • ئاستی ${previewItem.lv}
           </div>
         </div>
         <div class="p-4 bg-gradient-to-b from-[#241108] to-[#140804] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -671,7 +775,7 @@ function renderSeasonPassModalBody() {
       </div>
 
       <div class="space-y-1.5">
-        <div class="text-[11px] font-black text-amber-300 px-1">🏙️ شارەکەت هەڵبژێرە (تایبەت بە بەشداربووانی $3):</div>
+        <div class="text-[11px] font-black text-amber-300 px-1">🏙️ کلیک لە شارەکەت بکە تا وێنەکەی بە گەورەیی لە سەرەوە ببینیت:</div>
         <div class="yk-no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-1">
           ${YK_CITY_FILTERS.map(c => `
             <button onclick="setSeasonCityFilter('${c.id}')"
