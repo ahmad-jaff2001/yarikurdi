@@ -1,0 +1,900 @@
+
+:root {
+      --bg-deep: #1a0d06;
+      --bg-royal: #29150a;
+      --bg-card: #241208;
+      --gold: #facc15;
+      --gold-light: #fef08a;
+      --gold-dark: #b45309;
+    }
+
+    html, body {
+      background-color: #1a0d06 !important;
+      /* پاشبنەمای چایخانەی دارگوێزی شاهانە بە تیشکی زێڕین و ڕەنگەکانی کوردستان */
+      background-image:
+        radial-gradient(circle at 50% 18%, rgba(250, 204, 21, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(220, 38, 38, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 15% 75%, rgba(21, 128, 61, 0.12) 0%, transparent 45%),
+        linear-gradient(180deg, #2b170c 0%, #1c0e06 50%, #120803 100%) !important;
+      color: #ffffff !important;
+      min-height: 100dvh;
+    }
+
+    /* هیدەر بە شریتی ئاڵای کوردستان و نووسینی زەقی سپی و زێڕین */
+    header {
+      background: rgba(28, 14, 6, 0.95) !important;
+      border-bottom: 4px solid transparent !important;
+      border-image: repeating-linear-gradient(90deg, #dc2626 0 18px, #facc15 18px 36px, #15803d 36px 54px, #ffffff 54px 72px) 1 !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65) !important;
+    }
+    header nav {
+      background: #170b05 !important;
+      border: 1.5px solid rgba(250, 204, 21, 0.35) !important;
+    }
+    header nav button.text-slate-300,
+    header .text-white {
+      color: #ffffff !important;
+    }
+    header .text-slate-400 {
+      color: #fde68a !important;
+    }
+    header .bg-\[\#0e1c38\] {
+      background: #2b170c !important;
+      border-color: rgba(250, 204, 21, 0.45) !important;
+    }
+
+    /* کارتەکانی یاری بە چوارچێوەی زێڕینی درەوشاوە */
+    .pito-game-card {
+      position: relative;
+      border-radius: 1.45rem !important;
+      background: #241208 !important;
+      border: 2.5px solid #f59e0b !important;
+      box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.85), 0 0 18px rgba(250, 204, 21, 0.18) !important;
+      transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+
+    .pito-game-card:hover {
+      transform: translateY(-7px) scale(1.025) !important;
+      border-color: #fde047 !important;
+      box-shadow: 0 22px 42px -8px rgba(0, 0, 0, 0.95), 0 0 28px rgba(250, 204, 21, 0.45) !important;
+    }
+
+    .royal-card {
+      background: linear-gradient(145deg, rgba(43, 23, 12, 0.96), rgba(24, 12, 5, 0.98)) !important;
+      border: 1.5px solid rgba(250, 204, 21, 0.35) !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(12px);
+    }
+
+    .royal-card .text-white { color: #ffffff !important; }
+    .royal-card .text-slate-300,
+    .royal-card .text-slate-400 { color: #e7e5e4 !important; }
+    .royal-card .bg-\[\#091326\],
+    .royal-card .bg-\[\#071022\],
+    .royal-card .bg-\[\#081124\] {
+      background: #1a0d06 !important;
+      color: #ffffff !important;
+      border-color: rgba(250, 204, 21, 0.35) !important;
+    }
+
+    .gold-btn {
+      background: linear-gradient(135deg, #fde047 0%, #f59e0b 55%, #d97706 100%) !important;
+      color: #1a0d06 !important;
+      font-weight: 900;
+      border: 1px solid #fef9c3;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .gold-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(250, 204, 21, 0.6); }
+
+    .gold-text {
+      background: linear-gradient(to left, #fef08a, #facc15, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* شریتی خوارەوەی مۆبایل */
+    .floating-bottom-dock {
+      background: rgba(36, 18, 8, 0.97) !important;
+      border: 2px solid #f59e0b !important;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85) !important;
+    }
+    .dock-item { color: #fef3c7 !important; }
+    .dock-item.active { color: #1a0d06 !important; }
+    /* Chess Board */
+    .board-wrapper {
+      position: relative;
+      width: min(88vw, 480px);
+      height: min(88vw, 480px);
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+      direction: ltr;
+      touch-action: none;
+    }
+
+    .chess-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; }
+    .sq { position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .sq.light { background-color: #d9e2ec; }
+    .sq.dark { background-color: #334e68; }
+    .sq.selected { background-color: rgba(212, 175, 55, 0.65) !important; }
+    .sq.last-move { background-color: rgba(243, 207, 101, 0.38) !important; }
+    .sq.premove-from { background-color: rgba(220, 38, 38, 0.55) !important; }
+    .sq.premove-to { background-color: rgba(239, 68, 68, 0.7) !important; }
+    .sq.in-check { background: radial-gradient(circle, #ef4444 15%, #991b1b 85%) !important; }
+    .sq.drag-hover { box-shadow: inset 0 0 0 4px rgba(243, 207, 101, 0.9); }
+
+    .legal-dot { width: 28%; height: 28%; border-radius: 50%; background: rgba(16, 185, 129, 0.75); pointer-events: none; }
+    .legal-ring { position: absolute; inset: 6%; border-radius: 50%; border: 4px solid rgba(239, 68, 68, 0.8); pointer-events: none; }
+
+    .piece { width: 84%; height: 84%; z-index: 2; pointer-events: none; transition: transform 0.1s ease; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.45)); }
+    .piece.dragging-origin { opacity: 0.25; }
+
+    #dragGhost { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%) scale(1.18); filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.65)); display: none; }
+    .coord-file { position: absolute; bottom: 2px; right: 4px; font-size: 10px; font-weight: 700; opacity: 0.7; pointer-events: none; }
+    .coord-rank { position: absolute; top: 2px; left: 4px; font-size: 10px; font-weight: 700; opacity: 0.7; pointer-events: none; }
+    #arrowCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+    /* Domino Table & Ivory Tiles */
+    .domino-table {
+      background: radial-gradient(circle at center, #0e3a2f 0%, #07201a 75%, #04130f 100%);
+      border: 4px solid #b59224;
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.75), 0 15px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    .domino-tile {
+      background: linear-gradient(145deg, #fffdf7 0%, #f3ead3 100%);
+      border: 2px solid #cbb682;
+      border-radius: 10px;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 #ffffff;
+      color: #111827;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .domino-tile.playable {
+      border-color: #f3cf65;
+      box-shadow: 0 0 16px rgba(243, 207, 101, 0.65), 0 6px 14px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+    }
+    .domino-tile.playable:hover { transform: translateY(-10px) scale(1.06); }
+    .domino-tile.selected-tile { transform: translateY(-14px) scale(1.08); border: 3px solid #10b981; box-shadow: 0 0 22px rgba(16, 185, 129, 0.85); }
+
+    .domino-back { background: linear-gradient(135deg, #10254d 0%, #071229 100%); border: 2px solid #d4af37; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+    .pip-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 3px; }
+    .pip { width: 7px; height: 7px; border-radius: 50%; margin: auto; }
+    .pip-0 { background: transparent; }
+    .pip-1 { background: #dc2626; width: 9px; height: 9px; }
+    .pip-2 { background: #1e3a8a; }
+    .pip-3 { background: #047857; }
+    .pip-4 { background: #b45309; }
+    .pip-5 { background: #6d28d9; }
+    .pip-6 { background: #111827; }
+
+    @keyframes pulseRing { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(2.1); opacity: 0; } }
+    .radar-ring { animation: pulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+/* Konkan Royal Cards & Table */
+    .konkan-card {
+      width: 68px;
+      height: 100px;
+      background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: -3px 6px 14px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px 6px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .konkan-card:hover { transform: translateY(-10px) scale(1.04); z-index: 20; }
+    .konkan-card.selected {
+      transform: translateY(-18px) scale(1.07);
+      border: 3px solid #f3cf65;
+      box-shadow: 0 0 22px rgba(243, 207, 101, 0.85);
+      z-index: 25;
+    }
+    .konkan-card-sm { width: 46px; height: 68px; padding: 3px 4px; border-radius: 7px; cursor: default; }
+    .konkan-card-sm:hover { transform: none; }
+    .konkan-back {
+      width: 44px; height: 64px;
+      background: repeating-linear-gradient(45deg, #10254d, #10254d 5px, #17346b 5px, #17346b 10px);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .meld-group {
+      background: rgba(5, 11, 24, 0.45);
+      border: 1.5px dashed rgba(243, 207, 101, 0.45);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .meld-group:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+    /* Live Mic Voice Ring */
+    @keyframes voicePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75); }
+      70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .mic-speaking {
+      border: 2.5px solid #10b981 !important;
+      animation: voicePulse 1.1s infinite;
+    }
+    /* Modern App UI: 3-Column Visual Cards & Floating Bottom Dock */
+    body { padding-bottom: 92px; }
+    .pito-game-card {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .pito-game-card:hover, .pito-game-card:active {
+      transform: translateY(-4px) scale(1.02);
+      border-color: #f3cf65;
+      box-shadow: 0 14px 30px rgba(243, 207, 101, 0.28);
+    }
+    .pito-game-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .pito-game-card:hover img { transform: scale(1.07); }
+    .pito-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4, 9, 20, 0.94) 8%, rgba(4, 9, 20, 0.25) 52%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .pito-card-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+      line-height: 1.2;
+    }
+    .floating-bottom-dock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      padding: 7px 14px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(243, 207, 101, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 45;
+    }
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      color: #334155;
+      font-size: 19px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dock-item.active {
+      background: linear-gradient(135deg, #d4af37, #b48811);
+      color: #050b18;
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.55);
+    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    /* Fit Games Perfectly Inside Screen Without Scroll */
+    body.in-game-mode { padding-bottom: 10px !important; }
+    body.in-game-mode .floating-bottom-dock { display: none !important; }
+    body.in-game-mode header { padding-top: 4px !important; padding-bottom: 4px !important; }
+    
+    #view-chess, #view-domino, #view-konkan {
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+    #chessBoard {
+      width: min(86vw, 62vh, 490px) !important;
+      height: min(86vw, 62vh, 490px) !important;
+      margin: 0 auto;
+    }
+    #dominoTableArea {
+      min-height: 54vh !important;
+      max-height: 62vh !important;
+    }
+    /* Chess.com Pro Layout (Full Screen Fit, Zero Scroll) */
+    body.in-game-mode {
+      padding-bottom: 0 !important;
+      overflow-x: hidden;
+    }
+    body.in-game-mode header,
+    body.in-game-mode .floating-bottom-dock {
+      display: none !important;
+    }
+
+    .chesscom-arena {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      min-height: 100vh;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .chesscom-arena {
+        grid-template-columns: 1fr;
+        padding: 8px;
+        gap: 10px;
+      }
+    }
+    .chesscom-board-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .chesscom-player-strip {
+      width: min(92vw, 76vh, 620px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1930;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 12px;
+      padding: 8px 14px;
+    }
+    #chessBoard {
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
+      aspect-ratio: 1 / 1 !important;
+      margin: 0 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75) !important;
+    }
+    .chesscom-sidebar {
+      height: min(86vh, 710px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #0b1528;
+      border: 1px solid rgba(243, 207, 101, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+    }
+    #boardWrapper {
+      width: min(92vw, 76vh, 620px) !important;
+      height: min(92vw, 76vh, 620px) !important;
+    }
+    #activeGameArea > div:last-child {
+      width: 100% !important;
+      max-width: 360px !important;
+    }
+    @media (max-width: 900px) {
+      .chesscom-sidebar { height: auto; }
+      
+    }
+   /* Yalla Ludo Pro Design */
+  /* ================= YARIKURDI ROYAL TEAHOUSE DOMINO 101 ================= */
+    .yk-domino-arena {
+      max-width: 440px;
+      min-height: 96dvh;
+      max-height: 96dvh;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 28px;
+      padding: 12px;
+      overflow: hidden;
+      /* مێزی دارگوێزی تۆخ بە نەخشی ڕەسەن */
+      background:
+        radial-gradient(circle at 50% 45%, rgba(217, 119, 6, 0.14) 0%, rgba(15, 10, 6, 0.88) 85%),
+        repeating-linear-gradient(90deg, #3b2314 0px, #472a18 28px, #2f1b0f 30px, #3f2515 58px);
+      border: 3px solid #d97706;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 0, 0, 0.75);
+    }
+    /* نەخشی فەرشی کوردی لە لێواری سەرەوە و خوارەوە */
+    .yk-domino-arena::before,
+    .yk-domino-arena::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #dc2626 0 12px, #facc15 12px 24px, #059669 24px 36px, #f8fafc 36px 48px);
+      opacity: 0.85;
+      z-index: 2;
+    }
+    .yk-domino-arena::before { top: 0; }
+    .yk-domino-arena::after { bottom: 0; }
+
+    /* شریتی سەرەوەی یاریزان و بۆت */
+    .yk-dom-hud-top {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .yk-dom-opponent-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(18, 13, 10, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      border-radius: 16px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .yk-bot-mini-tiles {
+      display: flex;
+      gap: 3px;
+    }
+    .yk-bot-mini-tile {
+      width: 9px;
+      height: 16px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #ef4444, #991b1b);
+      border: 1px solid #fca5a5;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    /* کەپسوولی بازاڕ (بۆنیا) */
+    .yk-boneyard-pill {
+      margin: 4px auto 0;
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      color: #451a03;
+      border: 2px solid #f59e0b;
+      border-radius: 9999px;
+      padding: 3px 14px;
+      font-size: 11px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .yk-boneyard-pill:hover:not(:disabled) { transform: scale(1.06); }
+    .yk-boneyard-pill:disabled { opacity: 0.7; cursor: default; }
+
+    /* گۆڕەپانی دانانی کاشییەکان */
+    .yk-dom-board-stage {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      margin: 8px 0;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px dashed rgba(251, 191, 36, 0.22);
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: 360px;
+    }
+
+    /* کارتی ڕێنمایی ناوەڕاست */
+    .yk-dom-hint-banner {
+      background: rgba(255, 251, 235, 0.96);
+      color: #1c1917;
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      padding: 12px 16px;
+      max-width: 88%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* کاشیی عاجیی شاهانە بە بزمارە زێڕینەکەوە */
+    .yk-tile {
+      background: linear-gradient(155deg, #ffffff 0%, #fdf8ee 65%, #efe4ce 100%);
+      border: 1.5px solid #d6c5a9;
+      border-radius: 9px;
+      box-shadow: 0 4px 0 #a8967a, 0 7px 14px rgba(0, 0, 0, 0.55);
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      user-select: none;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
+    }
+    .yk-tile.horiz {
+      width: 58px;
+      height: 30px;
+      padding: 0 6px;
+      flex-direction: row;
+    }
+    .yk-tile.vert-double {
+      width: 32px;
+      height: 58px;
+      padding: 6px 0;
+      flex-direction: column;
+    }
+    .yk-tile.in-hand {
+      width: 44px;
+      height: 82px;
+      padding: 7px 0;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .yk-tile.in-hand.can-move {
+      border-color: #facc15;
+      box-shadow: 0 0 16px rgba(250, 204, 21, 0.9), 0 5px 0 #ca8a04;
+      transform: translateY(-9px);
+    }
+    .yk-tile.in-hand.can-move:hover {
+      transform: translateY(-14px) scale(1.06);
+    }
+    .yk-tile.in-hand.locked-tile {
+      opacity: 0.72;
+      filter: brightness(0.92);
+    }
+
+    /* هێڵ و ئەڵقەی زێڕینی ناوەڕاستی کاشی */
+    .yk-tile-divider-h {
+      width: 1.5px;
+      height: 74%;
+      background: linear-gradient(180deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-divider-v {
+      width: 74%;
+      height: 1.5px;
+      background: linear-gradient(90deg, #b45309, #f59e0b, #b45309);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .yk-tile-rivet {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #fde047, #b45309);
+      border: 0.5px solid #78350f;
+    }
+
+    /* خاڵە ڕەنگاوڕەنگەکانی سەر کاشی */
+    .yk-pip-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      width: 22px;
+      height: 22px;
+      place-items: center;
+    }
+    .yk-pip {
+      width: 5.2px;
+      height: 5.2px;
+      border-radius: 9999px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.45), 0 1px 1px rgba(0,0,0,0.35);
+    }
+    .pip-c-1, .pip-c-6 { background: #dc2626; } /* سووری یاقووتی */
+    .pip-c-4, .pip-c-5 { background: #0284c7; } /* شینی فیروزەیی */
+    .pip-c-2, .pip-c-3 { background: #059669; } /* سەوزی زمڕوتی */
+
+    /* پانێڵی خوارەوەی یاریزان */
+    .yk-dom-player-dock {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .yk-dom-player-bar {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9));
+      border: 1.5px solid rgba(250, 204, 21, 0.45);
+      border-radius: 16px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+    .yalla-wood-frame {
+      background: linear-gradient(145deg, #451a03 0%, #78350f 45%, #451a03 100%);
+      padding: 11px;
+      border-radius: 22px;
+      border: 2.5px solid #f59e0b;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), inset 0 2px 4px rgba(254, 240, 138, 0.45), 0 0 25px rgba(245, 158, 11, 0.22);
+    }
+    .ludo-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      grid-template-rows: repeat(15, 1fr);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #fefce8;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #92400e;
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
+    }
+    .ludo-cell {
+      border: 0.5px solid rgba(146, 64, 14, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ludo-socket {
+      width: 76%;
+      height: 76%;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(226,232,240,0.95));
+      border: 1.5px solid rgba(146, 64, 14, 0.35);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ludo-token {
+      width: 88%;
+      height: 88%;
+      border-radius: 9999px;
+      border: 2.5px solid #ffffff;
+      cursor: pointer;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.55), inset 0 2px 3px rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ludo-token:hover {
+      transform: scale(1.16) translateY(-2px);
+    }
+    .yalla-dice-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      border: 2px solid #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), inset 0 2px 3px #ffffff;
+      transition: transform 0.15s ease;
+    }
+    .yalla-dice-box:active {
+      transform: scale(0.92);
+    }
+    .ludo-token.yellow-pawn {
+      background: radial-gradient(circle at 32% 30%, #fde047, #eab308 65%, #a16207);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+    .ludo-token.red-pawn {
+      background: radial-gradient(circle at 32% 30%, #fca5a5, #ef4444 65%, #991b1b);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+    .ludo-token.movable {
+      animation: yallaPulse 0.65s infinite alternate;
+      box-shadow: 0 0 14px #facc15, 0 0 4px #ffffff;
+    }
+    @keyframes yallaPulse {
+      from { transform: scale(0.92); }
+      to { transform: scale(1.22); }
+    }
+    .yalla-dice-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 -3px 0 #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #1e293b;
+      cursor: pointer;
+      user-select: none;
+    }
+    .dice-rolling { animation: diceSpin 0.35s ease-in-out; }
+    @keyframes diceSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.16); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .mic-speaking-ring {
+      box-shadow: 0 0 0 3px #22c55e, 0 0 14px #22c55e !important;
+    }
+    ::-webkit-scrollbar-track { background: #070f20; }
+    ::-webkit-scrollbar-thumb { background: #263f73; border-radius: 9999px; }
+    /* شاشەی سەرەتایی شاهانە (Splash Screen) */
+    #royalSplashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 35%, #16284c 0%, #070d1b 65%, #03060d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+    #royalSplashScreen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-crown-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #f3cf65, #d4af37, #9e7e1b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.45), inset 0 2px 6px rgba(255,255,255,0.5);
+      animation: splashPulse 1.8s infinite ease-in-out;
+    }
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(243, 207, 101, 0.75); }
+    }
+    /* ================= YARIKURDI MASTERPIECE ROYAL HUB UI ================= */
+    @keyframes royalSheen {
+      0% { transform: translateX(150%) skewX(-25deg); }
+      100% { transform: translateX(-150%) skewX(-25deg); }
+    }
+    @keyframes sunPulseGlow {
+      0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.85)); }
+      50% { transform: scale(1.07) rotate(6deg); filter: drop-shadow(0 0 26px rgba(253, 224, 71, 1)); }
+    }
+    @keyframes royalBorderGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25), 0 16px 35px rgba(0, 0, 0, 0.8); }
+      50% { box-shadow: 0 0 28px rgba(250, 204, 21, 0.5), 0 20px 42px rgba(0, 0, 0, 0.9); }
+    }
+
+    html, body {
+      background-color: #120703 !important;
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.24) 0%, transparent 55%),
+        radial-gradient(circle at 15% 40%, rgba(185, 28, 28, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(21, 128, 61, 0.15) 0%, transparent 45%),
+        linear-gradient(180deg, #241107 0%, #160904 48%, #0d0502 100%) !important;
+      background-attachment: fixed !important;
+    }
+
+    section {
+      position: relative;
+      z-index: 10;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(28, 13, 5, 0.94) 0%, rgba(18, 8, 3, 0.88) 100%) !important;
+      backdrop-filter: blur(18px) !important;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.75), 0 2px 15px rgba(245, 158, 11, 0.18) !important;
+    }
+
+    #view-hub svg.w-24.h-24 {
+      animation: sunPulseGlow 4.5s ease-in-out infinite;
+    }
+
+    .pito-game-card {
+      border-radius: 1.5rem !important;
+      border: 2px solid rgba(250, 204, 21, 0.55) !important;
+      background: #1a0c05 !important;
+      box-shadow: 0 16px 34px -8px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(254, 240, 138, 0.45) !important;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.35s ease !important;
+    }
+
+    .pito-game-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 55%;
+      background: linear-gradient(90deg, transparent, rgba(255, 250, 220, 0.32), transparent);
+      transform: translateX(220%) skewX(-25deg);
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .pito-game-card:hover {
+      transform: translateY(-9px) scale(1.035) !important;
+      border-color: #fde047 !important;
+      box-shadow: 0 26px 48px -10px rgba(0, 0, 0, 0.95), 0 0 32px rgba(250, 204, 21, 0.5) !important;
+    }
+
+    .pito-game-card:hover::after {
+      animation: royalSheen 0.85s ease-out forwards;
+    }
+
+    .pito-card-overlay {
+      background: linear-gradient(to top, rgba(12, 5, 2, 0.96) 10%, rgba(12, 5, 2, 0.32) 52%, transparent 100%) !important;
+    }
+
+    .pito-card-title {
+      font-size: 17px !important;
+      letter-spacing: 0.3px;
+      background: linear-gradient(180deg, #ffffff 0%, #fef08a 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.95));
+    }
+
+    .gold-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 52%, #b45309 100%) !important;
+      border: 1.5px solid #fef9c3 !important;
+      box-shadow: 0 8px 22px rgba(245, 158, 11, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.75) !important;
+    }
+
+    .gold-btn::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 45%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      transform: translateX(250%) skewX(-25deg);
+      animation: royalSheen 3.8s infinite ease-in-out;
+    }
+
+    .floating-bottom-dock {
+      background: linear-gradient(180deg, rgba(38, 18, 7, 0.92) 0%, rgba(18, 8, 3, 0.98) 100%) !important;
+      backdrop-filter: blur(20px) !important;
+      border: 1.8px solid rgba(250, 204, 21, 0.65) !important;
+      animation: royalBorderGlow 4s ease-in-out infinite;
+    }
+  
