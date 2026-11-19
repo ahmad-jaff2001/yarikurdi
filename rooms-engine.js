@@ -1,3 +1,6 @@
+const PLATFORM_OWNER_EMAIL = 'ah6753038@gmail.com';
+const PLATFORM_OWNER_FALLBACK_UID = 'u_ahmadhassan';
+
 const ROOM_THEMES = [
   { id: 'sherwana', name: 'قەڵای شێروانە • کەلار', subtitle: 'مێژووی گەرمیان', accent: '#facc15', preview: 'linear-gradient(135deg,#451a03,#9a3412,#1c0a04)' },
   { id: 'erbil', name: 'قەڵای هەولێر', subtitle: 'پایتەختی مێژوو', accent: '#fb923c', preview: 'linear-gradient(135deg,#2e1065,#7c2d12,#0f0720)' },
@@ -8,15 +11,26 @@ const ROOM_THEMES = [
 ];
 
 const ROYAL_GIFTS_CATALOG = [
-  { id: 'tea', name: 'چای چایخانە', icon: '🫖', cost: 5, xp: 15, tier: 'normal', cat: 'kurdish', desc: 'چای گەرمی دیوەخان' },
-  { id: 'rose', name: 'گوڵی سوور', icon: '🌹', cost: 15, xp: 30, tier: 'normal', cat: 'hot', desc: 'ڕێزلێنانی تایبەت' },
-  { id: 'scroll', name: 'فەرمانی شاهانە', icon: '📜', cost: 40, xp: 75, tier: 'normal', cat: 'kurdish', desc: 'پەیامی شکۆمەندی' },
-  { id: 'lovebox', name: 'سندوقی دڵ', icon: '💝', cost: 99, xp: 160, tier: 'rare', cat: 'hot', desc: 'دیارییەکی پڕ سۆز' },
-  { id: 'crown', name: 'تاجی پاشا', icon: '👑', cost: 299, xp: 450, tier: 'epic', cat: 'vip', desc: 'درەوشانەوەی زێڕین' },
-  { id: 'sports_car', name: 'ئۆتۆمبێلی لوکس', icon: '🏎️', cost: 599, xp: 900, tier: 'epic', cat: 'hot', desc: 'هاتنەناوەوەی شاهانە' },
-  { id: 'knight', name: 'سوارچاکی زێڕین', icon: '⚔️', cost: 1200, xp: 1800, tier: 'legendary', cat: 'vip', desc: 'ئەنیمەیشنی فول سکرین' },
-  { id: 'whale', name: 'نەهەنگی گەردوونی', icon: '🐋', cost: 2500, xp: 3800, tier: 'legendary', cat: 'vip', desc: 'شەپۆلی گەردوونی!' },
-  { id: 'eagle', name: 'هەڵۆی کوردستان', icon: '🦅', cost: 5000, xp: 8000, tier: 'mythic', cat: 'kurdish', desc: 'بەرزترین دیاریی پلاتفۆرم!' }
+  { id: 'teapot', name: 'قۆری چا', icon: '🫖', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Iranian_Samovar_and_Teapot.jpg?width=600', cost: 6, xp: 15, cat: 'cheap', anim: 'romance' },
+  { id: 'rose', name: 'گوڵ', icon: '🌹', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Red_rose.jpg?width=600', cost: 10, xp: 25, cat: 'cheap', anim: 'romance' },
+  { id: 'lantern', name: 'فانۆس', icon: '🏮', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Fanous_Ramadan.jpg?width=600', cost: 16, xp: 35, cat: 'cheap', anim: 'romance' },
+  { id: 'cat', name: 'پشیلە', icon: '🐱', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cat_November_2010-1a.jpg?width=600', cost: 30, xp: 55, cat: 'cheap', anim: 'beast' },
+  { id: 'flower_garden', name: 'باخچەیەکی پڕ لە گوڵ', icon: '🌺', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Keukenhof_Garden_(33).JPG?width=640', cost: 80, xp: 140, cat: 'cheap', anim: 'romance' },
+
+  { id: 'wolf', name: 'گورگی دڕندە', icon: '🐺', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Gray_Wolf_(Canis_lupus)_(119671562).jpg?width=640', cost: 250, xp: 400, cat: 'beasts', anim: 'beast' },
+  { id: 'leopard', name: 'پڵنگ', icon: '🐆', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/African_leopard,_Panthera_pardus_pardus,_near_Lake_Panic,_Kruger_National_Park,_South_Africa_(19448654130).jpg?width=640', cost: 400, xp: 650, cat: 'beasts', anim: 'beast' },
+  { id: 'lion', name: 'شێر', icon: '🦁', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Lion_waiting_in_Namibia.jpg?width=640', cost: 600, xp: 950, cat: 'beasts', anim: 'beast' },
+  { id: 'big_bear', name: 'ورچی گەورە', icon: '🐻', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2010-kodiak-bear-1.jpg?width=640', cost: 850, xp: 1300, cat: 'beasts', anim: 'beast' },
+  { id: 'big_whale', name: 'نەهەنگی گەورە', icon: '🐋', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Humpback_Whale_underwater_shot.jpg?width=640', cost: 1200, xp: 1850, cat: 'beasts', anim: 'ocean' },
+  { id: 'winged_lion', name: 'شێری باڵدار', icon: '🪽', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Winged_Lion_-_Getty_Museum_(79.AC.140).jpg?width=640', cost: 2200, xp: 3400, cat: 'beasts', anim: 'royal' },
+  { id: 'pegasus', name: 'ئەسپی باڵدار', icon: '🦄', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Pegasus_bronze_sculpture.jpg?width=640', cost: 2800, xp: 4200, cat: 'beasts', anim: 'royal' },
+
+  { id: 'bmw', name: 'سەیارەی BMW', icon: '🚘', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/BMW_M4_(G82)_IMG_5391.jpg?width=640', cost: 1000, xp: 1550, cat: 'cars', anim: 'car' },
+  { id: 'land_cruiser', name: 'لاند کرۆزەر', icon: '🚙', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Land_Cruiser_300_Sahara.jpg?width=640', cost: 1400, xp: 2100, cat: 'cars', anim: 'car' },
+  { id: 'range_rover', name: 'ڕەنج ڕۆڤەر', icon: '🚙', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Range_Rover_2013.jpg?width=640', cost: 1800, xp: 2800, cat: 'cars', anim: 'car' },
+  { id: 'mercedes', name: 'مارسیدس', icon: '🚘', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2019_Mercedes-AMG_G_63.jpg?width=640', cost: 2400, xp: 3600, cat: 'cars', anim: 'car' },
+  { id: 'race_car', name: 'سەیارەی پێشبڕکێ', icon: '🏎️', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Ferrari_SF90_Stradale_IMG_4242.jpg?width=640', cost: 3500, xp: 5200, cat: 'cars', anim: 'car' },
+  { id: 'rolls_royce', name: 'ڕۆڵس ڕۆیس', icon: '💎', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2020_Rolls-Royce_Ghost_V12_4X4_Automatic_6.75.jpg?width=640', cost: 5000, xp: 7800, cat: 'cars', anim: 'car' }
 ];
 
 const COIN_STORE_PACKAGES = [
@@ -62,7 +76,7 @@ let stayXpInterval = null;
 let roomBgAnimFrame = null;
 
 let selectedGiftRecipient = 'ALL';
-let selectedGiftId = 'tea';
+let selectedGiftId = 'teapot';
 let selectedGiftQty = 1;
 let selectedGiftCat = 'all';
 let lastSentGiftCombo = null;
@@ -100,11 +114,46 @@ function injectVipRoomStyles() {
       0% { transform: translateX(120%); opacity: 0; }
       100% { transform: translateX(0); opacity: 1; }
     }
-    @keyframes ykGrandGiftPop {
-      0% { transform: scale(0.25) rotate(-12deg); opacity: 0; }
-      35% { transform: scale(1.12) rotate(4deg); opacity: 1; }
-      55% { transform: scale(0.98) rotate(-2deg); opacity: 1; }
-      100% { transform: scale(1.04) rotate(0deg); opacity: 1; }
+    @keyframes ykCarDriftStage {
+      0% { transform: translateX(135%) skewX(-16deg) scale(0.7); opacity: 0; }
+      20% { transform: translateX(-5%) skewX(5deg) scale(1.08); opacity: 1; }
+      32% { transform: translateX(0%) skewX(0deg) scale(1.02); opacity: 1; }
+      82% { transform: translateX(0%) scale(1.06); opacity: 1; }
+      100% { transform: translateX(-130%) skewX(14deg) scale(0.8); opacity: 0; }
+    }
+    @keyframes ykBeastSwoopStage {
+      0% { transform: scale(0.15) translateY(-130px) rotate(-10deg); opacity: 0; }
+      26% { transform: scale(1.1) translateY(0px) rotate(2deg); opacity: 1; }
+      48% { transform: scale(1.02) translateY(-8px) rotate(-2deg); opacity: 1; }
+      72% { transform: scale(1.08) translateY(0px) rotate(1deg); opacity: 1; }
+      100% { transform: scale(1.38) translateY(-45px); opacity: 0; }
+    }
+    @keyframes ykRomanceBloomStage {
+      0% { transform: scale(0.25) translateY(100px); opacity: 0; }
+      26% { transform: scale(1.08) translateY(0px); opacity: 1; }
+      55% { transform: scale(1.01) translateY(-10px); opacity: 1; }
+      84% { transform: scale(1.06) translateY(0px); opacity: 1; }
+      100% { transform: scale(0.85) translateY(-65px); opacity: 0; }
+    }
+    @keyframes ykRoyalDescentStage {
+      0% { transform: translateY(-120px) scale(0.45); opacity: 0; }
+      25% { transform: translateY(0) scale(1.08); opacity: 1; }
+      82% { transform: translateY(-4px) scale(1.04); opacity: 1; }
+      100% { transform: translateY(-35px) scale(1.25); opacity: 0; }
+    }
+    @keyframes ykKenBurnsLive {
+      0% { transform: scale(1) translate(0, 0); }
+      33% { transform: scale(1.16) translate(-2%, -2%); }
+      66% { transform: scale(1.12) translate(2%, -1%); }
+      100% { transform: scale(1.2) translate(0, 0); }
+    }
+    @keyframes ykLightSweep {
+      0% { transform: translateX(160%) skewX(-25deg); }
+      100% { transform: translateX(-160%) skewX(-25deg); }
+    }
+    @keyframes ykShockRing {
+      0% { transform: scale(0.6); opacity: 0.95; }
+      100% { transform: scale(2.0); opacity: 0; }
     }
     @keyframes ykPkShine {
       0% { background-position: 0% 50%; }
@@ -141,8 +190,17 @@ function injectVipRoomStyles() {
   document.head.appendChild(st);
 }
 
+function registerPlatformOwnerUidIfNeeded() {
+  if (typeof db === 'undefined' || typeof auth === 'undefined' || !auth.currentUser || !playerId) return;
+  const email = (auth.currentUser.email || '').trim().toLowerCase();
+  if (email === PLATFORM_OWNER_EMAIL) {
+    db.ref('platformConfig/ownerUid').set(playerId);
+  }
+}
+
 function syncPlayerCoinsListener() {
   if (typeof db === 'undefined' || typeof playerId === 'undefined' || !playerId) return;
+  registerPlatformOwnerUidIfNeeded();
   if (window._ykCoinsSynced) return;
   window._ykCoinsSynced = true;
   db.ref(`players/${playerId}/coins`).on('value', snap => {
@@ -157,7 +215,7 @@ function syncPlayerCoinsListener() {
 }
 
 function updateRoomCoinDisplays() {
-  document.querySelectorAll('.yk-user-coin-balance').forEach(el => {
+  document.querySelectorAll('.yk-user-coin-balance, .yk-bazaar-coin-val').forEach(el => {
     el.textContent = myUserCoins.toLocaleString();
   });
 }
@@ -175,7 +233,7 @@ function ensureGlobalCoinStoreModal() {
       <div class="flex items-center justify-between border-b border-amber-400/25 pb-3">
         <div>
           <h3 class="text-lg font-black gold-text">🪙 فرۆشگای سکەی YariKurdi</h3>
-          <p class="text-[11px] text-amber-200/80">سکە بکڕە بۆ ناردنی دیاریی شاهانە و کردنەوەی کورسییەکان</p>
+          <p class="text-[11px] text-amber-200/80">سکە بکڕە بۆ ناردنی دیاریی شاهانە</p>
         </div>
         <button onclick="closeCoinStoreModal()" class="w-8 h-8 rounded-full bg-white/10 text-white font-bold">✕</button>
       </div>
@@ -197,7 +255,6 @@ function ensureGlobalCoinStoreModal() {
           </div>
         `).join('')}
       </div>
-      <p class="text-[10px] text-center text-amber-200/70">پشتگیری لە FIB • Qi Card • FastPay دەکات</p>
     </div>
   `;
   document.body.appendChild(m);
@@ -247,7 +304,7 @@ function loadActiveVoiceRooms() {
               🪙 <span class="yk-user-coin-balance">${myUserCoins.toLocaleString()}</span>
             </span>
           </div>
-          <p class="text-xs text-amber-100/80 mt-1">سەرەتا ٥ کورسی کراوەیە — هەر کاتێک ویستت کلیک لەسەر کورسییەکی بەتاڵ بکە و شوێنت بگۆڕە!</p>
+          <p class="text-xs text-amber-100/80 mt-1">سەرەتا ٥ کورسی کراوەیە — ٥٠٪ی نرخی هەر دیارییەک ڕاستەوخۆ دەچێتە سەر باڵانسی وەرگر!</p>
         </div>
         <button onclick="openCoinStoreModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-[#1a0d06] text-xs font-black shadow-lg">
           🪙 کڕینی سکە
@@ -349,7 +406,6 @@ async function createVoiceRoom() {
   joinVoiceRoom(rId);
 }
 
-// ڕووکاری فول سکرین بە ناسنامەی سەربەخۆ (ykVip_*) تا هیچ تێکەڵاوییەک لەگەڵ index.html نەبێت
 function buildFullscreenVipRoomRoot() {
   injectVipRoomStyles();
   const existing = document.getElementById('ykVipRoomRoot');
@@ -376,7 +432,6 @@ function buildFullscreenVipRoomRoot() {
       <span id="ykVip_ComboCountText" class="text-sm text-yellow-100 mt-0.5">x1</span>
     </button>
 
-    <!-- هیدەری سەرەوەی VIP Live -->
     <div class="relative z-20 px-3 pb-1.5 space-y-1.5" style="padding-top: max(10px, env(safe-area-inset-top)); background:linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%);">
       <div class="max-w-lg mx-auto flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 bg-black/55 backdrop-blur-md border border-white/15 rounded-full pl-3 pr-1 py-1 min-w-0">
@@ -409,7 +464,6 @@ function buildFullscreenVipRoomRoot() {
         </div>
       </div>
 
-      <!-- شریتی وزە و لیڤڵی ژوور -->
       <div class="max-w-lg mx-auto flex items-center gap-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full px-2.5 py-1">
         <span id="ykVip_SeatsUnlockHint" class="text-[10px] font-black text-amber-300 whitespace-nowrap">🪑 5/8 کورسی</span>
         <div class="flex-1 h-2 rounded-full bg-white/15 overflow-hidden">
@@ -419,12 +473,9 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- ناوەڕاست: سەکۆی ٨ کورسیی VIP + ئامادەبووان + چات -->
     <div class="relative z-20 flex-1 flex flex-col justify-between overflow-hidden max-w-lg w-full mx-auto px-2.5 pb-1">
-      <!-- ٨ کورسییەکە (٢ ڕیزی ٤ دانەیی) -->
       <div id="ykVip_SeatsGrid" class="grid grid-cols-4 gap-2 pt-1.5 shrink-0"></div>
 
-      <!-- شریتی ئامادەبووان و گوێگران لە خوار کورسییەکان (وەک وێنەکەی تیکتۆک) -->
       <div class="flex items-center justify-between gap-2 mt-2 px-1 shrink-0">
         <div id="ykVip_AudienceRow" class="yk-no-scroll flex items-center gap-1.5 overflow-x-auto py-0.5"></div>
         <button id="ykVip_StandUpBtn" onclick="stepDownFromSeat()"
@@ -433,7 +484,6 @@ function buildFullscreenVipRoomRoot() {
         </button>
       </div>
 
-      <!-- چاتی شەفاف و دیارییە جووڵاوەکان -->
       <div class="flex-1 flex flex-col justify-end min-h-0 pt-1">
         <div id="ykVip_FloatingGiftBanner" class="mb-1.5 min-h-[36px] flex items-center justify-start"></div>
         <div id="ykVip_ChatMessages"
@@ -443,7 +493,6 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- شریتی خوارەوەی کۆنترۆڵ -->
     <div class="relative z-20 px-3 pt-1.5" style="padding-bottom: max(12px, env(safe-area-inset-bottom)); background:linear-gradient(0deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0) 100%);">
       <div class="max-w-lg mx-auto flex items-center gap-1.5">
         <button id="ykVip_MicBtn" onclick="toggleRoomMicrophone()"
@@ -474,7 +523,6 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- مێنوی خێرای کورسیی خۆت (بێدەنگکردن یان دابەزین) -->
     <div id="ykVip_MySeatMenu" class="hidden fixed inset-0 flex items-end justify-center bg-black/55 backdrop-blur-xs" style="z-index:10012;" onclick="if(event.target===this) closeMySeatMenu()">
       <div class="bg-[#160e1f]/98 border-t-2 border-amber-400/70 rounded-t-3xl p-4 max-w-lg w-full mx-auto space-y-2.5 shadow-2xl" style="padding-bottom: max(18px, env(safe-area-inset-bottom));">
         <div class="text-center text-xs font-black text-amber-300 pb-1">کۆنترۆڵی کورسییەکەت</div>
@@ -490,8 +538,7 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- پانێڵی دیاری ناردن -->
-    <div id="ykVip_GiftDrawer" class="hidden fixed inset-0 flex flex-col justify-end bg-black/55 backdrop-blur-xs" style="z-index:10015;" onclick="if(event.target===this) closeGiftDrawerModal()">
+    <div id="ykVip_GiftDrawer" class="hidden fixed inset-0 flex flex-col justify-end bg-black/60 backdrop-blur-xs" style="z-index:10015;" onclick="if(event.target===this) closeGiftDrawerModal()">
       <div class="bg-[#120b1a]/98 border-t-2 border-amber-400/75 rounded-t-3xl p-4 max-w-lg w-full mx-auto space-y-3 shadow-2xl" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
           <div class="yk-no-scroll flex items-center gap-1.5 overflow-x-auto pb-0.5" id="ykVip_GiftRecipientsRow"></div>
@@ -499,16 +546,20 @@ function buildFullscreenVipRoomRoot() {
         </div>
 
         <div class="flex items-center justify-between gap-2 text-[11px] font-black">
-          <div class="flex items-center gap-2">
-            <button onclick="setGiftCategory('all', this)" class="yk-gcat-btn text-amber-300 border-b-2 border-amber-300 pb-0.5">هەمووی</button>
-            <button onclick="setGiftCategory('kurdish', this)" class="yk-gcat-btn text-slate-400 pb-0.5">کوردەواری</button>
-            <button onclick="setGiftCategory('hot', this)" class="yk-gcat-btn text-slate-400 pb-0.5">باوترین</button>
-            <button onclick="setGiftCategory('vip', this)" class="yk-gcat-btn text-slate-400 pb-0.5">شاهانە VIP</button>
+          <div class="yk-no-scroll flex items-center gap-2.5 overflow-x-auto">
+            <button onclick="setGiftCategory('all', this)" class="yk-gcat-btn text-amber-300 border-b-2 border-amber-300 pb-0.5 whitespace-nowrap">هەمووی (${ROYAL_GIFTS_CATALOG.length})</button>
+            <button onclick="setGiftCategory('cheap', this)" class="yk-gcat-btn text-slate-400 pb-0.5 whitespace-nowrap">🌹 هەرزان و ئاسایی</button>
+            <button onclick="setGiftCategory('beasts', this)" class="yk-gcat-btn text-slate-400 pb-0.5 whitespace-nowrap">🦁 ئاژەڵ و ئەفسانە</button>
+            <button onclick="setGiftCategory('cars', this)" class="yk-gcat-btn text-slate-400 pb-0.5 whitespace-nowrap">🚘 ئۆتۆمبێل</button>
           </div>
-          <span id="ykVip_SelectedGiftCostHint" class="text-yellow-300">🪙 5</span>
+          <span id="ykVip_SelectedGiftCostHint" class="text-yellow-300 whitespace-nowrap shrink-0">🪙 6</span>
         </div>
 
-        <div id="ykVip_GiftsGrid" class="yk-no-scroll grid grid-cols-4 gap-2 max-h-48 overflow-y-auto"></div>
+        <div class="text-[10px] text-emerald-300/90 text-center bg-emerald-500/10 border border-emerald-400/25 rounded-xl py-1">
+          💰 ٥٠٪ ی دراوی هەر دیارییەک ڕاستەوخۆ دەچێتە سەر باڵانسی وەرگری دیارییەکە!
+        </div>
+
+        <div id="ykVip_GiftsGrid" class="yk-no-scroll grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-60 overflow-y-auto"></div>
 
         <div class="flex items-center justify-between gap-2 pt-2 border-t border-white/10">
           <button onclick="openCoinStoreModal()" class="flex items-center gap-1 px-3 py-2 rounded-full bg-amber-400/15 border border-amber-400/50 text-yellow-300 text-xs font-black">
@@ -531,7 +582,6 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- مۆداڵی هەڵبژاردنی وێنەی شارەکان یان بەرزکردنەوەی وێنەی مۆبایل -->
     <div id="ykVip_ThemePicker" class="hidden fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm" style="z-index:10020;" onclick="if(event.target===this) closeThemePickerModal()">
       <div class="royal-card max-w-md w-full rounded-3xl p-5 space-y-4 border-2 border-amber-400 shadow-2xl">
         <div class="flex items-center justify-between">
@@ -777,7 +827,6 @@ function startCityCanvasRenderer() {
   draw();
 }
 
-// دۆزینەوەی یەکەم کورسیی بەتاڵ کاتێک کەسێک دێتە ناو ژوورەکە
 function findFirstOpenSeatIndex(members, unlockedSeats, isHost) {
   const taken = new Set();
   Object.entries(members || {}).forEach(([uid, m]) => {
@@ -789,7 +838,7 @@ function findFirstOpenSeatIndex(members, unlockedSeats, isHost) {
   for (let i = 0; i < unlockedSeats; i++) {
     if (!taken.has(i)) return i;
   }
-  return -1; // هەموو کورسییەکان پڕن، وەک گوێگر دەمێنێتەوە تا کورسییەک بەتاڵ دەبێت
+  return -1;
 }
 
 async function joinVoiceRoom(rId) {
@@ -809,7 +858,6 @@ async function joinVoiceRoom(rId) {
   buildFullscreenVipRoomRoot();
   updateMicButtonsUI();
 
-  // خوێندنەوەی سەرەتایی ژوور بۆ دابەشکردنی کورسیی بەتاڵ
   const initialSnap = await db.ref('voiceRooms/' + rId).once('value');
   const initialRoom = initialSnap.val() || {};
   const initLv = getRoomLevelData(initialRoom.roomXp || 0);
@@ -927,13 +975,17 @@ async function joinVoiceRoom(rId) {
         </span></div>`;
       }
       if (m.type === 'gift') {
+        const thumbHtml = m.giftImg
+          ? `<img src="${m.giftImg}" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover border border-yellow-300 shadow shrink-0" />`
+          : `<span class="text-2xl">${m.giftIcon || '🎁'}</span>`;
+        const splitInfo = m.recipientShare ? ` • +${m.recipientShare} 🪙 بۆ وەرگر` : '';
         return `<div class="p-2 rounded-2xl bg-gradient-to-l from-amber-500/30 via-rose-600/25 to-black/65 backdrop-blur-md border border-amber-400/50 flex items-center justify-between gap-2">
           <div class="leading-tight">
             <div class="text-[11px] font-black text-amber-300">${escapeRoomHtml(m.senderName)} ➔ <span class="text-white">@${escapeRoomHtml(m.targetName)}</span></div>
-            <div class="text-[10px] text-amber-100">${escapeRoomHtml(m.giftName)} (+${m.coins} 🪙)</div>
+            <div class="text-[10px] text-amber-100">${escapeRoomHtml(m.giftName)} (${(m.coins || 0).toLocaleString()} 🪙${splitInfo})</div>
           </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <span class="text-2xl">${m.giftIcon}</span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${thumbHtml}
             <span class="text-sm font-black text-yellow-300">x${m.qty}</span>
           </div>
         </div>`;
@@ -955,13 +1007,11 @@ async function joinVoiceRoom(rId) {
   });
 }
 
-// گۆڕینی کورسی بە دڵی خۆت (کلیک لەسەر هەر کورسییەکی بەتاڵی کراوە)
 function switchToRoomSeat(targetSeatIdx) {
   if (!currentVoiceRoomId || !playerId) return;
   const lv = getRoomLevelData((currentRoomMeta && currentRoomMeta.roomXp) || 0);
   if (targetSeatIdx < 0 || targetSeatIdx >= lv.unlockedSeats) return;
 
-  // دڵنیابوونەوە لەوەی کەسێکی تر لەسەر ئەم کورسییە نییە
   const occupiedByOther = Object.entries(currentRoomMembers || {}).some(
     ([uid, m]) => uid !== playerId && m.seatIndex === targetSeatIdx
   );
@@ -990,7 +1040,6 @@ function closeMySeatMenu() {
   if (m) m.classList.add('hidden');
 }
 
-// نیشاندانی ٨ کورسییەکە بەپێی seatIndex ی هەر کەسێک (دەتوانیت کورسییەکەت بگۆڕیت!)
 function renderRoomSeats(members) {
   const grid = document.getElementById('ykVip_SeatsGrid');
   if (!grid) return;
@@ -1006,7 +1055,6 @@ function renderRoomSeats(members) {
     }
   }
 
-  // دانانی هەر ئەندامێک لەسەر کورسییەکەی خۆی (seatIndex)
   const seatMap = new Array(8).fill(null);
   const unassigned = [];
   const audience = [];
@@ -1025,7 +1073,6 @@ function renderRoomSeats(members) {
     }
   });
 
-  // ئەندامانی کۆن یان بێ ژمارەی کورسی دەچنە یەکەم کورسیی بەتاڵ
   unassigned.forEach(entry => {
     const emptyIdx = seatMap.findIndex((s, idx) => s === null && idx < unlocked);
     if (emptyIdx !== -1) seatMap[emptyIdx] = entry;
@@ -1079,7 +1126,6 @@ function renderRoomSeats(members) {
         </div>
       `;
     } else if (!isLocked) {
-      // کورسیی بەتاڵی کراوە — کلیک لێی بکە ڕاستەوخۆ دێیتە سەر ئەم کورسییە!
       html += `
         <div onclick="switchToRoomSeat(${i})"
           class="cursor-pointer rounded-2xl p-1.5 bg-black/35 hover:bg-amber-500/20 backdrop-blur-md border border-dashed border-amber-300/50 hover:border-yellow-300 flex flex-col items-center justify-center text-center gap-1 min-h-[108px] transition active:scale-95">
@@ -1106,7 +1152,6 @@ function renderRoomSeats(members) {
   }
   grid.innerHTML = html;
 
-  // نیشاندانی شریتی ئامادەبووان لە ژێر کورسییەکاندا
   const audRow = document.getElementById('ykVip_AudienceRow');
   if (audRow) {
     const allList = Object.entries(members || {});
@@ -1120,15 +1165,15 @@ function renderRoomSeats(members) {
   }
 }
 
-function sendFloatingHeart() {
+function sendFloatingHeart(customIcon) {
   const layer = document.getElementById('ykVip_HeartsLayer');
   if (!layer) return;
-  const icons = ['❤️', '💛', '✨', '👑', '🔥', '💖'];
+  const icons = customIcon ? [customIcon] : ['❤️', '💛', '✨', '👑', '🔥', '💖'];
   const el = document.createElement('div');
   el.textContent = icons[Math.floor(Math.random() * icons.length)];
-  el.style.cssText = `position:absolute; left:${18 + Math.random() * 64}%; bottom:72px; font-size:${22 + Math.random() * 14}px; animation: ykFloatHeart 1.8s ease-out forwards; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6));`;
+  el.style.cssText = `position:absolute; left:${12 + Math.random() * 76}%; bottom:72px; font-size:${22 + Math.random() * 18}px; animation: ykFloatHeart 1.85s ease-out forwards; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.65));`;
   layer.appendChild(el);
-  setTimeout(() => el.remove(), 1850);
+  setTimeout(() => el.remove(), 1900);
 }
 
 function selectGiftRecipientAndOpen(uid) {
@@ -1152,9 +1197,9 @@ function closeGiftDrawerModal() {
 function setGiftCategory(cat, btn) {
   selectedGiftCat = cat;
   document.querySelectorAll('.yk-gcat-btn').forEach(b => {
-    b.className = 'yk-gcat-btn text-slate-400 pb-0.5';
+    b.className = 'yk-gcat-btn text-slate-400 pb-0.5 whitespace-nowrap';
   });
-  if (btn) btn.className = 'yk-gcat-btn text-amber-300 border-b-2 border-amber-300 pb-0.5';
+  if (btn) btn.className = 'yk-gcat-btn text-amber-300 border-b-2 border-amber-300 pb-0.5 whitespace-nowrap';
   renderGiftsCatalogGrid();
 }
 
@@ -1168,7 +1213,7 @@ function renderGiftRecipientsRow() {
       All (هەمووان)
     </button>
   `;
-  members.forEach(([uid, m], idx) => {
+  members.forEach(([uid, m]) => {
     const active = selectedGiftRecipient === uid;
     html += `
       <button onclick="setGiftRecipient('${uid}')"
@@ -1212,15 +1257,16 @@ function renderGiftsCatalogGrid() {
 
   grid.innerHTML = list.map(g => {
     const isSel = g.id === selectedGiftId;
-    const isBig = g.tier === 'legendary' || g.tier === 'mythic' || g.tier === 'epic';
     return `
       <div onclick="selectGiftItem('${g.id}')"
-        class="cursor-pointer rounded-2xl p-2 flex flex-col items-center justify-between text-center gap-0.5 border transition ${isSel ? 'bg-amber-400/25 border-yellow-300 shadow-[0_0_14px_rgba(250,204,21,0.5)]' : 'bg-white/5 border-white/10'}">
-        <div class="w-full flex justify-end text-[8px]">
-          ${isBig ? '<span class="px-1 rounded bg-rose-600 text-white font-black">3D</span>' : '<span class="opacity-0">.</span>'}
+        class="cursor-pointer rounded-2xl p-1.5 flex flex-col items-center justify-between text-center gap-1 border transition ${isSel ? 'bg-amber-400/25 border-yellow-300 shadow-[0_0_16px_rgba(250,204,21,0.55)] scale-[1.02]' : 'bg-white/5 border-white/10 hover:border-amber-400/40'}">
+        <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-amber-950 to-slate-900 border border-white/15 flex items-center justify-center">
+          <img src="${g.img}" alt="${g.name}" loading="lazy"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            class="w-full h-full object-cover" />
+          <div style="display:none;" class="w-full h-full items-center justify-center text-3xl">${g.icon}</div>
         </div>
-        <div class="text-2xl">${g.icon}</div>
-        <div class="text-[10px] font-black text-white truncate w-full">${g.name}</div>
+        <div class="text-[10px] font-black text-white truncate w-full leading-tight">${g.name}</div>
         <div class="text-[10px] font-black text-yellow-300">🪙 ${g.cost.toLocaleString()}</div>
       </div>
     `;
@@ -1232,11 +1278,12 @@ function updateSelectedGiftCostHint() {
   const hint = document.getElementById('ykVip_SelectedGiftCostHint');
   const gift = ROYAL_GIFTS_CATALOG.find(g => g.id === selectedGiftId) || ROYAL_GIFTS_CATALOG[0];
   if (hint && gift) {
-    hint.textContent = `کۆی گشتی: 🪙 ${(gift.cost * selectedGiftQty).toLocaleString()}`;
+    hint.textContent = `🪙 ${(gift.cost * selectedGiftQty).toLocaleString()}`;
   }
 }
 
-function sendSelectedRoyalGift() {
+// ٥٠٪ بۆ خاوەنی پلاتفۆرم + ٥٠٪ ڕاستەوخۆ بۆ باڵانسی ئەو کەسەی دیارییەکەی بۆ دەچێت
+async function sendSelectedRoyalGift() {
   if (!currentVoiceRoomId) return;
   const gift = ROYAL_GIFTS_CATALOG.find(g => g.id === selectedGiftId) || ROYAL_GIFTS_CATALOG[0];
   const qty = selectedGiftQty || 1;
@@ -1253,19 +1300,43 @@ function sendSelectedRoyalGift() {
   updateRoomCoinDisplays();
   if (db && playerId) db.ref(`players/${playerId}/coins`).set(myUserCoins);
 
+  // دابەشکردنی نیوە بە نیوەی دراوەکە (50% بۆ ئەدمین + 50% بۆ وەرگر)
+  const ownerHalf = Math.ceil(totalCost / 2);
+  const recipientHalf = Math.floor(totalCost / 2);
+
+  let recipientUid = null;
   let targetName = 'هەموو دیوەخان';
+
   if (selectedGiftRecipient !== 'ALL' && currentRoomMembers[selectedGiftRecipient]) {
+    recipientUid = selectedGiftRecipient;
     targetName = currentRoomMembers[selectedGiftRecipient].name;
-    db.ref(`voiceRooms/${currentVoiceRoomId}/members/${selectedGiftRecipient}/supportCoins`).transaction(c => (c || 0) + totalCost);
   } else {
     const hId = currentRoomMeta && currentRoomMeta.hostId;
     if (hId && currentRoomMembers[hId]) {
-      db.ref(`voiceRooms/${currentVoiceRoomId}/members/${hId}/supportCoins`).transaction(c => (c || 0) + totalCost);
+      recipientUid = hId;
+      targetName = currentRoomMembers[hId].name;
     }
   }
 
-  db.ref(`voiceRooms/${currentVoiceRoomId}/roomXp`).transaction(cur => (cur || 0) + gift.xp * qty);
-  db.ref(`voiceRooms/${currentVoiceRoomId}/totalGiftCoins`).transaction(cur => (cur || 0) + totalCost);
+  if (db) {
+    // 1. ناردنی 50% بۆ باڵانسی خاوەنی پلاتفۆرم
+    const ownerSnap = await db.ref('platformConfig/ownerUid').once('value');
+    const resolvedOwnerUid = (ownerSnap.exists() && ownerSnap.val()) ? ownerSnap.val() : PLATFORM_OWNER_FALLBACK_UID;
+    if (resolvedOwnerUid) {
+      db.ref(`players/${resolvedOwnerUid}/coins`).transaction(c => (Number(c) || 0) + ownerHalf);
+    }
+
+    // 2. ناردنی 50% بۆ باڵانسی ڕاستەقینەی وەرگری دیارییەکە و خاڵی پشتگیریی سەر کورسی
+    if (recipientUid) {
+      db.ref(`voiceRooms/${currentVoiceRoomId}/members/${recipientUid}/supportCoins`).transaction(c => (c || 0) + totalCost);
+      if (recipientHalf > 0) {
+        db.ref(`players/${recipientUid}/coins`).transaction(c => (Number(c) || 0) + recipientHalf);
+      }
+    }
+
+    db.ref(`voiceRooms/${currentVoiceRoomId}/roomXp`).transaction(cur => (cur || 0) + gift.xp * qty);
+    db.ref(`voiceRooms/${currentVoiceRoomId}/totalGiftCoins`).transaction(cur => (cur || 0) + totalCost);
+  }
 
   const giftPayload = {
     type: 'gift',
@@ -1276,9 +1347,11 @@ function sendSelectedRoyalGift() {
     giftId: gift.id,
     giftName: gift.name,
     giftIcon: gift.icon,
-    tier: gift.tier,
+    giftImg: gift.img,
+    anim: gift.anim || 'beast',
     qty,
     coins: totalCost,
+    recipientShare: recipientHalf,
     ts: Date.now()
   };
 
@@ -1311,9 +1384,86 @@ function triggerComboRepeat() {
   sendSelectedRoyalGift();
 }
 
+let activeGiftOverlayTimer = null;
+let activeGiftParticleLoop = null;
+
+function startAnimatedGiftParticles(animType) {
+  if (activeGiftParticleLoop) cancelAnimationFrame(activeGiftParticleLoop);
+  const cvs = document.getElementById('ykVip_GiftFxCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  const w = (cvs.width = window.innerWidth);
+  const h = (cvs.height = window.innerHeight);
+
+  const items = Array.from({ length: 48 }, () => ({
+    x: Math.random() * w,
+    y: animType === 'car' ? (h * 0.35 + Math.random() * h * 0.3) : (Math.random() * h),
+    vx: animType === 'car' ? -(Math.random() * 14 + 8) : ((Math.random() - 0.5) * 2.5),
+    vy: animType === 'car' ? ((Math.random() - 0.5) * 1.5) : (animType === 'beast' ? -(Math.random() * 3.5 + 1.5) : (Math.random() * 2.8 + 1.2)),
+    size: Math.random() * 6 + 3,
+    rot: Math.random() * Math.PI * 2,
+    vrot: (Math.random() - 0.5) * 0.12,
+    alpha: Math.random() * 0.65 + 0.35
+  }));
+
+  function loop() {
+    if (!document.body.contains(cvs)) return;
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of items) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vrot;
+
+      if (animType === 'car') {
+        if (p.x < -40) { p.x = w + 30; p.y = h * 0.35 + Math.random() * h * 0.3; }
+        ctx.strokeStyle = `rgba(253, 224, 71, ${p.alpha})`;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + p.size * 7, p.y);
+        ctx.stroke();
+      } else if (animType === 'romance') {
+        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = `rgba(244, 63, 94, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size * 1.3, p.size * 0.7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else if (animType === 'ocean') {
+        if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; }
+        ctx.strokeStyle = `rgba(56, 189, 248, ${p.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 1.1, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; }
+        ctx.fillStyle = `rgba(250, 204, 21, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    activeGiftParticleLoop = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
 function triggerFullScreenGiftAnimation(g) {
+  const catalogMatch = ROYAL_GIFTS_CATALOG.find(item => item.id === g.giftId);
+  const giftImg = g.giftImg || (catalogMatch && catalogMatch.img) || '';
+  const animType = g.anim || (catalogMatch && catalogMatch.anim) || 'beast';
+
   const bannerBox = document.getElementById('ykVip_FloatingGiftBanner');
   if (bannerBox) {
+    const thumb = giftImg
+      ? `<img src="${giftImg}" onerror="this.style.display='none'" class="w-9 h-9 rounded-full object-cover border-2 border-yellow-200 shadow" />`
+      : `<span class="text-2xl">${g.giftIcon || '🎁'}</span>`;
     bannerBox.innerHTML = `
       <div style="animation: ykGiftSlideIn 0.35s ease-out;"
         class="inline-flex items-center gap-2 pl-3.5 pr-1 py-1 rounded-full bg-gradient-to-l from-amber-500 via-orange-500 to-rose-600 border-2 border-yellow-200 shadow-[0_6px_22px_rgba(245,158,11,0.8)]">
@@ -1322,39 +1472,69 @@ function triggerFullScreenGiftAnimation(g) {
         </div>
         <div class="text-right leading-tight">
           <div class="text-[10px] font-black text-white">${escapeRoomHtml(g.senderName)}</div>
-          <div class="text-[9px] font-bold text-yellow-100">Send to @${escapeRoomHtml(g.targetName)}</div>
+          <div class="text-[9px] font-bold text-yellow-100">بۆ @${escapeRoomHtml(g.targetName)}</div>
         </div>
-        <span class="text-2xl drop-shadow">${g.giftIcon}</span>
+        ${thumb}
         <span class="text-base font-black text-yellow-200 italic">x${g.qty}</span>
       </div>
     `;
   }
 
-  for (let i = 0; i < 6; i++) setTimeout(sendFloatingHeart, i * 110);
+  const particleIcons = animType === 'car' ? ['✨', '⚡', '🔥'] : animType === 'romance' ? ['🌹', '❤️', '✨'] : animType === 'ocean' ? ['🌊', '💎', '✨'] : ['👑', '🔥', '✨'];
+  for (let i = 0; i < 12; i++) {
+    setTimeout(() => sendFloatingHeart(particleIcons[i % particleIcons.length]), i * 110);
+  }
 
   const overlay = document.getElementById('ykVip_FullGiftOverlay');
-  if (!overlay) return;
-  const isGrand = g.tier === 'legendary' || g.tier === 'mythic' || g.tier === 'epic';
-  if (!isGrand) return;
+  if (!overlay || !giftImg) return;
+
+  const animMap = {
+    car: 'ykCarDriftStage 4.1s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    beast: 'ykBeastSwoopStage 4.0s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    ocean: 'ykBeastSwoopStage 4.0s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+    romance: 'ykRomanceBloomStage 3.8s ease-out forwards',
+    royal: 'ykRoyalDescentStage 4.2s cubic-bezier(0.22, 1, 0.36, 1) forwards'
+  };
+  const chosenAnim = animMap[animType] || animMap.beast;
+  const glowColor = animType === 'car' ? 'rgba(56,189,248,0.5)' : animType === 'romance' ? 'rgba(244,63,94,0.5)' : animType === 'ocean' ? 'rgba(14,165,233,0.55)' : 'rgba(250,204,21,0.55)';
+
+  if (activeGiftOverlayTimer) clearTimeout(activeGiftOverlayTimer);
 
   overlay.classList.remove('hidden');
   overlay.classList.add('flex');
   overlay.innerHTML = `
-    <div style="animation: ykGrandGiftPop 0.65s cubic-bezier(0.22,1,0.36,1) forwards;" class="relative flex flex-col items-center justify-center text-center p-6">
-      <div class="absolute w-72 h-72 rounded-full bg-amber-400/35 blur-3xl"></div>
-      <div class="text-[110px] drop-shadow-[0_15px_35px_rgba(0,0,0,0.95)] relative z-10">${g.giftIcon}</div>
-      <div class="mt-2 px-6 py-2 rounded-full bg-black/85 border-2 border-yellow-300 shadow-2xl relative z-10">
-        <div class="text-base font-black gold-text">${escapeRoomHtml(g.giftName)} x${g.qty}</div>
-        <div class="text-xs font-bold text-white">${escapeRoomHtml(g.senderName)} ➔ @${escapeRoomHtml(g.targetName)}</div>
+    <canvas id="ykVip_GiftFxCanvas" style="position:fixed; inset:0; width:100vw; height:100dvh; pointer-events:none; z-index:1;"></canvas>
+    <div style="animation: ${chosenAnim};" class="relative z-10 flex flex-col items-center justify-center text-center px-4 w-full max-w-sm">
+      <div style="position:absolute; width:300px; height:300px; border-radius:9999px; background:${glowColor}; filter:blur(52px);"></div>
+      <div style="position:absolute; width:245px; height:245px; border-radius:9999px; border:3px solid rgba(253,224,71,0.85); animation: ykShockRing 1.35s ease-out infinite;"></div>
+
+      <div class="relative z-10 w-72 h-48 sm:w-80 sm:h-52 rounded-3xl overflow-hidden border-[3px] border-yellow-300 shadow-[0_24px_60px_rgba(0,0,0,0.95),0_0_42px_rgba(250,204,21,0.75)] bg-black">
+        <img src="${giftImg}" alt="${escapeRoomHtml(g.giftName)}"
+          style="animation: ykKenBurnsLive 4.0s ease-in-out forwards;"
+          class="w-full h-full object-cover" />
+        <div style="position:absolute; inset:0; width:50%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent); animation: ykLightSweep 1.6s ease-in-out infinite;"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/15"></div>
+        <span class="absolute top-2.5 left-2.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-rose-600 text-white text-xs font-black shadow-lg">
+          x${g.qty} VIP
+        </span>
+      </div>
+
+      <div class="relative z-10 -mt-4 px-6 py-2.5 rounded-2xl bg-black/92 border-2 border-yellow-300 shadow-2xl">
+        <div class="text-base sm:text-lg font-black gold-text">${escapeRoomHtml(g.giftName)} x${g.qty}</div>
+        <div class="text-xs font-bold text-white">${escapeRoomHtml(g.senderName)} ➔ <span class="text-amber-300">@${escapeRoomHtml(g.targetName)}</span></div>
       </div>
     </div>
   `;
+
+  startAnimatedGiftParticles(animType);
   if (typeof playChessSound === 'function') playChessSound('end');
-  setTimeout(() => {
+
+  activeGiftOverlayTimer = setTimeout(() => {
+    if (activeGiftParticleLoop) { cancelAnimationFrame(activeGiftParticleLoop); activeGiftParticleLoop = null; }
     overlay.classList.add('hidden');
     overlay.classList.remove('flex');
     overlay.innerHTML = '';
-  }, 3200);
+  }, 4150);
 }
 
 function openThemePickerModal() {
@@ -1577,6 +1757,7 @@ function sendRoomChatMessage() {
 
 function leaveVoiceRoom() {
   if (roomBgAnimFrame) { cancelAnimationFrame(roomBgAnimFrame); roomBgAnimFrame = null; }
+  if (activeGiftParticleLoop) { cancelAnimationFrame(activeGiftParticleLoop); activeGiftParticleLoop = null; }
   if (voiceAnalyserInterval) { clearInterval(voiceAnalyserInterval); voiceAnalyserInterval = null; }
   if (stayXpInterval) { clearInterval(stayXpInterval); stayXpInterval = null; }
   if (roomMetaRef) { roomMetaRef.off(); roomMetaRef = null; }
