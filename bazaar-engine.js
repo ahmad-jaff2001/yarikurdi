@@ -13,6 +13,13 @@ const YK_COIN_PACKS = [
   { id: 'yk_c_50000', coins: 50000, bonus: 12000, usd: '$25', iqd: '37,500 دینار', tag: 'پاشای مەیدان 💎' }
 ];
 
+const YK_DIAMOND_PACKS = [
+  { id: 'yk_d_50', diamonds: 50, bonus: 5, coinCost: 1000, tag: 'گەوهەری شین' },
+  { id: 'yk_d_250', diamonds: 250, bonus: 40, coinCost: 4500, tag: 'پڕفرۆشترین 💎' },
+  { id: 'yk_d_800', diamonds: 800, bonus: 150, coinCost: 13000, tag: 'شاهانە 👑' },
+  { id: 'yk_d_2500', diamonds: 2500, bonus: 600, coinCost: 38000, tag: 'ئەفسانەیی ✨' }
+];
+
 const YK_BAZAAR_ITEMS = {
   profile: [
     { id: 'frame_kurd', type: 'frame', name: 'چوارچێوەی ئاڵای کوردستان', icon: '☀️', price: 1200, preview: 'linear-gradient(135deg,#dc2626,#facc15,#15803d)', desc: 'چوارچێوەیەکی زێڕینی درەوشاوە بە ڕەنگەکانی ئاڵا' },
@@ -41,6 +48,7 @@ const YK_BAZAAR_ITEMS = {
 
 let ykBazaarState = {
   coins: 250,
+  diamonds: 25,
   plusMonths: 0,
   plusUntil: 0,
   plusBadgeColor: '#38bdf8',
@@ -58,18 +66,7 @@ function injectBazaarStyles() {
     .yk-kurd-flag-scroll-bg {
       background:
         radial-gradient(circle at 50% 48%, rgba(250, 204, 21, 0.22) 0%, transparent 32%),
-        linear-gradient(
-          180deg,
-          #4a0710 0%,
-          #7f101d 18%,
-          #4c141c 33%,
-          #252936 44%,
-          #2f3545 50%,
-          #1f2c2b 58%,
-          #0e4025 74%,
-          #072e19 90%,
-          #041a0e 100%
-        );
+        linear-gradient(180deg, #4a0710 0%, #7f101d 18%, #4c141c 33%, #252936 44%, #2f3545 50%, #1f2c2b 58%, #0e4025 74%, #072e19 90%, #041a0e 100%);
       background-attachment: local;
     }
     .yk-sun-watermark {
@@ -88,6 +85,128 @@ function injectBazaarStyles() {
     @keyframes ykSlowSunSpin {
       from { transform: translate(-50%, -50%) rotate(0deg); }
       to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes ykAvatarHaloSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .yk-royal-top-hud {
+      background: linear-gradient(180deg, rgba(36, 17, 8, 0.96) 0%, rgba(20, 9, 4, 0.94) 100%);
+      border-bottom: 3px solid transparent;
+      border-image: repeating-linear-gradient(90deg, #dc2626 0 18px, #facc15 18px 36px, #15803d 36px 54px, #ffffff 54px 72px) 1;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.78);
+    }
+    .yk-avatar-aura {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .yk-avatar-aura::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 9999px;
+      background: conic-gradient(from 0deg, #fef08a, #f59e0b, #dc2626, #16a34a, #fde047, #fef08a);
+      animation: ykAvatarHaloSpin 4.5s linear infinite;
+      box-shadow: 0 0 18px rgba(250, 204, 21, 0.75);
+    }
+    .yk-lvl-shield {
+      position: absolute;
+      bottom: -3px;
+      right: -4px;
+      z-index: 12;
+      min-width: 24px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 7px;
+      background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
+      border: 1.5px solid #fde047;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.85);
+    }
+    .yk-currency-pill {
+      position: relative;
+      height: 32px;
+      border-radius: 9999px;
+      background: linear-gradient(180deg, rgba(14, 7, 3, 0.92), rgba(28, 14, 6, 0.95));
+      border: 1.5px solid rgba(250, 204, 21, 0.45);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      gap: 6px;
+      min-width: 98px;
+    }
+    .yk-coin-orb {
+      width: 28px;
+      height: 28px;
+      margin-right: -6px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 32% 28%, #fef9c3, #facc15 55%, #b45309 100%);
+      border: 1.5px solid #fef08a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.65);
+      flex-shrink: 0;
+    }
+    .yk-diamond-orb {
+      width: 28px;
+      height: 28px;
+      margin-right: -6px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 32% 28%, #e0f2fe, #38bdf8 55%, #1d4ed8 100%);
+      border: 1.5px solid #bae6fd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+      flex-shrink: 0;
+    }
+    .yk-plus-circle-btn {
+      width: 23px;
+      height: 23px;
+      border-radius: 9999px;
+      background: linear-gradient(180deg, #fde047 0%, #eab308 60%, #ca8a04 100%);
+      border: 1.5px solid #fef9c3;
+      color: #451a03;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+    .yk-plus-circle-btn:active {
+      transform: scale(0.9);
+    }
+    .yk-hud-stat-box {
+      background: linear-gradient(180deg, rgba(46, 22, 10, 0.85) 0%, rgba(22, 10, 4, 0.92) 100%);
+      border: 1.5px solid rgba(250, 204, 21, 0.38);
+      border-radius: 16px;
+      box-shadow: inset 0 1px 1px rgba(254, 240, 138, 0.25), 0 6px 16px rgba(0, 0, 0, 0.55);
+      transition: transform 0.18s ease, border-color 0.2s ease;
+    }
+    .yk-hud-stat-box:hover {
+      border-color: #fde047;
+      transform: translateY(-1px);
     }
     .yk-coin-icon {
       display: inline-flex;
@@ -146,6 +265,12 @@ function getUserCoinsSync() {
       ykBazaarState.coins = 250;
       db.ref(`players/${playerId}/coins`).set(250);
     }
+    if (typeof d.diamonds === 'number') {
+      ykBazaarState.diamonds = d.diamonds;
+    } else {
+      ykBazaarState.diamonds = 25;
+      db.ref(`players/${playerId}/diamonds`).set(25);
+    }
     ykBazaarState.plusUntil = (d.plus && d.plus.until) || 0;
     ykBazaarState.plusMonths = (d.plus && d.plus.months) || 0;
     ykBazaarState.plusBadgeColor = (d.plus && d.plus.badgeColor) || '#38bdf8';
@@ -154,7 +279,7 @@ function getUserCoinsSync() {
 
     if (typeof myUserCoins !== 'undefined') myUserCoins = ykBazaarState.coins;
     updateAllBazaarCoinBadges();
-    applyEquippedCosmeticsToHeader();
+    refreshRoyalTopHudData();
     if (document.getElementById('ykBazaarRoot')) renderBazaarBody();
   });
 }
@@ -163,37 +288,50 @@ function updateAllBazaarCoinBadges() {
   document.querySelectorAll('.yk-user-coin-balance, .yk-bazaar-coin-val').forEach(el => {
     el.textContent = (ykBazaarState.coins || 0).toLocaleString();
   });
+  document.querySelectorAll('.yk-bazaar-diamond-val').forEach(el => {
+    el.textContent = (ykBazaarState.diamonds || 0).toLocaleString();
+  });
 }
 
 function isUserPlusActive() {
   return ykBazaarState.plusUntil > Date.now();
 }
 
-function applyEquippedCosmeticsToHeader() {
-  const hName = document.getElementById('headerPlayerName');
-  const hAvatar = document.getElementById('headerAvatar');
-  if (hName && typeof playerName !== 'undefined' && playerName) {
-    const plusBadge = isUserPlusActive()
-      ? `<span title="YariKurdi Plus" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:999px;background:${ykBazaarState.plusBadgeColor};color:#fff;font-size:9px;font-weight:900;margin-right:4px;box-shadow:0 0 8px ${ykBazaarState.plusBadgeColor};">✓</span>`
-      : '';
-    const eqNameId = ykBazaarState.equipped && ykBazaarState.equipped.nameStyle;
-    const styleItem = YK_BAZAAR_ITEMS.profile.find(it => it.id === eqNameId);
-    const nameSpan = styleItem
-      ? `<span style="${styleItem.css} font-weight:900;">${playerName}</span>`
-      : `<span>${playerName}</span>`;
-    const ownerBadge = typeof getVerifiedBadgeHTML === 'function' && typeof auth !== 'undefined'
-      ? getVerifiedBadgeHTML(auth.currentUser && auth.currentUser.email)
-      : '';
-    hName.innerHTML = nameSpan + plusBadge + ownerBadge;
+function refreshRoyalTopHudData() {
+  const avInner = document.getElementById('ykHudAvatarInner');
+  const lvlTag = document.getElementById('ykHudLevelNum');
+  const leagueVal = document.getElementById('ykHudLeagueVal');
+  const rankVal = document.getElementById('ykHudRankVal');
+
+  const pName = (typeof playerName !== 'undefined' && playerName) ? playerName : 'ی';
+  const pAv = (typeof playerAvatarData !== 'undefined') ? playerAvatarData : '';
+
+  if (avInner) {
+    if (pAv && (pAv.startsWith('data:image') || pAv.startsWith('http'))) {
+      avInner.innerHTML = `<img src="${pAv}" class="w-full h-full object-cover" />`;
+    } else {
+      avInner.textContent = pName.charAt(0);
+    }
   }
 
-  if (hAvatar) {
-    const eqFrameId = ykBazaarState.equipped && ykBazaarState.equipped.frame;
-    const frameItem = YK_BAZAAR_ITEMS.profile.find(it => it.id === eqFrameId);
-    if (frameItem) {
-      hAvatar.style.border = '2.5px solid #fde047';
-      hAvatar.style.boxShadow = '0 0 14px rgba(250, 204, 21, 0.75)';
-    }
+  if (lvlTag && typeof getLevelInfo === 'function' && typeof playerProfile !== 'undefined') {
+    const info = getLevelInfo(playerProfile.xp || 0);
+    lvlTag.textContent = info.level;
+  }
+
+  if (leagueVal && typeof playerProfile !== 'undefined' && playerProfile.elo) {
+    const chessElo = playerProfile.elo.chess || 1200;
+    leagueVal.textContent = `${chessElo} ★`;
+  }
+
+  if (rankVal && typeof allPlayersCache !== 'undefined' && typeof playerId !== 'undefined' && playerId) {
+    const list = Object.entries(allPlayersCache).map(([id, d]) => ({
+      id,
+      score: ((d.elo && d.elo.chess) || 1200) + ((d.elo && d.elo.domino) || 1200)
+    }));
+    list.sort((a, b) => b.score - a.score);
+    const idx = list.findIndex(item => item.id === playerId);
+    rankVal.textContent = idx !== -1 ? `No.${idx + 1}` : 'No.1';
   }
 }
 
@@ -205,11 +343,20 @@ function addUserCoins(amount) {
   updateAllBazaarCoinBadges();
 }
 
+function addUserDiamonds(amount) {
+  if (typeof db === 'undefined' || !playerId) return;
+  const next = Math.max(0, (ykBazaarState.diamonds || 0) + amount);
+  ykBazaarState.diamonds = next;
+  db.ref(`players/${playerId}/diamonds`).set(next);
+  updateAllBazaarCoinBadges();
+}
+
 function spendUserCoins(cost) {
   if ((ykBazaarState.coins || 0) < cost) {
     if (confirm(`باڵانسەکەت بەش ناکات! پێویستت بە ${cost.toLocaleString()} ${YK_CURRENCY_SYMBOL} هەیە.\nدەتەوێت ئێستا کۆین بکڕیت؟`)) {
       ykBazaarState.activeTab = 'coins';
-      renderBazaarBody();
+      if (!document.getElementById('ykBazaarRoot')) openBazaarModal('coins');
+      else renderBazaarBody();
     }
     return false;
   }
@@ -237,15 +384,17 @@ function openBazaarModal(tab = 'plus') {
     <div class="sticky top-0 z-30 bg-[#18070a]/90 backdrop-blur-lg border-b border-amber-400/35">
       <div class="max-w-lg mx-auto px-3 pt-3 pb-2 space-y-2.5" style="padding-top: max(12px, env(safe-area-inset-top));">
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <button onclick="openBazaarTab('coins')" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 border border-amber-400/55 shadow">
-              <span class="yk-coin-icon">☀️</span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openBazaarTab('coins')" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55 border border-amber-400/55 shadow">
+              <span class="yk-coin-icon" style="width:17px;height:17px;font-size:9px;">☀️</span>
               <span class="yk-bazaar-coin-val text-xs font-black text-amber-300">${(ykBazaarState.coins || 0).toLocaleString()}</span>
               <span class="text-[10px] font-black text-emerald-400">+</span>
             </button>
-            <div class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-black text-white">
-              ${isUserPlusActive() ? '💎 پڵەس چالاکە' : 'ناچالاک'}
-            </div>
+            <button onclick="openBazaarTab('diamonds')" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55 border border-sky-400/55 shadow">
+              <span class="text-xs">💎</span>
+              <span class="yk-bazaar-diamond-val text-xs font-black text-sky-300">${(ykBazaarState.diamonds || 0).toLocaleString()}</span>
+              <span class="text-[10px] font-black text-emerald-400">+</span>
+            </button>
           </div>
 
           <div class="flex items-center gap-2">
@@ -255,12 +404,13 @@ function openBazaarModal(tab = 'plus') {
         </div>
 
         <div class="flex items-center justify-between text-xs font-bold text-slate-300 border-t border-white/10 pt-2 overflow-x-auto gap-1">
-          <button id="ykBTab-plus" onclick="openBazaarTab('plus')" class="px-2.5 pb-1.5 whitespace-nowrap transition">پڵەس</button>
-          <button id="ykBTab-coins" onclick="openBazaarTab('coins')" class="px-2.5 pb-1.5 whitespace-nowrap transition">کۆین</button>
-          <button id="ykBTab-profile" onclick="openBazaarTab('profile')" class="px-2.5 pb-1.5 whitespace-nowrap transition">پرۆفایل</button>
-          <button id="ykBTab-chat" onclick="openBazaarTab('chat')" class="px-2.5 pb-1.5 whitespace-nowrap transition">چات</button>
-          <button id="ykBTab-themes" onclick="openBazaarTab('themes')" class="px-2.5 pb-1.5 whitespace-nowrap transition">ڕووکار</button>
-          <button id="ykBTab-gifts" onclick="openBazaarTab('gifts')" class="px-2.5 pb-1.5 whitespace-nowrap transition">دیاری</button>
+          <button id="ykBTab-plus" onclick="openBazaarTab('plus')" class="px-2 pb-1.5 whitespace-nowrap transition">پڵەس</button>
+          <button id="ykBTab-coins" onclick="openBazaarTab('coins')" class="px-2 pb-1.5 whitespace-nowrap transition">کۆین</button>
+          <button id="ykBTab-diamonds" onclick="openBazaarTab('diamonds')" class="px-2 pb-1.5 whitespace-nowrap transition">ئەڵماس</button>
+          <button id="ykBTab-profile" onclick="openBazaarTab('profile')" class="px-2 pb-1.5 whitespace-nowrap transition">پرۆفایل</button>
+          <button id="ykBTab-chat" onclick="openBazaarTab('chat')" class="px-2 pb-1.5 whitespace-nowrap transition">چات</button>
+          <button id="ykBTab-themes" onclick="openBazaarTab('themes')" class="px-2 pb-1.5 whitespace-nowrap transition">ڕووکار</button>
+          <button id="ykBTab-gifts" onclick="openBazaarTab('gifts')" class="px-2 pb-1.5 whitespace-nowrap transition">دیاری</button>
         </div>
       </div>
     </div>
@@ -285,7 +435,7 @@ function openBazaarTab(tab) {
 }
 
 function renderBazaarBody() {
-  const tabs = ['plus', 'coins', 'profile', 'chat', 'themes', 'gifts'];
+  const tabs = ['plus', 'coins', 'diamonds', 'profile', 'chat', 'themes', 'gifts'];
   tabs.forEach(t => {
     const el = document.getElementById('ykBTab-' + t);
     if (!el) return;
@@ -360,7 +510,6 @@ function renderBazaarBody() {
             </button>
           `).join('')}
         </div>
-        <p class="text-[11px] text-amber-200/80">هەر مانگێکی پڵەس نیشانەکەت بەرەو ڕەنگێکی شاهانەتر دەبات</p>
       </div>
 
       <div class="grid grid-cols-3 gap-2.5">
@@ -379,24 +528,6 @@ function renderBazaarBody() {
           </div>
         `).join('')}
       </div>
-
-      <div onclick="buyYariKurdiPlus('plus_12m')" class="cursor-pointer rounded-3xl p-4 bg-gradient-to-l from-amber-500/30 via-yellow-600/20 to-black/75 border-2 border-yellow-400 text-center space-y-2 shadow-xl active:scale-98 transition">
-        <div class="text-sm font-black text-yellow-300">👑 ١٢ مانگ • ساڵی شاهانە</div>
-        <div class="text-xs font-bold text-emerald-300">٣٠٪ هەرزانتر • باشترین هەڵبژاردە</div>
-        <div class="inline-flex items-center gap-1.5 px-6 py-2 rounded-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-[#1a0d06] text-sm font-black shadow-lg">
-          <span>☀️</span><span>42,000 ${YK_CURRENCY_SYMBOL}</span>
-        </div>
-      </div>
-
-      <div class="yk-glass-panel rounded-3xl p-4 space-y-3">
-        <div class="text-xs font-black text-amber-300">✨ چی لە یاری کوردی پڵەسدا هەیە؟</div>
-        <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-black text-white">
-          <div class="p-2 rounded-xl bg-white/5 border border-white/10"><div class="text-xl mb-1">✓</div>نیشانەی VIP</div>
-          <div class="p-2 rounded-xl bg-white/5 border border-white/10"><div class="text-xl mb-1">☀️</div>چوارچێوەی کوردی</div>
-          <div class="p-2 rounded-xl bg-white/5 border border-white/10"><div class="text-xl mb-1">🎨</div>٥ ڕەنگی ناو</div>
-          <div class="p-2 rounded-xl bg-white/5 border border-white/10"><div class="text-xl mb-1">⚡</div>خاڵی ٢x وەرز</div>
-        </div>
-      </div>
     `;
     return;
   }
@@ -407,7 +538,6 @@ function renderBazaarBody() {
         <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-yellow-200 via-amber-400 to-amber-700 border-2 border-yellow-100 flex items-center justify-center text-3xl shadow-[0_0_28px_rgba(250,204,21,0.85)]">☀️</div>
         <h3 class="text-xl font-black gold-text">دراوی خۆری زێڕین (${YK_CURRENCY_SYMBOL})</h3>
         <p class="text-xs text-amber-100/90">باڵانسی ئێستات: <strong class="text-yellow-300 text-sm">${(ykBazaarState.coins || 0).toLocaleString()} ${YK_CURRENCY_SYMBOL}</strong></p>
-        <p class="text-[11px] text-slate-300">بەکاری بهێنە بۆ کڕینی پڵەس، چوارچێوە، ڕووکاری یاری و ناردنی دیاری لە دیوەخاندا</p>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
@@ -425,9 +555,33 @@ function renderBazaarBody() {
           </div>
         `).join('')}
       </div>
+    `;
+    return;
+  }
 
-      <div class="yk-glass-panel rounded-2xl p-3.5 text-center text-[11px] text-amber-100/85">
-        💳 شێوازەکانی پارەدان: <strong>FIB • Qi Card • FastPay • کۆدی کارتی یاری کوردی</strong>
+  if (ykBazaarState.activeTab === 'diamonds') {
+    box.innerHTML = `
+      <div class="yk-glass-panel rounded-3xl p-5 text-center space-y-2 border-sky-400/60">
+        <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-sky-200 via-sky-400 to-blue-700 border-2 border-sky-100 flex items-center justify-center text-3xl shadow-[0_0_28px_rgba(56,189,248,0.85)]">💎</div>
+        <h3 class="text-xl font-black text-sky-300">گەوهەر و ئەڵماسی یاری کوردی</h3>
+        <p class="text-xs text-sky-100/90">باڵانسی ئەڵماسەکانت: <strong class="text-sky-300 text-sm">${(ykBazaarState.diamonds || 0).toLocaleString()} 💎</strong></p>
+        <p class="text-[11px] text-slate-300">بە دراوی خۆری زێڕین (YK) ئەڵماس بەدەست بهێنە بۆ شتە دەگمەنەکان</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        ${YK_DIAMOND_PACKS.map(dp => `
+          <div onclick="buyDiamondPackWithCoins('${dp.id}')" class="cursor-pointer yk-glass-panel rounded-3xl p-4 flex flex-col justify-between items-center text-center gap-2.5 border-sky-400/50 hover:border-sky-300 transition active:scale-95">
+            <span class="px-2.5 py-0.5 rounded-full bg-sky-400/20 border border-sky-400/40 text-[10px] font-black text-sky-200">${dp.tag}</span>
+            <div class="text-3xl drop-shadow">💎</div>
+            <div>
+              <div class="text-base font-black text-white">${dp.diamonds.toLocaleString()} ئەڵماس</div>
+              <div class="text-[10px] font-black text-emerald-400">+${dp.bonus} ئەڵماسی دیاری</div>
+            </div>
+            <div class="w-full py-2 rounded-xl bg-gradient-to-r from-sky-400 to-blue-600 text-white text-xs font-black flex items-center justify-center gap-1 shadow">
+              <span>☀️</span><span>${dp.coinCost.toLocaleString()} ${YK_CURRENCY_SYMBOL}</span>
+            </div>
+          </div>
+        `).join('')}
       </div>
     `;
     return;
@@ -464,6 +618,18 @@ function renderBazaarBody() {
   `;
 }
 
+function buyDiamondPackWithCoins(packId) {
+  const dp = YK_DIAMOND_PACKS.find(d => d.id === packId);
+  if (!dp) return;
+  const totalDiamonds = dp.diamonds + dp.bonus;
+  if (!confirm(`گۆڕینەوەی ${dp.coinCost.toLocaleString()} ${YK_CURRENCY_SYMBOL} بە ${totalDiamonds} ئەڵماس 💎؟`)) return;
+  if (!spendUserCoins(dp.coinCost)) return;
+  addUserDiamonds(totalDiamonds);
+  if (typeof playChessSound === 'function') playChessSound('end');
+  alert(`💎 پیرۆزە! ${totalDiamonds} ئەڵماس زیاد کرا بۆ باڵانسەکەت!`);
+  renderBazaarBody();
+}
+
 function selectPlusBadgeColor(col) {
   if (!isUserPlusActive()) {
     alert('سەرەتا بەشداری لە یاری کوردی پڵەس بکە تا بتوانیت ڕەنگی نیشانەکەت بگۆڕیت!');
@@ -473,14 +639,11 @@ function selectPlusBadgeColor(col) {
   if (typeof db !== 'undefined' && playerId) {
     db.ref(`players/${playerId}/plus/badgeColor`).set(col);
   }
-  applyEquippedCosmeticsToHeader();
   renderBazaarBody();
 }
 
 function buyYariKurdiPlus(planId) {
-  const plan = planId === 'plus_12m'
-    ? { months: 12, price: 42000, title: 'ساڵی شاهانە (١٢ مانگ)' }
-    : YK_PLUS_PLANS.find(p => p.id === planId);
+  const plan = YK_PLUS_PLANS.find(p => p.id === planId);
   if (!plan) return;
   if (!confirm(`بەشداریکردن لە ${plan.title} بە ${plan.price.toLocaleString()} ${YK_CURRENCY_SYMBOL}؟`)) return;
   if (!spendUserCoins(plan.price)) return;
@@ -533,27 +696,77 @@ function equipBazaarItem(itemId, itemType) {
   if (typeof playChessSound === 'function') playChessSound('move');
 }
 
+// ==================== ڕووکاری هیدەری شاهانەی سەرەوە (وەک وێنەکە: پڕۆفایل + پارە + ئەڵماس + بازاڕ + ڕێکخستن) ====================
 function mountBazaarControlsInUI() {
   injectBazaarStyles();
-  const nav = document.querySelector('header nav');
-  if (nav && !document.getElementById('nav-bazaar')) {
-    const btn = document.createElement('button');
-    btn.id = 'nav-bazaar';
-    btn.onclick = () => openBazaarModal('plus');
-    btn.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-amber-400/20 to-rose-500/20 border border-amber-400/45 text-amber-300 hover:brightness-125 transition';
-    btn.textContent = '🛒 بازاڕ';
-    nav.appendChild(btn);
-  }
 
-  const soundBtn = document.getElementById('soundBtn');
-  if (soundBtn && soundBtn.parentElement && !document.getElementById('headerYkCoinPill')) {
-    const pill = document.createElement('button');
-    pill.id = 'headerYkCoinPill';
-    pill.onclick = () => openBazaarModal('coins');
-    pill.title = 'باڵانس و کڕینی دراوی یاری کوردی';
-    pill.className = 'px-2.5 h-9 rounded-xl bg-[#241208] border border-amber-400/50 flex items-center gap-1.5 text-amber-300 text-xs font-black hover:border-yellow-300 transition shadow';
-    pill.innerHTML = `<span class="yk-coin-icon" style="width:18px;height:18px;font-size:10px;">☀️</span><span class="yk-bazaar-coin-val">${(ykBazaarState.coins || 0).toLocaleString()}</span>`;
-    soundBtn.parentElement.insertBefore(pill, soundBtn);
+  const header = document.querySelector('header');
+  if (header && !document.getElementById('ykRoyalTopHudInner')) {
+    header.className = 'yk-royal-top-hud sticky top-0 z-40';
+    header.innerHTML = `
+      <div id="ykRoyalTopHudInner" class="max-w-3xl mx-auto px-3 pt-2.5 pb-2.5 space-y-2.5" style="padding-top: max(10px, env(safe-area-inset-top));">
+        <!-- ڕیزی یەکەم: پڕۆفایلی درەوشاوە + پارە + ئەڵماس + بازاڕ + ڕێکخستن -->
+        <div class="flex items-center justify-between gap-2">
+          <!-- پڕۆفایل و باجی لیڤڵ (بەشی ڕاست) -->
+          <div onclick="openEditProfileModal()" title="دەستکاریکردنی پڕۆفایل" class="cursor-pointer flex items-center gap-2 shrink-0">
+            <div class="yk-avatar-aura">
+              <div id="ykHudAvatarInner" class="relative z-10 w-[48px] h-[48px] rounded-full bg-[#1a0d06] text-yellow-300 font-black text-lg flex items-center justify-center overflow-hidden border-2 border-[#1a0d06]">ی</div>
+              <div id="ykHudLevelNum" class="yk-lvl-shield">1</div>
+            </div>
+          </div>
+
+          <!-- کەپسوولی پارە (YK) و ئەڵماس (Diamonds) لە ناوەڕاست -->
+          <div class="flex items-center gap-2 flex-1 justify-center max-w-[260px]">
+            <!-- کەپسوولی پارە -->
+            <div onclick="openBazaarModal('coins')" class="cursor-pointer yk-currency-pill flex-1">
+              <div class="yk-coin-orb">☀️</div>
+              <span class="yk-bazaar-coin-val text-xs sm:text-sm font-black text-white tracking-wide">${(ykBazaarState.coins || 0).toLocaleString()}</span>
+              <button type="button" class="yk-plus-circle-btn">+</button>
+            </div>
+
+            <!-- کەپسوولی ئەڵماس -->
+            <div onclick="openBazaarModal('diamonds')" class="cursor-pointer yk-currency-pill flex-1">
+              <div class="yk-diamond-orb">💎</div>
+              <span class="yk-bazaar-diamond-val text-xs sm:text-sm font-black text-white tracking-wide">${(ykBazaarState.diamonds || 0).toLocaleString()}</span>
+              <button type="button" class="yk-plus-circle-btn">+</button>
+            </div>
+          </div>
+
+          <!-- سەبەتەی بازاڕ + دوگمەی دەنگ/ڕێکخستن (بەشی چەپ) -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="openBazaarModal('plus')" title="بازاڕی یاری کوردی"
+              class="w-10 h-10 rounded-2xl bg-gradient-to-b from-amber-300/20 to-amber-600/10 border border-amber-400/45 flex items-center justify-center text-xl shadow-lg hover:scale-105 transition">
+              🛒
+            </button>
+            <button id="soundBtn" onclick="toggleSound()" title="دەنگ و ڕێکخستن"
+              class="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-lg text-slate-200 hover:bg-white/15 transition">
+              ⚙️
+            </button>
+          </div>
+        </div>
+
+        <!-- ڕیزی دووەم: دوو کارتی خول (League) و ڕیزبەندی (Rank) وەک وێنەکە -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div onclick="typeof openSeasonPassModal === 'function' ? openSeasonPassModal() : switchView('hub')"
+            class="cursor-pointer yk-hud-stat-box px-3 py-1.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-lg shadow">🏆</div>
+              <span class="text-[10px] font-black text-amber-300">خول • وەرز</span>
+            </div>
+            <span id="ykHudLeagueVal" class="text-xs sm:text-sm font-black text-white">1200 ★</span>
+          </div>
+
+          <div onclick="switchView('leaderboard')"
+            class="cursor-pointer yk-hud-stat-box px-3 py-1.5 flex items-center justify-between">
+            <span id="ykHudRankVal" class="text-xs sm:text-sm font-black text-white">No.1</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-black text-emerald-300">ڕیزبەندی</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-400/15 border border-emerald-400/40 flex items-center justify-center text-lg shadow">🌍</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   const dock = document.querySelector('.floating-bottom-dock');
@@ -568,6 +781,8 @@ function mountBazaarControlsInUI() {
     if (profileDock) dock.insertBefore(dBtn, profileDock);
     else dock.appendChild(dBtn);
   }
+
+  refreshRoyalTopHudData();
 }
 
 window.openBazaarModal = openBazaarModal;
@@ -575,6 +790,7 @@ window.closeBazaarModal = closeBazaarModal;
 window.openBazaarTab = openBazaarTab;
 window.buyYariKurdiPlus = buyYariKurdiPlus;
 window.buyBazaarCoinPack = buyBazaarCoinPack;
+window.buyDiamondPackWithCoins = buyDiamondPackWithCoins;
 window.buyBazaarItem = buyBazaarItem;
 window.equipBazaarItem = equipBazaarItem;
 window.selectPlusBadgeColor = selectPlusBadgeColor;
@@ -586,5 +802,8 @@ window.selectPlusBadgeColor = selectPlusBadgeColor;
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
-  setInterval(getUserCoinsSync, 2000);
+  setInterval(() => {
+    getUserCoinsSync();
+    refreshRoyalTopHudData();
+  }, 2000);
 })();
