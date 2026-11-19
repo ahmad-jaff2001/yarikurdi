@@ -1,23 +1,51 @@
 const YK_SEASON_EPOCH_MS = Date.UTC(2026, 10, 1, 0, 0, 0);
 const YK_SEASON_DURATION_MS = 60 * 24 * 60 * 60 * 1000;
-const YK_SEASON_MAX_LEVEL = 30;
-const YK_POINTS_PER_LEVEL = 6;
+const YK_SEASON_MAX_LEVEL = 50;
+const YK_POINTS_PER_LEVEL = 5;
 const YK_GOLDEN_TRACK_PRICE_USD = '$3';
 const YK_GOLDEN_TRACK_PRICE_IQD = '4,500 دینار';
 
 const YK_SEASON_NAMES = [
-  'وەرزی زستان و قەڵای شێروانە',
-  'وەرزی نەورۆز و بەهاری کوردستان',
-  'وەرزی هاوین و چیای هەڵگورد',
-  'وەرزی پاییز و گۆیژە'
+  'شکۆی شارەکانی کوردستان',
+  'وەرزی نەورۆز و نیشتمان',
+  'وەرزی کوێستان و بەهار',
+  'وەرزی زێڕینی کوردەواری'
 ];
 
 const YK_REAL_SCENES = {
-  sherwana_snow: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle.jpg?width=640',
-  sherwana_park: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle_view_from_park_1.jpg?width=640',
   erbil_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Erbil_Citadel_and_Machko_tea_house.jpg?width=640',
-  kalar_panorama: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kalar_View_from_Sherwana_Castle.jpg?width=640'
+  sulaymaniyah_city: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sulaymaniyah.jpg?width=640',
+  kalar_sherwana: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherwana_Castle.jpg?width=640',
+  duhok_amedi: 'https://commons.wikimedia.org/wiki/Special:FilePath/Amadiya_2009.jpg?width=640',
+  kirkuk_citadel: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kirkuk_Citadel.jpg?width=640',
+  halabja_ahmadawa: 'https://commons.wikimedia.org/wiki/Special:FilePath/Ahmedawa_waterfall.jpg?width=640',
+  zakho_delal: 'https://commons.wikimedia.org/wiki/Special:FilePath/Delal_Bridge_in_Zakho.jpg?width=640',
+  akre_mountains: 'https://commons.wikimedia.org/wiki/Special:FilePath/Akre_Kurdistan.jpg?width=640',
+  ranya_dukan: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dokan_Lake.jpg?width=640',
+  soran_rawanduz: 'https://commons.wikimedia.org/wiki/Special:FilePath/Rawandiz_canyon.jpg?width=640',
+  koya_haibat: 'https://commons.wikimedia.org/wiki/Special:FilePath/Koya_Kurdistan.jpg?width=640',
+  shaqlawa_safeen: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shaqlawa.jpg?width=640',
+  penjwen_winter: 'https://commons.wikimedia.org/wiki/Special:FilePath/Penjwen.jpg?width=640',
+  chamchamal_garmian: 'https://commons.wikimedia.org/wiki/Special:FilePath/Kalar_View_from_Sherwana_Castle.jpg?width=640'
 };
+
+const YK_CITY_FILTERS = [
+  { id: 'all', label: 'هەموو شارەکان' },
+  { id: 'erbil', label: 'هەولێر' },
+  { id: 'sulaymaniyah', label: 'سلێمانی' },
+  { id: 'duhok', label: 'دهۆک و ئامێدی' },
+  { id: 'kirkuk', label: 'کەرکووک' },
+  { id: 'halabja', label: 'هەڵەبجە و هەورامان' },
+  { id: 'kalar', label: 'کەلار و گەرمیان' },
+  { id: 'zakho', label: 'زاخۆ' },
+  { id: 'akre', label: 'ئاکرێ' },
+  { id: 'ranya', label: 'ڕانیە و دووکان' },
+  { id: 'soran', label: 'سۆران و ڕواندز' },
+  { id: 'koya', label: 'کۆیە' },
+  { id: 'shaqlawa', label: 'شەقڵاوە' },
+  { id: 'penjwen', label: 'پێنجوێن' },
+  { id: 'chamchamal', label: 'چەمچەماڵ' }
+];
 
 function getCurrentSeasonCycle() {
   const now = Date.now();
@@ -36,6 +64,8 @@ function getRoyalCrownSVG(variant = 'gold', size = 56) {
     gold: { c1: '#fef08a', c2: '#f59e0b', c3: '#92400e', gem1: '#ef4444', gem2: '#10b981', gem3: '#38bdf8' },
     kurd: { c1: '#fde047', c2: '#dc2626', c3: '#15803d', gem1: '#facc15', gem2: '#ffffff', gem3: '#ef4444' },
     ice: { c1: '#e0f2fe', c2: '#38bdf8', c3: '#1d4ed8', gem1: '#ffffff', gem2: '#67e8f9', gem3: '#818cf8' },
+    emerald: { c1: '#a7f3d0', c2: '#10b981', c3: '#064e3b', gem1: '#fde047', gem2: '#ef4444', gem3: '#ffffff' },
+    ruby: { c1: '#fecdd3', c2: '#e11d48', c3: '#881337', gem1: '#fde047', gem2: '#38bdf8', gem3: '#ffffff' },
     imperial: { c1: '#fef9c3', c2: '#eab308', c3: '#78350f', gem1: '#dc2626', gem2: '#facc15', gem3: '#16a34a' }
   };
   const p = palettes[variant] || palettes.gold;
@@ -70,6 +100,8 @@ function getRoyalFrameRingSVG(variant = 'sherwana', size = 82) {
     kurdistan: { ring1: '#ef4444', ring2: '#facc15', ring3: '#16a34a', accent: '#fde047' },
     frost: { ring1: '#e0f2fe', ring2: '#38bdf8', ring3: '#1e40af', accent: '#bae6fd' },
     nowruz: { ring1: '#fde047', ring2: '#f97316', ring3: '#dc2626', accent: '#fef08a' },
+    emerald_city: { ring1: '#6ee7b7', ring2: '#059669', ring3: '#064e3b', accent: '#fde047' },
+    ruby_star: { ring1: '#fda4af', ring2: '#e11d48', ring3: '#881337', accent: '#fde047' },
     royal_king: { ring1: '#fef9c3', ring2: '#eab308', ring3: '#991b1b', accent: '#fde047' }
   };
   const c = configs[variant] || configs.sherwana;
@@ -100,26 +132,40 @@ function getRoyalFrameRingSVG(variant = 'sherwana', size = 82) {
 }
 
 const YK_SEASON_REWARDS = [
-  { lv: 1, track: 'gold', id: 's_g1', name: 'تاجی زێڕینی شێروانە', kind: 'crown', variant: 'gold', desc: 'تاجێکی ٣ ڕەهەندیی زێڕین بە یاقووتی سوور لە سەرووی وێنەکەت' },
-  { lv: 2, track: 'gold', id: 's_g2', name: 'چوارچێوەی بەفر و کریستاڵ', kind: 'frame', variant: 'frost', desc: 'چوارچێوەی سەهۆڵیی درەوشاوە لە دەوری پڕۆفایلەکەت' },
-  { lv: 3, track: 'gold', id: 's_g3', name: 'قەڵای شێروانە لە بەفردا', kind: 'scene', img: YK_REAL_SCENES.sherwana_snow, snow: true, desc: 'وێنەی ڕاستەقینەی قەڵای شێروانە بە بەفربارینی زیندوو' },
-  { lv: 3, track: 'free', id: 's_f3', name: '٢٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 250, desc: 'دیاریی خۆڕایی بۆ هەموو یاریزانان' },
-  { lv: 4, track: 'gold', id: 's_g4', name: 'چوارچێوەی خۆری ٢١ پەڕ', kind: 'frame', variant: 'kurdistan', desc: 'تیشکی خۆری کوردستان بە ڕەنگی سوور و زەرد و سەوز' },
-  { lv: 5, track: 'gold', id: 's_g5', name: 'تاجی ئاڵای کوردستان', kind: 'crown', variant: 'kurd', desc: 'تاجی شاهانەی کوردی بە گەوهەری سەوز و سوور' },
-  { lv: 6, track: 'free', id: 's_f6', name: 'ناوی زێڕینی بریقەدار', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#fef08a,#f59e0b,#fde047);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە ڕەنگی زێڕین دەدرەوشێتەوە' },
-  { lv: 7, track: 'gold', id: 's_g7', name: 'قەڵای هەولێر و مەچکۆ', kind: 'scene', img: YK_REAL_SCENES.erbil_citadel, snow: false, desc: 'دیمەنی ڕاستەقینەی قەڵای دێرینی هەولێر بۆ پاشبنەما' },
-  { lv: 8, track: 'gold', id: 's_g8', name: 'چوارچێوەی قەڵای شێروانە', kind: 'frame', variant: 'sherwana', desc: 'نەخشی تەلارسازیی زێڕینی گەرمیان' },
-  { lv: 9, track: 'free', id: 's_f9', name: '٤٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 400, desc: 'دراوی خۆڕایی بۆ کڕین لە بازاڕدا' },
-  { lv: 10, track: 'gold', id: 's_g10', name: 'تاجی کریستاڵی زستان', kind: 'crown', variant: 'ice', desc: 'تاجی سەهۆڵینی شاهانە بە درەوشانەوەی شین' },
-  { lv: 12, track: 'gold', id: 's_g12', name: 'دیمەنی کەلار لە شێروانەوە', kind: 'scene', img: YK_REAL_SCENES.kalar_panorama, snow: true, desc: 'وێنەی پانۆرامای شاری کەلار بە بەفربارینی زیندوو' },
-  { lv: 14, track: 'free', id: 's_f14', name: 'چوارچێوەی گڕی نەورۆز', kind: 'frame', variant: 'nowruz', desc: 'هالەی ئاگرینی زێڕین و پرتەقاڵی' },
-  { lv: 15, track: 'gold', id: 's_g15', name: '٧٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 750, desc: 'سندوقی گەورەی دراوی یاری کوردی' },
-  { lv: 18, track: 'gold', id: 's_g18', name: 'پارکی شێروانە لە زستاندا', kind: 'scene', img: YK_REAL_SCENES.sherwana_park, snow: true, desc: 'دیمەنی ڕاستەقینەی قەڵا و پارکی شێروانە بە بەفرەوە' },
-  { lv: 20, track: 'free', id: 's_f20', name: '٦٠٠ دراوی خۆر + ئەڵماس', kind: 'coins', coins: 600, desc: 'پاداشتی نیوەی ڕێگای وەرز' },
-  { lv: 22, track: 'gold', id: 's_g22', name: 'ناوی ئاڵای کوردستان', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#ef4444,#fde047,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە سێ ڕەنگە پیرۆزەکە دەنووسرێت' },
-  { lv: 25, track: 'gold', id: 's_g25', name: '١,٥٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 1500, desc: 'گەنجینەی شاهانەی وەرز' },
-  { lv: 28, track: 'gold', id: 's_g28', name: 'چوارچێوەی پاشای گەرمیان', kind: 'frame', variant: 'royal_king', desc: 'بەرزترین چوارچێوەی زێڕین و یاقووت' },
-  { lv: 30, track: 'gold', id: 's_g30', name: 'تاجی ئیمپراتۆری کورد + ٢,٥٠٠ YK', kind: 'crown', variant: 'imperial', coins: 2500, desc: 'تاجی ئەفسانەیی کۆتایی وەرز لەگەڵ ٢,٥٠٠ دراو!' }
+  { lv: 1, track: 'gold', city: 'erbil', cityLabel: 'هەولێر', id: 's_g1', name: 'قەڵای هەولێر و مەچکۆ', kind: 'scene', img: YK_REAL_SCENES.erbil_citadel, fallbackGrad: 'linear-gradient(135deg,#4c1d95,#9a3412)', snow: true, desc: 'وێنەی ڕاستەقینەی قەڵای دێرینی هەولێر بە بەفربارینی زیندوو' },
+  { lv: 2, track: 'free', city: 'none', id: 's_f2', name: 'چوارچێوەی بەفر (خۆڕایی)', kind: 'frame', variant: 'frost', desc: 'چوارچێوەی سەهۆڵی بۆ هەموو یاریزانان بەبەلاش' },
+  { lv: 3, track: 'gold', city: 'sulaymaniyah', cityLabel: 'سلێمانی', id: 's_g3', name: 'شاری سلێمانی و گۆیژە', kind: 'scene', img: YK_REAL_SCENES.sulaymaniyah_city, fallbackGrad: 'linear-gradient(135deg,#0c4a6e,#1e3a8a)', snow: true, desc: 'دیمەنی ڕاستەقینەی شاری ڕۆشنبیری سلێمانی بە بەفرەوە' },
+  { lv: 4, track: 'gold', city: 'kalar', cityLabel: 'کەلار و گەرمیان', id: 's_g4', name: 'قەڵای شێروانە لە بەفردا', kind: 'scene', img: YK_REAL_SCENES.kalar_sherwana, fallbackGrad: 'linear-gradient(135deg,#7c2d12,#b45309)', snow: true, desc: 'وێنەی ڕاستەقینەی قەڵای شێروانەی کەلار بە بەفربارینی زیندوو' },
+  { lv: 5, track: 'free', city: 'none', id: 's_f5', name: '٢٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 250, desc: 'دیاریی خۆڕایی دراوی YK بۆ هەموو یاریزانان' },
+  { lv: 6, track: 'gold', city: 'duhok', cityLabel: 'دهۆک و ئامێدی', id: 's_g6', name: 'ئامێدی و شاخەکانی دهۆک', kind: 'scene', img: YK_REAL_SCENES.duhok_amedi, fallbackGrad: 'linear-gradient(135deg,#065f46,#0f766e)', snow: true, desc: 'دیمەنی سەرسوڕهێنەری ئامێدی و بادینان لە زستاندا' },
+  { lv: 7, track: 'gold', city: 'erbil', cityLabel: 'هەولێر', id: 's_g7', name: 'تاجی پایتەخت (هەولێر)', kind: 'crown', variant: 'gold', desc: 'تاجی زێڕینی ٣ ڕەهەندی بە یاقووتی سوور لە سەرووی وێنەکەت' },
+  { lv: 8, track: 'free', city: 'none', id: 's_f8', name: 'چوارچێوەی گڕی نەورۆز', kind: 'frame', variant: 'nowruz', desc: 'چوارچێوەی ئاگرینی خۆڕایی لە دەوری وێنەکەت' },
+  { lv: 9, track: 'gold', city: 'kirkuk', cityLabel: 'کەرکووک', id: 's_g9', name: 'قەڵای مێژوویی کەرکووک', kind: 'scene', img: YK_REAL_SCENES.kirkuk_citadel, fallbackGrad: 'linear-gradient(135deg,#991b1b,#d97706)', snow: false, desc: 'وێنەی ڕاستەقینەی قەڵای کەرکووک بۆ پاشبنەما' },
+  { lv: 10, track: 'gold', city: 'halabja', cityLabel: 'هەڵەبجە و هەورامان', id: 's_g10', name: 'تافگەی ئەحمەدئاوا و هەورامان', kind: 'scene', img: YK_REAL_SCENES.halabja_ahmadawa, fallbackGrad: 'linear-gradient(135deg,#047857,#0284c7)', snow: true, desc: 'دیمەنی ڕاستەقینەی ئەحمەدئاوا و هەڵەبجە بە بەفرەوە' },
+  { lv: 11, track: 'free', city: 'none', id: 's_f11', name: 'ناوی زێڕینی بریقەدار', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#fef08a,#f59e0b,#fde047);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە تیشکی زێڕین دەنووسرێت (خۆڕایی)' },
+  { lv: 12, track: 'gold', city: 'zakho', cityLabel: 'زاخۆ', id: 's_g12', name: 'پردی دەلالی زاخۆ', kind: 'scene', img: YK_REAL_SCENES.zakho_delal, fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#0284c7)', snow: true, desc: 'وێنەی ڕاستەقینەی پردی مێژوویی دەلال لە زاخۆ' },
+  { lv: 14, track: 'gold', city: 'sulaymaniyah', cityLabel: 'سلێمانی', id: 's_g14', name: 'تاجی شاری ڕۆشنبیری', kind: 'crown', variant: 'ice', desc: 'تاجی کریستاڵی شینی سلێمانی لە سەرووی پڕۆفایل' },
+  { lv: 15, track: 'free', city: 'none', id: 's_f15', name: 'چوارچێوەی زمڕودی کوردستان', kind: 'frame', variant: 'emerald_city', desc: 'چوارچێوەی سەوز و زێڕینی خۆڕایی بۆ هەمووان' },
+  { lv: 16, track: 'gold', city: 'akre', cityLabel: 'ئاکرێ', id: 's_g16', name: 'شاری ئاکرێ و چیاکان', kind: 'scene', img: YK_REAL_SCENES.akre_mountains, fallbackGrad: 'linear-gradient(135deg,#7c2d12,#dc2626)', snow: true, desc: 'دیمەنی ڕاستەقینەی پایتەختی نەورۆز (ئاکرێ)' },
+  { lv: 18, track: 'gold', city: 'ranya', cityLabel: 'ڕانیە و دووکان', id: 's_g18', name: 'دەریاچەی دووکان و ڕانیە', kind: 'scene', img: YK_REAL_SCENES.ranya_dukan, fallbackGrad: 'linear-gradient(135deg,#0369a1,#0d9488)', snow: false, desc: 'دیمەنی دەریاچەی دووکان و دەروازەی ڕاپەڕین' },
+  { lv: 20, track: 'free', city: 'none', id: 's_f20', name: '٤٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 450, desc: 'پاداشتی خۆڕایی ئاستی ٢٠ بۆ کڕین لە بازاڕدا' },
+  { lv: 22, track: 'gold', city: 'soran', cityLabel: 'سۆران و ڕواندز', id: 's_g22', name: 'خەرەندی ڕواندز و سۆران', kind: 'scene', img: YK_REAL_SCENES.soran_rawanduz, fallbackGrad: 'linear-gradient(135deg,#064e3b,#1e40af)', snow: true, desc: 'دیمەنی ڕاستەقینەی خەرەندی ڕواندز بە بەفربارینەوە' },
+  { lv: 24, track: 'gold', city: 'kalar', cityLabel: 'کەلار و گەرمیان', id: 's_g24', name: 'چوارچێوەی زێڕینی شێروانە', kind: 'frame', variant: 'sherwana', desc: 'چوارچێوەی شاهانەی گەرمیان لە دەوری پڕۆفایل' },
+  { lv: 25, track: 'free', city: 'none', id: 's_f25', name: 'چوارچێوەی یاقووتی سوور', kind: 'frame', variant: 'ruby_star', desc: 'چوارچێوەی یاقووت و ئەستێرەی زێڕین (خۆڕایی)' },
+  { lv: 27, track: 'gold', city: 'koya', cityLabel: 'کۆیە', id: 's_g27', name: 'کۆیە و چیای هەیبەت سوڵتان', kind: 'scene', img: YK_REAL_SCENES.koya_haibat, fallbackGrad: 'linear-gradient(135deg,#581c87,#b45309)', snow: true, desc: 'دیمەنی شاری کۆیە و هەیبەت سوڵتان لە زستاندا' },
+  { lv: 29, track: 'gold', city: 'duhok', cityLabel: 'دهۆک و ئامێدی', id: 's_g29', name: 'تاجی زمڕودی بادینان', kind: 'crown', variant: 'emerald', desc: 'تاجی شاهانەی سەوز و زێڕین لە سەرووی وێنەکەت' },
+  { lv: 30, track: 'free', city: 'none', id: 's_f30', name: '٦٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 600, desc: 'دیاریی خۆڕایی ئاستی ٣٠ بۆ هەموو یاریزانان' },
+  { lv: 32, track: 'gold', city: 'shaqlawa', cityLabel: 'شەقڵاوە', id: 's_g32', name: 'شەقڵاوە و چیای سەفین', kind: 'scene', img: YK_REAL_SCENES.shaqlawa_safeen, fallbackGrad: 'linear-gradient(135deg,#0f766e,#1d4ed8)', snow: true, desc: 'دیمەنی شەقڵاوە و سەفین بە بەفربارینی زیندوو' },
+  { lv: 35, track: 'free', city: 'none', id: 's_f35', name: 'ناوی ئاڵای کوردستان', kind: 'nameStyle', css: 'background:linear-gradient(90deg,#ef4444,#fde047,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;', desc: 'ناوەکەت بە سێ ڕەنگە پیرۆزەکە دەدرەوشێتەوە (خۆڕایی)' },
+  { lv: 36, track: 'gold', city: 'penjwen', cityLabel: 'پێنجوێن', id: 's_g36', name: 'بەفرستانی پێنجوێن', kind: 'scene', img: YK_REAL_SCENES.penjwen_winter, fallbackGrad: 'linear-gradient(135deg,#1e3a8a,#38bdf8)', snow: true, desc: 'شاری بەفر و جوانی پێنجوێن بە بەفربارینی زیندوو' },
+  { lv: 38, track: 'gold', city: 'kirkuk', cityLabel: 'کەرکووک', id: 's_g38', name: 'تاجی یاقووتی کەرکووک', kind: 'crown', variant: 'ruby', desc: 'تاجی ئاگرین و یاقووتی سوور لە سەرووی پڕۆفایل' },
+  { lv: 40, track: 'free', city: 'none', id: 's_f40', name: 'چوارچێوەی خۆری ٢١ پەڕ', kind: 'frame', variant: 'kurdistan', desc: 'چوارچێوەی خۆری ٢١ تیشکی کوردستان (خۆڕایی)' },
+  { lv: 42, track: 'gold', city: 'chamchamal', cityLabel: 'چەمچەماڵ', id: 's_g42', name: 'دیمەنی چەمچەماڵ و گەرمیان', kind: 'scene', img: YK_REAL_SCENES.chamchamal_garmian, fallbackGrad: 'linear-gradient(135deg,#92400e,#b91c1c)', snow: true, desc: 'دیمەنی چەمچەماڵ و دەشتی گەرمیان بۆ پاشبنەما' },
+  { lv: 45, track: 'gold', city: 'all', cityLabel: 'کوردستان', id: 's_g45', name: '١,٥٠٠ دراوی خۆری زێڕین', kind: 'coins', coins: 1500, desc: 'گەنجینەی تایبەتی بەشداربووانی ڕێڕەوی زێڕین' },
+  { lv: 46, track: 'free', city: 'none', id: 's_f46', name: '٨٥٠ دراوی خۆری زێڕین', kind: 'coins', coins: 850, desc: 'پاداشتی خۆڕایی نزیکبوونەوە لە کۆتایی وەرز' },
+  { lv: 48, track: 'gold', city: 'all', cityLabel: 'کوردستان', id: 's_g48', name: 'چوارچێوەی پاشای کوردستان', kind: 'frame', variant: 'royal_king', desc: 'بەرزترین و ناوازەترین چوارچێوەی زێڕین و یاقووت' },
+  { lv: 50, track: 'gold', city: 'all', cityLabel: 'کوردستان', id: 's_g50', name: 'تاجی ئیمپراتۆری ئاستی ٥٠ + ٣,٠٠٠ YK', kind: 'crown', variant: 'imperial', coins: 3000, desc: 'تاجی ئەفسانەیی ئاستی ٥٠ لەگەڵ ٣,٠٠٠ دراوی YK!' },
+  { lv: 50, track: 'free', city: 'none', id: 's_f50', name: 'چوارچێوەی ئەفسانەی ئاستی ٥٠ + ١,٠٠٠ YK', kind: 'frame', variant: 'royal_king', coins: 1000, desc: 'دیاریی گەورەی خۆڕایی بۆ گەیشتن بە ئاستی ٥٠!' }
 ];
 
 let ykSeasonState = {
@@ -132,8 +178,9 @@ let ykSeasonState = {
   equippedCrown: '',
   equippedFrame: '',
   equippedScene: '',
-  previewItemId: 's_g3',
+  previewItemId: 's_g1',
   filterTrack: 'all',
+  filterCity: 'all',
   syncedUid: null
 };
 
@@ -165,6 +212,8 @@ function injectUniqueSeasonStyles() {
       -webkit-backdrop-filter: blur(14px);
       border: 1.5px solid rgba(250, 204, 21, 0.35);
     }
+    .yk-no-scrollbar::-webkit-scrollbar { display: none; }
+    .yk-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   `;
   document.head.appendChild(st);
 }
@@ -234,6 +283,22 @@ function applySeasonCosmeticsToTopHud() {
   } else if (crownWrap) {
     crownWrap.remove();
   }
+
+  let frameWrap = document.getElementById('ykHudEquippedFrame');
+  if (ykSeasonState.equippedFrame) {
+    const fItem = YK_SEASON_REWARDS.find(r => r.id === ykSeasonState.equippedFrame);
+    if (fItem) {
+      if (!frameWrap) {
+        frameWrap = document.createElement('div');
+        frameWrap.id = 'ykHudEquippedFrame';
+        frameWrap.style.cssText = 'position:absolute; inset:-8px; z-index:15; display:flex; align-items:center; justify-content:center; pointer-events:none;';
+        aura.appendChild(frameWrap);
+      }
+      frameWrap.innerHTML = getRoyalFrameRingSVG(fItem.variant, 68);
+    }
+  } else if (frameWrap) {
+    frameWrap.remove();
+  }
 }
 
 function addSeasonPoints(delta) {
@@ -241,7 +306,7 @@ function addSeasonPoints(delta) {
   const cycle = getCurrentSeasonCycle();
   const today = getTodayIsoDate();
   const curToday = ykSeasonState.todayDate === today ? ykSeasonState.todayPoints : 0;
-  const newToday = Math.min(30, curToday + delta);
+  const newToday = Math.min(35, curToday + delta);
   const actualAdd = Math.max(0, newToday - curToday);
   if (actualAdd <= 0) return 0;
 
@@ -268,9 +333,9 @@ function claimDailySeasonCheckIn() {
   if (typeof db !== 'undefined' && playerId) {
     db.ref(`players/${playerId}/seasons/${cycle.seasonKey}/claimed/${key}`).set(true);
   }
-  const gained = addSeasonPoints(6);
+  const gained = addSeasonPoints(5);
   if (typeof playChessSound === 'function') playChessSound('end');
-  alert(`🔥 دەستخۆش! +${gained || 6} خاڵی وەرزت وەرگرت!`);
+  alert(`🔥 دەستخۆش! +${gained || 5} خاڵی وەرزت وەرگرت!`);
 }
 
 function purchaseGoldenSeasonTrack() {
@@ -333,6 +398,11 @@ function claimOrEquipSeasonReward(itemId) {
   const item = YK_SEASON_REWARDS.find(r => r.id === itemId);
   if (!item) return;
 
+  if (item.track === 'gold' && !ykSeasonState.goldenUnlocked) {
+    purchaseGoldenSeasonTrack();
+    return;
+  }
+
   const isClaimed = !!(ykSeasonState.claimed && ykSeasonState.claimed[item.id]);
   if (isClaimed) {
     if (typeof db !== 'undefined' && playerId) {
@@ -351,10 +421,6 @@ function claimOrEquipSeasonReward(itemId) {
     previewSeasonReward(item.id);
     return;
   }
-  if (item.track === 'gold' && !ykSeasonState.goldenUnlocked) {
-    purchaseGoldenSeasonTrack();
-    return;
-  }
 
   const cycle = getCurrentSeasonCycle();
   if (typeof db !== 'undefined' && playerId) {
@@ -369,7 +435,7 @@ function claimOrEquipSeasonReward(itemId) {
     addUserCoins(item.coins);
   }
   if (typeof playChessSound === 'function') playChessSound('end');
-  alert(`🎉 پیرۆزە! خەڵاتی شاهانەی «${item.name}» وەرگیرا!`);
+  alert(`🎉 پیرۆزە! خەڵاتی «${item.name}» وەرگیرا!`);
 }
 
 function openSeasonPassModal() {
@@ -405,6 +471,16 @@ function setSeasonTrackFilter(f) {
   initAllSnowCanvases();
 }
 
+function setSeasonCityFilter(cityId) {
+  ykSeasonState.filterCity = cityId;
+  if (cityId !== 'all') {
+    const firstCityReward = YK_SEASON_REWARDS.find(r => r.city === cityId);
+    if (firstCityReward) ykSeasonState.previewItemId = firstCityReward.id;
+  }
+  renderSeasonPassModalBody();
+  initAllSnowCanvases();
+}
+
 function renderRewardVisualArtwork(item, sizeMode = 'card') {
   const isHero = sizeMode === 'hero';
   const pName = (typeof playerName !== 'undefined' && playerName) ? playerName : 'یاریزانی کورد';
@@ -415,15 +491,15 @@ function renderRewardVisualArtwork(item, sizeMode = 'card') {
 
   if (item.kind === 'scene') {
     return `
-      <div class="relative w-full h-full overflow-hidden bg-[#1a0c06]">
+      <div class="relative w-full h-full overflow-hidden" style="background:${item.fallbackGrad || '#1a0c06'};">
         <img src="${item.img}" alt="${item.name}"
           onerror="this.style.display='none'"
           class="w-full h-full object-cover ${isHero ? 'scale-105' : ''} transition-transform duration-700" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/30"></div>
         ${item.snow ? '<canvas class="yk-snow-canvas absolute inset-0 w-full h-full pointer-events-none"></canvas>' : ''}
         <div class="absolute bottom-1.5 right-2 left-2 flex items-center justify-between text-[10px] font-black text-amber-200 drop-shadow">
-          <span>🏰 دیمەنی ڕاستەقینە</span>
-          ${item.snow ? '<span class="px-1.5 py-0.2 rounded-full bg-sky-500/40 border border-sky-300/60 text-white">❄️ بەفراوی</span>' : ''}
+          <span>🏙️ ${item.cityLabel || 'کوردستان'}</span>
+          ${item.snow ? '<span class="px-1.5 py-0.2 rounded-full bg-sky-500/45 border border-sky-300/60 text-white">❄️ بەفراوی</span>' : ''}
         </div>
       </div>
     `;
@@ -484,13 +560,19 @@ function renderSeasonPassModalBody() {
   const cycle = getCurrentSeasonCycle();
   const stats = getSeasonProgressStats();
   const todayDone = !!(ykSeasonState.claimed && ykSeasonState.claimed['daily_' + getTodayIsoDate()]);
-  const previewItem = YK_SEASON_REWARDS.find(r => r.id === ykSeasonState.previewItemId) || YK_SEASON_REWARDS[2];
+  const previewItem = YK_SEASON_REWARDS.find(r => r.id === ykSeasonState.previewItemId) || YK_SEASON_REWARDS[0];
 
   const filteredList = YK_SEASON_REWARDS.filter(r => {
-    if (ykSeasonState.filterTrack === 'gold') return r.track === 'gold';
-    if (ykSeasonState.filterTrack === 'free') return r.track === 'free';
+    if (ykSeasonState.filterTrack === 'gold' && r.track !== 'gold') return false;
+    if (ykSeasonState.filterTrack === 'free' && r.track !== 'free') return false;
+    if (ykSeasonState.filterCity !== 'all') {
+      return r.city === ykSeasonState.filterCity || r.city === 'all';
+    }
     return true;
   });
+
+  const goldCount = YK_SEASON_REWARDS.filter(r => r.track === 'gold').length;
+  const freeCount = YK_SEASON_REWARDS.filter(r => r.track === 'free').length;
 
   const cardsHtml = filteredList.map(item => {
     const isGold = item.track === 'gold';
@@ -502,10 +584,10 @@ function renderSeasonPassModalBody() {
     let actionBtnHtml = '';
     if (claimed) {
       actionBtnHtml = `<button onclick="event.stopPropagation(); claimOrEquipSeasonReward('${item.id}')" class="w-full py-1.5 rounded-xl bg-emerald-500/25 border border-emerald-400 text-emerald-300 text-[11px] font-black">✓ وەرگیرا • بەکارهێنان</button>`;
-    } else if (reached && !lockedByPass) {
-      actionBtnHtml = `<button onclick="event.stopPropagation(); claimOrEquipSeasonReward('${item.id}')" class="w-full py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-green-600 text-[#050b18] text-[11px] font-black shadow animate-pulse">وەرگرتنی خەڵات 🎁</button>`;
     } else if (lockedByPass) {
-      actionBtnHtml = `<button onclick="event.stopPropagation(); purchaseGoldenSeasonTrack()" class="w-full py-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-[#1a0d06] text-[11px] font-black shadow">👑 کردنەوە بە $3</button>`;
+      actionBtnHtml = `<button onclick="event.stopPropagation(); purchaseGoldenSeasonTrack()" class="w-full py-1.5 rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-[#1a0d06] text-[11px] font-black shadow">👑 تایبەت بە $3</button>`;
+    } else if (reached) {
+      actionBtnHtml = `<button onclick="event.stopPropagation(); claimOrEquipSeasonReward('${item.id}')" class="w-full py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-green-600 text-[#050b18] text-[11px] font-black shadow animate-pulse">وەرگرتنی خەڵات 🎁</button>`;
     } else {
       actionBtnHtml = `<div class="w-full py-1.5 rounded-xl bg-white/10 text-amber-200/80 text-[10px] font-black text-center">🔒 پێویستی بە ئاستی ${item.lv} هەیە</div>`;
     }
@@ -519,7 +601,7 @@ function renderSeasonPassModalBody() {
             ئاستی ${item.lv}
           </span>
           <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full ${isGold ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-[#1a0d06]' : 'bg-emerald-600 text-white'} text-[9px] font-black shadow">
-            ${isGold ? '👑 زێڕین' : 'خۆڕایی'}
+            ${isGold ? '👑 زێڕین ($3)' : '🎁 خۆڕایی'}
           </span>
         </div>
 
@@ -535,7 +617,6 @@ function renderSeasonPassModalBody() {
   }).join('');
 
   body.innerHTML = `
-    <!-- سەرپەڕەی تایبەتی لوتکەی شێروانە -->
     <div class="sticky top-0 z-30 bg-[#140804]/92 backdrop-blur-lg border-b border-amber-400/35 px-3 py-2.5" style="padding-top: max(12px, env(safe-area-inset-top));">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -544,13 +625,12 @@ function renderSeasonPassModalBody() {
           </span>
           <span class="text-[10px] text-slate-300 hidden sm:inline">هەر ٢ مانگ جارێک سفر دەبێتەوە</span>
         </div>
-        <div class="text-sm font-black gold-text">🏔️ لوتکەی شێروانە • وەرزی ${cycle.seasonNum}</div>
+        <div class="text-sm font-black gold-text">🏔️ ${cycle.title} • وەرزی ${cycle.seasonNum}</div>
         <button onclick="closeSeasonPassModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white font-black text-sm flex items-center justify-center">✕</button>
       </div>
     </div>
 
-    <div class="px-3 pt-3 space-y-4">
-      <!-- سەکۆی تاقیکردنەوەی ڕاستەوخۆ (Live Interactive Preview Stage) -->
+    <div class="px-3 pt-3 space-y-3.5">
       <div class="rounded-3xl overflow-hidden border-2 border-yellow-400/75 shadow-[0_18px_45px_rgba(0,0,0,0.85)] bg-[#140804]">
         <div class="relative h-48 w-full">
           ${renderRewardVisualArtwork(previewItem, 'hero')}
@@ -565,12 +645,11 @@ function renderSeasonPassModalBody() {
           </div>
           <button onclick="purchaseGoldenSeasonTrack()"
             class="px-5 py-2.5 rounded-2xl ${ykSeasonState.goldenUnlocked ? 'bg-emerald-500/25 border border-emerald-400 text-emerald-300' : 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-[#1a0d06] shadow-xl'} text-xs font-black whitespace-nowrap shrink-0">
-            ${ykSeasonState.goldenUnlocked ? '✓ وەرزی زێڕین چالاکە' : `👑 کردنەوەی هەمووی بە ${YK_GOLDEN_TRACK_PRICE_USD}`}
+            ${ykSeasonState.goldenUnlocked ? '✓ وەرزی زێڕین چالاکە' : `👑 کردنەوەی هەموو شارەکان بە ${YK_GOLDEN_TRACK_PRICE_USD}`}
           </button>
         </div>
       </div>
 
-      <!-- شریتی ئاست و خاڵەکان + ناردنی دیاری -->
       <div class="yk-royal-glass rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between text-xs font-black">
           <span class="text-yellow-300">⭐ ئاستی ئێستات: ${stats.level} / ${YK_SEASON_MAX_LEVEL}</span>
@@ -583,7 +662,7 @@ function renderSeasonPassModalBody() {
 
         <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
           <button onclick="claimDailySeasonCheckIn()" class="px-3.5 py-2 rounded-xl ${todayDone ? 'bg-white/10 text-slate-300' : 'bg-emerald-500 text-[#050b18] animate-pulse'} text-xs font-black">
-            ${todayDone ? '✓ خاڵی ئەمڕۆ وەرگیرا' : '🔥 وەرگرتنی +٦ خاڵی ئەمڕۆ'}
+            ${todayDone ? '✓ خاڵی ئەمڕۆ وەرگیرا' : '🔥 وەرگرتنی +٥ خاڵی ئەمڕۆ'}
           </button>
           <button onclick="giftGoldenSeasonToFriend()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-amber-400/40 text-amber-200 text-xs font-black">
             🎁 ناردن بە دیاری ($3)
@@ -591,14 +670,24 @@ function renderSeasonPassModalBody() {
         </div>
       </div>
 
-      <!-- فلتەری خەڵاتەکان -->
-      <div class="grid grid-cols-3 gap-2 bg-black/50 p-1.5 rounded-2xl border border-amber-400/30 text-xs font-black">
-        <button onclick="setSeasonTrackFilter('all')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'all' ? 'bg-amber-400 text-[#1a0d06]' : 'text-amber-100'}">هەمووی (${YK_SEASON_REWARDS.length})</button>
-        <button onclick="setSeasonTrackFilter('gold')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'gold' ? 'bg-amber-400 text-[#1a0d06]' : 'text-amber-100'}">👑 زێڕین ($3)</button>
-        <button onclick="setSeasonTrackFilter('free')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'free' ? 'bg-emerald-500 text-[#050b18]' : 'text-emerald-300'}">🎁 خۆڕایی</button>
+      <div class="space-y-1.5">
+        <div class="text-[11px] font-black text-amber-300 px-1">🏙️ شارەکەت هەڵبژێرە (تایبەت بە بەشداربووانی $3):</div>
+        <div class="yk-no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-1">
+          ${YK_CITY_FILTERS.map(c => `
+            <button onclick="setSeasonCityFilter('${c.id}')"
+              class="px-3 py-1.5 rounded-full text-[11px] font-black whitespace-nowrap border transition ${ykSeasonState.filterCity === c.id ? 'bg-gradient-to-r from-amber-300 to-yellow-500 text-[#1a0d06] border-yellow-200 shadow' : 'bg-black/55 text-amber-100 border-amber-400/30 hover:border-amber-300'}">
+              ${c.label}
+            </button>
+          `).join('')}
+        </div>
       </div>
 
-      <!-- تۆڕی خەڵاتە شاهانەکان -->
+      <div class="grid grid-cols-3 gap-2 bg-black/50 p-1.5 rounded-2xl border border-amber-400/30 text-xs font-black">
+        <button onclick="setSeasonTrackFilter('all')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'all' ? 'bg-amber-400 text-[#1a0d06]' : 'text-amber-100'}">هەمووی (${YK_SEASON_REWARDS.length})</button>
+        <button onclick="setSeasonTrackFilter('gold')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'gold' ? 'bg-amber-400 text-[#1a0d06]' : 'text-amber-100'}">👑 زێڕین (${goldCount})</button>
+        <button onclick="setSeasonTrackFilter('free')" class="py-2 rounded-xl ${ykSeasonState.filterTrack === 'free' ? 'bg-emerald-500 text-[#050b18]' : 'text-emerald-300'}">🎁 خۆڕایی (${freeCount})</button>
+      </div>
+
       <div class="grid grid-cols-2 gap-3">
         ${cardsHtml}
       </div>
@@ -606,7 +695,6 @@ function renderSeasonPassModalBody() {
   `;
 }
 
-// دروستکردنی بەفربارینی زیندوو لەسەر وێنەی قەڵای شێروانە و کەلار
 function initAllSnowCanvases() {
   document.querySelectorAll('canvas.yk-snow-canvas').forEach(cvs => {
     if (cvs.dataset.snowRunning) return;
@@ -661,7 +749,7 @@ function updateHubSeasonBannerLive() {
         const openPill = document.createElement('span');
         openPill.id = 'hubSeasonOpenBtn';
         openPill.className = 'px-2.5 py-0.5 rounded-full bg-amber-400 text-[#1a0d06] text-[10px] font-black shadow';
-        openPill.textContent = '🏔️ لوتکەی شێروانە ➔';
+        openPill.textContent = '🏔️ شکۆی شارەکان ➔';
         topRow.appendChild(openPill);
       }
     }
@@ -676,6 +764,7 @@ window.previewSeasonReward = previewSeasonReward;
 window.claimOrEquipSeasonReward = claimOrEquipSeasonReward;
 window.claimDailySeasonCheckIn = claimDailySeasonCheckIn;
 window.setSeasonTrackFilter = setSeasonTrackFilter;
+window.setSeasonCityFilter = setSeasonCityFilter;
 
 (function initSeasonBootstrap() {
   const hookAwardXp = () => {
@@ -684,7 +773,7 @@ window.setSeasonTrackFilter = setSeasonTrackFilter;
       const origAward = window.awardGameXp;
       window.awardGameXp = function (resultType) {
         const res = origAward.apply(this, arguments);
-        const sGain = resultType === 'win' ? 6 : (resultType === 'draw' ? 4 : 2);
+        const sGain = resultType === 'win' ? 5 : (resultType === 'draw' ? 3 : 2);
         addSeasonPoints(sGain);
         return res;
       };
