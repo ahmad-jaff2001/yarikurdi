@@ -88,8 +88,8 @@ function injectVipRoomStyles() {
       100% { transform: rotate(360deg); }
     }
     @keyframes ykVoiceWave {
-      0% { transform: scale(1); opacity: 0.85; }
-      100% { transform: scale(1.42); opacity: 0; }
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(1.44); opacity: 0; }
     }
     @keyframes ykFloatHeart {
       0% { transform: translateY(0) scale(0.7) rotate(0deg); opacity: 1; }
@@ -118,6 +118,9 @@ function injectVipRoomStyles() {
     .yk-vip-ring-speak {
       background: conic-gradient(from 0deg, #34d399, #22d3ee, #facc15, #34d399);
       animation: ykSpinGlow 1.8s linear infinite;
+    }
+    .yk-vip-ring-guest {
+      background: conic-gradient(from 0deg, #38bdf8, #a855f7, #ec4899, #38bdf8);
     }
     .yk-speak-ripple {
       position: absolute;
@@ -165,7 +168,7 @@ function ensureGlobalCoinStoreModal() {
   m = document.createElement('div');
   m.id = 'ykGlobalCoinStore';
   m.className = 'hidden fixed inset-0 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md';
-  m.style.zIndex = '10020';
+  m.style.zIndex = '10030';
   m.onclick = (e) => { if (e.target === m) closeCoinStoreModal(); };
   m.innerHTML = `
     <div class="royal-card max-w-md w-full rounded-3xl p-5 space-y-4 border-2 border-yellow-400 shadow-2xl" dir="rtl">
@@ -244,7 +247,7 @@ function loadActiveVoiceRooms() {
               🪙 <span class="yk-user-coin-balance">${myUserCoins.toLocaleString()}</span>
             </span>
           </div>
-          <p class="text-xs text-amber-100/80 mt-1">سەرەتا ٥ کورسی کراوەیە — پاشبنەمای قەڵای شێروانە، هەولێر و سلێمانی هەڵبژێرە یان وێنەی خۆت دابنێ!</p>
+          <p class="text-xs text-amber-100/80 mt-1">سەرەتا ٥ کورسی کراوەیە — هەر کاتێک ویستت کلیک لەسەر کورسییەکی بەتاڵ بکە و شوێنت بگۆڕە!</p>
         </div>
         <button onclick="openCoinStoreModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-[#1a0d06] text-xs font-black shadow-lg">
           🪙 کڕینی سکە
@@ -346,6 +349,7 @@ async function createVoiceRoom() {
   joinVoiceRoom(rId);
 }
 
+// ڕووکاری فول سکرین بە ناسنامەی سەربەخۆ (ykVip_*) تا هیچ تێکەڵاوییەک لەگەڵ index.html نەبێت
 function buildFullscreenVipRoomRoot() {
   injectVipRoomStyles();
   const existing = document.getElementById('ykVipRoomRoot');
@@ -357,35 +361,35 @@ function buildFullscreenVipRoomRoot() {
   root.style.cssText = 'position:fixed; inset:0; width:100vw; height:100dvh; z-index:9990; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; background:#090512; user-select:none; -webkit-user-select:none;';
 
   root.innerHTML = `
-    <canvas id="ykVipBgCanvas" style="position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
-    <div id="ykVipCustomBgLayer" style="position:absolute; inset:0; z-index:2; background-size:cover; background-position:center; display:none; pointer-events:none;">
+    <canvas id="ykVip_BgCanvas" style="position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
+    <div id="ykVip_CustomBgLayer" style="position:absolute; inset:0; z-index:2; background-size:cover; background-position:center; display:none; pointer-events:none;">
       <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(6,4,12,0.58) 0%, rgba(6,4,12,0.34) 45%, rgba(6,4,12,0.88) 100%);"></div>
     </div>
 
-    <div id="ykHeartsLayer" style="position:absolute; inset:0; z-index:35; pointer-events:none; overflow:hidden;"></div>
-    <div id="ykFullGiftOverlay" class="hidden fixed inset-0 flex-col items-center justify-center pointer-events-none" style="z-index:10005;"></div>
+    <div id="ykVip_HeartsLayer" style="position:absolute; inset:0; z-index:35; pointer-events:none; overflow:hidden;"></div>
+    <div id="ykVip_FullGiftOverlay" class="hidden fixed inset-0 flex-col items-center justify-center pointer-events-none" style="z-index:10005;"></div>
 
-    <button id="ykGiftComboBtn" onclick="triggerComboRepeat()"
-      class="hidden fixed left-4 w-16 h-16 rounded-full bg-gradient-to-br from-amber-300 via-orange-500 to-rose-600 border-3 border-yellow-200 shadow-[0_0_28px_rgba(251,191,36,0.95)] flex flex-col items-center justify-center text-white font-black animate-bounce cursor-pointer"
-      style="bottom: calc(82px + env(safe-area-inset-bottom)); z-index:10002;">
+    <button id="ykVip_GiftComboBtn" onclick="triggerComboRepeat()"
+      class="hidden fixed left-4 w-16 h-16 rounded-full bg-gradient-to-br from-amber-300 via-orange-500 to-rose-600 border-2 border-yellow-200 shadow-[0_0_28px_rgba(251,191,36,0.95)] flex flex-col items-center justify-center text-white font-black animate-bounce cursor-pointer"
+      style="bottom: calc(84px + env(safe-area-inset-bottom)); z-index:10002;">
       <span class="text-xs leading-none">Combo</span>
-      <span id="ykComboCountText" class="text-sm text-yellow-100 mt-0.5">x1</span>
+      <span id="ykVip_ComboCountText" class="text-sm text-yellow-100 mt-0.5">x1</span>
     </button>
 
-    <!-- هیدەری سەرەوەی هاوشێوەی TikTok Live -->
-    <div class="relative z-20 px-3 pb-1.5 space-y-1.5" style="padding-top: max(10px, env(safe-area-inset-top)); background:linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0) 100%);">
+    <!-- هیدەری سەرەوەی VIP Live -->
+    <div class="relative z-20 px-3 pb-1.5 space-y-1.5" style="padding-top: max(10px, env(safe-area-inset-top)); background:linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%);">
       <div class="max-w-lg mx-auto flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 bg-black/50 backdrop-blur-md border border-white/15 rounded-full pl-3 pr-1 py-1 min-w-0">
-          <div id="vipHostAvatarBox" class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-[#1a0d06] font-black flex items-center justify-center overflow-hidden border border-yellow-200 shrink-0">👑</div>
+        <div class="flex items-center gap-2 bg-black/55 backdrop-blur-md border border-white/15 rounded-full pl-3 pr-1 py-1 min-w-0">
+          <div id="ykVip_HostAvatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-[#1a0d06] font-black flex items-center justify-center overflow-hidden border border-yellow-200 shrink-0">👑</div>
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
-              <span id="currentRoomTitle" class="text-xs font-black text-white truncate max-w-[115px] sm:max-w-[170px]">دیوەخان</span>
-              <span id="vipRoomLevelBadge" class="px-1.5 py-0.2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-white text-[9px] font-black shrink-0">Lv.1</span>
+              <span id="ykVip_Title" class="text-xs font-black text-white truncate max-w-[120px] sm:max-w-[180px]">دیوەخان</span>
+              <span id="ykVip_LevelBadge" class="px-1.5 py-0.2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-white text-[9px] font-black shrink-0">Lv.1</span>
             </div>
             <div class="flex items-center gap-1.5 text-[10px] text-amber-200/90">
-              <span id="vipThemeNameTag" class="truncate max-w-[95px]">قەڵای شێروانە</span>
+              <span id="ykVip_ThemeNameTag" class="truncate max-w-[95px]">قەڵای شێروانە</span>
               <span>•</span>
-              <span>🎁 <strong id="vipRoomTotalGifts">0</strong></span>
+              <span>🎁 <strong id="ykVip_TotalGifts">0</strong></span>
             </div>
           </div>
         </div>
@@ -396,7 +400,7 @@ function buildFullscreenVipRoomRoot() {
             🖼️
           </button>
           <div class="px-2 h-8 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-white text-[11px] font-black flex items-center gap-1">
-            <span>👥</span><span id="vipRoomOnlineCount">1</span>
+            <span>👥</span><span id="ykVip_OnlineCount">1</span>
           </div>
           <button onclick="leaveVoiceRoom()" title="دەرچوون"
             class="w-8 h-8 rounded-full bg-rose-600/90 text-white font-black flex items-center justify-center text-xs shadow">
@@ -405,43 +409,54 @@ function buildFullscreenVipRoomRoot() {
         </div>
       </div>
 
-      <!-- شریتی وزە و لیڤڵی ژوور (وەک PK Bar ی تیکتۆک) -->
-      <div class="max-w-lg mx-auto flex items-center gap-2 bg-black/45 backdrop-blur-md border border-white/10 rounded-full px-2.5 py-1">
-        <span id="vipSeatsUnlockHint" class="text-[10px] font-black text-amber-300 whitespace-nowrap">🪑 5/8 کورسی</span>
+      <!-- شریتی وزە و لیڤڵی ژوور -->
+      <div class="max-w-lg mx-auto flex items-center gap-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full px-2.5 py-1">
+        <span id="ykVip_SeatsUnlockHint" class="text-[10px] font-black text-amber-300 whitespace-nowrap">🪑 5/8 کورسی</span>
         <div class="flex-1 h-2 rounded-full bg-white/15 overflow-hidden">
-          <div id="vipRoomXpFill" class="h-full yk-pk-bar transition-all duration-500" style="width: 12%"></div>
+          <div id="ykVip_XpFill" class="h-full yk-pk-bar transition-all duration-500" style="width: 12%"></div>
         </div>
-        <span id="vipRoomXpText" class="text-[9px] font-mono text-cyan-200 whitespace-nowrap">0/100 XP</span>
+        <span id="ykVip_XpText" class="text-[9px] font-mono text-cyan-200 whitespace-nowrap">0/100 XP</span>
       </div>
     </div>
 
-    <!-- ناوەڕاست: سەکۆی ٨ کورسیی VIP + چاتی شەفاف لەسەر وێنەی شارەکە -->
+    <!-- ناوەڕاست: سەکۆی ٨ کورسیی VIP + ئامادەبووان + چات -->
     <div class="relative z-20 flex-1 flex flex-col justify-between overflow-hidden max-w-lg w-full mx-auto px-2.5 pb-1">
-      <div id="roomSeatsGrid" class="grid grid-cols-4 gap-2 pt-1 shrink-0"></div>
+      <!-- ٨ کورسییەکە (٢ ڕیزی ٤ دانەیی) -->
+      <div id="ykVip_SeatsGrid" class="grid grid-cols-4 gap-2 pt-1.5 shrink-0"></div>
 
-      <div class="flex-1 flex flex-col justify-end min-h-0 pt-1.5">
-        <div id="ykFloatingGiftBannerBox" class="mb-1.5 min-h-[38px] flex items-center justify-start"></div>
-        <div id="roomChatMessages"
-          class="yk-no-scroll max-h-[26dvh] overflow-y-auto space-y-1.5 px-1.5 py-1 text-xs"
+      <!-- شریتی ئامادەبووان و گوێگران لە خوار کورسییەکان (وەک وێنەکەی تیکتۆک) -->
+      <div class="flex items-center justify-between gap-2 mt-2 px-1 shrink-0">
+        <div id="ykVip_AudienceRow" class="yk-no-scroll flex items-center gap-1.5 overflow-x-auto py-0.5"></div>
+        <button id="ykVip_StandUpBtn" onclick="stepDownFromSeat()"
+          class="hidden px-2.5 py-1 rounded-full bg-black/55 border border-white/20 text-[10px] font-black text-amber-200 whitespace-nowrap shrink-0">
+          🚶 دابەزین
+        </button>
+      </div>
+
+      <!-- چاتی شەفاف و دیارییە جووڵاوەکان -->
+      <div class="flex-1 flex flex-col justify-end min-h-0 pt-1">
+        <div id="ykVip_FloatingGiftBanner" class="mb-1.5 min-h-[36px] flex items-center justify-start"></div>
+        <div id="ykVip_ChatMessages"
+          class="yk-no-scroll max-h-[25dvh] overflow-y-auto space-y-1.5 px-1 py-1 text-xs"
           style="mask-image: linear-gradient(to bottom, transparent 0%, black 14%, black 100%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 14%, black 100%);">
         </div>
       </div>
     </div>
 
-    <!-- شریتی خوارەوەی کۆنترۆڵ (تەواو دیار لەسەر مۆبایل) -->
+    <!-- شریتی خوارەوەی کۆنترۆڵ -->
     <div class="relative z-20 px-3 pt-1.5" style="padding-bottom: max(12px, env(safe-area-inset-bottom)); background:linear-gradient(0deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0) 100%);">
       <div class="max-w-lg mx-auto flex items-center gap-1.5">
-        <button id="roomMicToggleBtn" onclick="toggleRoomMicrophone()"
+        <button id="ykVip_MicBtn" onclick="toggleRoomMicrophone()"
           class="w-10 h-10 rounded-full bg-emerald-500 text-[#050b18] font-black flex items-center justify-center text-lg shadow-lg shrink-0 transition">
           🎙️
         </button>
-        <button id="roomSpeakerToggleBtn" onclick="toggleRoomSpeaker()"
+        <button id="ykVip_SpeakerBtn" onclick="toggleRoomSpeaker()"
           class="w-9 h-9 rounded-full bg-black/60 text-white border border-white/20 flex items-center justify-center text-sm shrink-0">
           🔊
         </button>
 
         <div class="flex-1 flex items-center bg-black/55 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 min-w-0">
-          <input id="roomChatInput" type="text" onkeydown="if(event.key==='Enter') sendRoomChatMessage()"
+          <input id="ykVip_ChatInput" type="text" onkeydown="if(event.key==='Enter') sendRoomChatMessage()"
             placeholder="شتێک بڵێ..."
             class="flex-1 min-w-0 bg-transparent text-xs text-white placeholder-slate-300 focus:outline-none py-1" />
           <button onclick="sendRoomChatMessage()" class="text-amber-300 font-black text-xs pr-1.5 shrink-0">ناردن</button>
@@ -459,11 +474,27 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <!-- پانێڵی دیاری ناردن (TikTok Style Bottom Sheet) -->
-    <div id="ykGiftDrawerModal" class="hidden fixed inset-0 flex flex-col justify-end bg-black/55 backdrop-blur-xs" style="z-index:10010;" onclick="if(event.target===this) closeGiftDrawerModal()">
+    <!-- مێنوی خێرای کورسیی خۆت (بێدەنگکردن یان دابەزین) -->
+    <div id="ykVip_MySeatMenu" class="hidden fixed inset-0 flex items-end justify-center bg-black/55 backdrop-blur-xs" style="z-index:10012;" onclick="if(event.target===this) closeMySeatMenu()">
+      <div class="bg-[#160e1f]/98 border-t-2 border-amber-400/70 rounded-t-3xl p-4 max-w-lg w-full mx-auto space-y-2.5 shadow-2xl" style="padding-bottom: max(18px, env(safe-area-inset-bottom));">
+        <div class="text-center text-xs font-black text-amber-300 pb-1">کۆنترۆڵی کورسییەکەت</div>
+        <button onclick="toggleRoomMicrophone(); closeMySeatMenu();" class="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-white text-xs font-black">
+          🎙️ کردنەوە / بێدەنگکردنی مایکرۆفۆن
+        </button>
+        <button onclick="stepDownFromSeat(); closeMySeatMenu();" class="w-full py-3 rounded-2xl bg-rose-600/25 border border-rose-500/40 text-rose-200 text-xs font-black">
+          🚶 دابەزین لە کورسی (بوون بە گوێگر)
+        </button>
+        <button onclick="closeMySeatMenu()" class="w-full py-2.5 rounded-2xl bg-black/50 text-slate-300 text-xs font-bold">
+          پاشگەزبوونەوە
+        </button>
+      </div>
+    </div>
+
+    <!-- پانێڵی دیاری ناردن -->
+    <div id="ykVip_GiftDrawer" class="hidden fixed inset-0 flex flex-col justify-end bg-black/55 backdrop-blur-xs" style="z-index:10015;" onclick="if(event.target===this) closeGiftDrawerModal()">
       <div class="bg-[#120b1a]/98 border-t-2 border-amber-400/75 rounded-t-3xl p-4 max-w-lg w-full mx-auto space-y-3 shadow-2xl" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
-          <div class="yk-no-scroll flex items-center gap-1.5 overflow-x-auto pb-0.5" id="ykGiftRecipientsRow"></div>
+          <div class="yk-no-scroll flex items-center gap-1.5 overflow-x-auto pb-0.5" id="ykVip_GiftRecipientsRow"></div>
           <button onclick="closeGiftDrawerModal()" class="text-slate-300 hover:text-white text-sm font-bold px-1.5">✕</button>
         </div>
 
@@ -474,10 +505,10 @@ function buildFullscreenVipRoomRoot() {
             <button onclick="setGiftCategory('hot', this)" class="yk-gcat-btn text-slate-400 pb-0.5">باوترین</button>
             <button onclick="setGiftCategory('vip', this)" class="yk-gcat-btn text-slate-400 pb-0.5">شاهانە VIP</button>
           </div>
-          <span id="ykSelectedGiftCostHint" class="text-yellow-300">🪙 5</span>
+          <span id="ykVip_SelectedGiftCostHint" class="text-yellow-300">🪙 5</span>
         </div>
 
-        <div id="ykGiftsGrid" class="yk-no-scroll grid grid-cols-4 gap-2 max-h-48 overflow-y-auto"></div>
+        <div id="ykVip_GiftsGrid" class="yk-no-scroll grid grid-cols-4 gap-2 max-h-48 overflow-y-auto"></div>
 
         <div class="flex items-center justify-between gap-2 pt-2 border-t border-white/10">
           <button onclick="openCoinStoreModal()" class="flex items-center gap-1 px-3 py-2 rounded-full bg-amber-400/15 border border-amber-400/50 text-yellow-300 text-xs font-black">
@@ -501,7 +532,7 @@ function buildFullscreenVipRoomRoot() {
     </div>
 
     <!-- مۆداڵی هەڵبژاردنی وێنەی شارەکان یان بەرزکردنەوەی وێنەی مۆبایل -->
-    <div id="ykThemePickerModal" class="hidden fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm" style="z-index:10015;" onclick="if(event.target===this) closeThemePickerModal()">
+    <div id="ykVip_ThemePicker" class="hidden fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm" style="z-index:10020;" onclick="if(event.target===this) closeThemePickerModal()">
       <div class="royal-card max-w-md w-full rounded-3xl p-5 space-y-4 border-2 border-amber-400 shadow-2xl">
         <div class="flex items-center justify-between">
           <div>
@@ -529,7 +560,7 @@ function buildFullscreenVipRoomRoot() {
       </div>
     </div>
 
-    <div id="remoteAudiosContainer" class="hidden"></div>
+    <div id="ykVip_RemoteAudios" class="hidden"></div>
   `;
 
   root.addEventListener('pointerdown', unlockMobileRoomAudio, { passive: true });
@@ -538,16 +569,15 @@ function buildFullscreenVipRoomRoot() {
 }
 
 function unlockMobileRoomAudio() {
-  document.querySelectorAll('#remoteAudiosContainer audio').forEach(a => {
+  document.querySelectorAll('#ykVip_RemoteAudios audio').forEach(a => {
     a.muted = isSpeakerMuted;
     if (a.paused && a.srcObject) a.play().catch(() => {});
   });
 }
 
-// کێشانی دیمەنی زیندووی شارە کوردییەکان (قەڵای شێروانە، قەڵای هەولێر، سلێمانی و گۆیژە، دهۆک، ئاڵای کوردستان) بە ئەنیمەیشنی ئەستێرە و تیشک
 function startCityCanvasRenderer() {
   if (roomBgAnimFrame) cancelAnimationFrame(roomBgAnimFrame);
-  const cvs = document.getElementById('ykVipBgCanvas');
+  const cvs = document.getElementById('ykVip_BgCanvas');
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
 
@@ -584,113 +614,65 @@ function startCityCanvasRenderer() {
 
     if (themeId === 'sherwana') {
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#12081c');
-      sky.addColorStop(0.38, '#3b1520');
-      sky.addColorStop(0.68, '#7c2d12');
-      sky.addColorStop(1, '#120704');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
+      sky.addColorStop(0, '#12081c'); sky.addColorStop(0.38, '#3b1520');
+      sky.addColorStop(0.68, '#7c2d12'); sky.addColorStop(1, '#120704');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
 
-      // مانگی درەوشاوە لە پشت قەڵای شێروانە
       const mx = w * 0.78, my = h * 0.24, mr = Math.min(w, h) * 0.085;
       const mg = ctx.createRadialGradient(mx, my, mr * 0.3, mx, my, mr * 2.6);
-      mg.addColorStop(0, 'rgba(254, 240, 138, 0.72)');
-      mg.addColorStop(0.45, 'rgba(245, 158, 11, 0.22)');
-      mg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = mg;
-      ctx.beginPath(); ctx.arc(mx, my, mr * 2.6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#fef9c3';
-      ctx.beginPath(); ctx.arc(mx, my, mr * 0.65, 0, Math.PI * 2); ctx.fill();
+      mg.addColorStop(0, 'rgba(254, 240, 138, 0.72)'); mg.addColorStop(0.45, 'rgba(245, 158, 11, 0.22)'); mg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, mr * 2.6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fef9c3'; ctx.beginPath(); ctx.arc(mx, my, mr * 0.65, 0, Math.PI * 2); ctx.fill();
 
-      // تەپەی بەناوبانگی شێروانە (کەلار)
       ctx.fillStyle = '#1f0c07';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.76);
+      ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, h * 0.76);
       ctx.quadraticCurveTo(w * 0.22, h * 0.72, w * 0.34, h * 0.63);
       ctx.lineTo(w * 0.66, h * 0.63);
       ctx.quadraticCurveTo(w * 0.78, h * 0.72, w, h * 0.76);
-      ctx.lineTo(w, h);
-      ctx.closePath();
-      ctx.fill();
+      ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
 
-      // کۆشکی قەڵای شێروانە (تەلاری دوو نهۆمی + قوللەی ناوەڕاست + کەوانە ڕووناکەکان)
       const cx = w * 0.5, base = h * 0.635, cw = Math.min(w * 0.52, 420), ch = cw * 0.42;
       ctx.fillStyle = '#2d1209';
       ctx.fillRect(cx - cw / 2, base - ch, cw, ch);
-      // قوللە گۆشەییەکان و قوللەی گەورەی سەرەوە
       ctx.fillRect(cx - cw * 0.54, base - ch * 1.15, cw * 0.14, ch * 1.15);
       ctx.fillRect(cx + cw * 0.40, base - ch * 1.15, cw * 0.14, ch * 1.15);
       ctx.fillRect(cx - cw * 0.16, base - ch * 1.48, cw * 0.32, ch * 0.55);
-      // گومەزی سەرەوەی شێروانە
-      ctx.beginPath();
-      ctx.arc(cx, base - ch * 1.48, cw * 0.12, Math.PI, 0);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, base - ch * 1.48, cw * 0.12, Math.PI, 0); ctx.fill();
 
-      // پەنجەرە کەوانەییە ڕووناکەکانی قەڵای شێروانە
       ctx.fillStyle = 'rgba(253, 224, 71, 0.85)';
-      ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 12;
+      ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 12;
       for (let i = -2; i <= 2; i++) {
         const ax = cx + i * (cw * 0.17);
-        ctx.beginPath();
-        ctx.arc(ax, base - ch * 0.55, cw * 0.038, Math.PI, 0);
-        ctx.lineTo(ax + cw * 0.038, base - ch * 0.22);
-        ctx.lineTo(ax - cw * 0.038, base - ch * 0.22);
-        ctx.closePath();
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(ax, base - ch * 0.55, cw * 0.038, Math.PI, 0);
+        ctx.lineTo(ax + cw * 0.038, base - ch * 0.22); ctx.lineTo(ax - cw * 0.038, base - ch * 0.22);
+        ctx.closePath(); ctx.fill();
       }
-      ctx.beginPath();
-      ctx.arc(cx, base - ch * 1.24, cw * 0.045, Math.PI, 0);
-      ctx.lineTo(cx + cw * 0.045, base - ch * 1.02);
-      ctx.lineTo(cx - cw * 0.045, base - ch * 1.02);
-      ctx.closePath();
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.arc(cx, base - ch * 1.24, cw * 0.045, Math.PI, 0);
+      ctx.lineTo(cx + cw * 0.045, base - ch * 1.02); ctx.lineTo(cx - cw * 0.045, base - ch * 1.02);
+      ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
 
     } else if (themeId === 'erbil') {
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#13072e');
-      sky.addColorStop(0.45, '#3b1047');
-      sky.addColorStop(0.75, '#6b211a');
-      sky.addColorStop(1, '#0e0514');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
+      sky.addColorStop(0, '#13072e'); sky.addColorStop(0.45, '#3b1047');
+      sky.addColorStop(0.75, '#6b211a'); sky.addColorStop(1, '#0e0514');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
 
-      // تەپۆڵکە مێژووییەکەی قەڵای هەولێر
       ctx.fillStyle = '#240f17';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.72);
-      ctx.lineTo(w * 0.14, h * 0.58);
-      ctx.lineTo(w * 0.86, h * 0.58);
-      ctx.lineTo(w, h * 0.72);
-      ctx.lineTo(w, h);
-      ctx.closePath();
-      ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, h * 0.72);
+      ctx.lineTo(w * 0.14, h * 0.58); ctx.lineTo(w * 0.86, h * 0.58);
+      ctx.lineTo(w, h * 0.72); ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
 
-      // شوورای خانووە دێرینەکانی سەر قەڵای هەولێر و دەروازە گەورەکە
-      const wallY = h * 0.58;
-      const wallH = Math.min(h * 0.1, 80);
-      ctx.fillStyle = '#33151d';
-      ctx.fillRect(w * 0.14, wallY - wallH, w * 0.72, wallH);
+      const wallY = h * 0.58, wallH = Math.min(h * 0.1, 80);
+      ctx.fillStyle = '#33151d'; ctx.fillRect(w * 0.14, wallY - wallH, w * 0.72, wallH);
 
-      // دەروازەی گەورەی قەڵای هەولێر لە ناوەڕاستدا
       const gx = w * 0.5, gw = Math.min(w * 0.24, 170);
-      ctx.fillStyle = '#471d1d';
-      ctx.fillRect(gx - gw / 2, wallY - wallH * 1.35, gw, wallH * 1.35);
+      ctx.fillStyle = '#471d1d'; ctx.fillRect(gx - gw / 2, wallY - wallH * 1.35, gw, wallH * 1.35);
 
       ctx.fillStyle = 'rgba(251, 191, 36, 0.88)';
-      ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.arc(gx, wallY - wallH * 0.55, gw * 0.22, Math.PI, 0);
-      ctx.lineTo(gx + gw * 0.22, wallY);
-      ctx.lineTo(gx - gw * 0.22, wallY);
-      ctx.closePath();
-      ctx.fill();
-
-      // پەنجەرە ڕووناکەکانی سەر شوورای هەولێر
+      ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(gx, wallY - wallH * 0.55, gw * 0.22, Math.PI, 0);
+      ctx.lineTo(gx + gw * 0.22, wallY); ctx.lineTo(gx - gw * 0.22, wallY);
+      ctx.closePath(); ctx.fill();
       for (let i = 0; i < 11; i++) {
         const wx = w * 0.17 + i * (w * 0.66 / 10);
         if (Math.abs(wx - gx) < gw * 0.6) continue;
@@ -700,57 +682,35 @@ function startCityCanvasRenderer() {
 
     } else if (themeId === 'sulaymaniyah') {
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#040a1a');
-      sky.addColorStop(0.45, '#0c2348');
-      sky.addColorStop(0.76, '#133a5e');
-      sky.addColorStop(1, '#040914');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
+      sky.addColorStop(0, '#040a1a'); sky.addColorStop(0.45, '#0c2348');
+      sky.addColorStop(0.76, '#133a5e'); sky.addColorStop(1, '#040914');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
 
-      // چیای گۆیژە و ئەزمەڕ
       ctx.fillStyle = '#08152b';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.62);
+      ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, h * 0.62);
       ctx.quadraticCurveTo(w * 0.26, h * 0.42, w * 0.52, h * 0.56);
       ctx.quadraticCurveTo(w * 0.78, h * 0.38, w, h * 0.58);
-      ctx.lineTo(w, h);
-      ctx.closePath();
-      ctx.fill();
+      ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
 
-      // چرا و ڕووناکییەکانی شەوی شاری سلێمانی لە دامێنی گۆیژە
       for (let i = 0; i < 42; i++) {
         const lx = ((i * 73) % 100) / 100 * w;
         const ly = h * 0.64 + ((i * 41) % 22) / 100 * h;
         const pulse = 0.45 + 0.55 * Math.sin(tick * 2 + i);
         ctx.fillStyle = i % 3 === 0 ? `rgba(56, 189, 248, ${pulse})` : `rgba(253, 224, 71, ${pulse})`;
-        ctx.beginPath();
-        ctx.arc(lx, ly, (i % 4 === 0 ? 3 : 1.8), 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(lx, ly, (i % 4 === 0 ? 3 : 1.8), 0, Math.PI * 2); ctx.fill();
       }
 
     } else if (themeId === 'duhok') {
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#021210');
-      sky.addColorStop(0.48, '#064e3b');
-      sky.addColorStop(0.82, '#0f2922');
-      sky.addColorStop(1, '#020b09');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
+      sky.addColorStop(0, '#021210'); sky.addColorStop(0.48, '#064e3b');
+      sky.addColorStop(0.82, '#0f2922'); sky.addColorStop(1, '#020b09');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
 
-      // شاخە سەختەکانی دهۆک و تەختی ئامێدی
       ctx.fillStyle = '#041f18';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.64);
-      ctx.lineTo(w * 0.24, h * 0.48);
-      ctx.lineTo(w * 0.76, h * 0.48);
-      ctx.lineTo(w, h * 0.68);
-      ctx.lineTo(w, h);
-      ctx.closePath();
-      ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(0, h * 0.64);
+      ctx.lineTo(w * 0.24, h * 0.48); ctx.lineTo(w * 0.76, h * 0.48);
+      ctx.lineTo(w, h * 0.68); ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
 
-      // ڕووناکییەکانی سەر شاری ئامێدی
       ctx.fillStyle = 'rgba(253, 224, 71, 0.85)';
       for (let i = 0; i < 16; i++) {
         const ax = w * 0.28 + i * (w * 0.44 / 15);
@@ -771,18 +731,13 @@ function startCityCanvasRenderer() {
       g3.addColorStop(0, '#052e16'); g3.addColorStop(0.5, '#14532d'); g3.addColorStop(1, '#022c22');
       ctx.fillStyle = g3; ctx.fillRect(0, band * 2, w, band + 2);
 
-      // خۆری ٢١ تیشکی درەوشاوە بە خولانەوەی هێواش
       ctx.save();
-      ctx.translate(w / 2, h * 0.48);
+      ctx.translate(w / 2, h * 0.5);
       ctx.rotate(tick * 0.08);
-      const outerR = Math.min(w, h) * 0.22;
-      const innerR = outerR * 0.5;
+      const outerR = Math.min(w, h) * 0.22, innerR = outerR * 0.5;
       const sg = ctx.createRadialGradient(0, 0, 4, 0, 0, outerR * 1.4);
-      sg.addColorStop(0, 'rgba(254, 240, 138, 0.75)');
-      sg.addColorStop(0.6, 'rgba(245, 158, 11, 0.25)');
-      sg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = sg;
-      ctx.beginPath(); ctx.arc(0, 0, outerR * 1.4, 0, Math.PI * 2); ctx.fill();
+      sg.addColorStop(0, 'rgba(254, 240, 138, 0.72)'); sg.addColorStop(0.6, 'rgba(245, 158, 11, 0.22)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(0, 0, outerR * 1.4, 0, Math.PI * 2); ctx.fill();
 
       ctx.fillStyle = 'rgba(250, 204, 21, 0.42)';
       ctx.beginPath();
@@ -792,46 +747,49 @@ function startCityCanvasRenderer() {
         if (i === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
         else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
       }
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      ctx.closePath(); ctx.fill(); ctx.restore();
 
     } else {
       const sky = ctx.createRadialGradient(w * 0.5, h * 0.3, 20, w * 0.5, h * 0.5, Math.max(w, h) * 0.8);
-      sky.addColorStop(0, '#3b0764');
-      sky.addColorStop(0.45, '#1e1b4b');
-      sky.addColorStop(1, '#060312');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
+      sky.addColorStop(0, '#3b0764'); sky.addColorStop(0.45, '#1e1b4b'); sky.addColorStop(1, '#060312');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
     }
 
-    // ئەستێرە بریسکەدارەکان
     for (const s of stars) {
       s.phase += s.sp;
       const al = 0.25 + 0.65 * Math.abs(Math.sin(s.phase));
       ctx.fillStyle = `rgba(255, 250, 225, ${al.toFixed(2)})`;
-      ctx.beginPath();
-      ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2); ctx.fill();
     }
 
-    // تەنۆلکە زێڕینە سحراوییەکان (Floating Magic Embers)
     for (const e of embers) {
-      e.y += e.vy;
-      e.ph += 0.025;
+      e.y += e.vy; e.ph += 0.025;
       if (e.y < -0.02) { e.y = 1.02; e.x = Math.random(); }
       const ex = (e.x + Math.sin(e.ph) * 0.015) * w;
       const ey = e.y * h;
       const al = 0.25 + 0.45 * Math.sin(e.ph * 1.4);
       ctx.fillStyle = `rgba(253, 224, 71, ${Math.max(0.05, al).toFixed(2)})`;
-      ctx.beginPath();
-      ctx.arc(ex, ey, e.r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(ex, ey, e.r, 0, Math.PI * 2); ctx.fill();
     }
 
     roomBgAnimFrame = requestAnimationFrame(draw);
   }
   draw();
+}
+
+// دۆزینەوەی یەکەم کورسیی بەتاڵ کاتێک کەسێک دێتە ناو ژوورەکە
+function findFirstOpenSeatIndex(members, unlockedSeats, isHost) {
+  const taken = new Set();
+  Object.entries(members || {}).forEach(([uid, m]) => {
+    if (uid !== playerId && typeof m.seatIndex === 'number' && m.seatIndex >= 0) {
+      taken.add(m.seatIndex);
+    }
+  });
+  if (isHost && !taken.has(0)) return 0;
+  for (let i = 0; i < unlockedSeats; i++) {
+    if (!taken.has(i)) return i;
+  }
+  return -1; // هەموو کورسییەکان پڕن، وەک گوێگر دەمێنێتەوە تا کورسییەک بەتاڵ دەبێت
 }
 
 async function joinVoiceRoom(rId) {
@@ -851,20 +809,38 @@ async function joinVoiceRoom(rId) {
   buildFullscreenVipRoomRoot();
   updateMicButtonsUI();
 
+  // خوێندنەوەی سەرەتایی ژوور بۆ دابەشکردنی کورسیی بەتاڵ
+  const initialSnap = await db.ref('voiceRooms/' + rId).once('value');
+  const initialRoom = initialSnap.val() || {};
+  const initLv = getRoomLevelData(initialRoom.roomXp || 0);
+  const initSeat = findFirstOpenSeatIndex(initialRoom.members || {}, initLv.unlockedSeats, initialRoom.hostId === playerId);
+
+  const myMemberRef = db.ref(`voiceRooms/${rId}/members/${playerId}`);
+  myMemberRef.onDisconnect().remove();
+  await myMemberRef.set({
+    name: playerName,
+    avatar: playerAvatarData || '',
+    muted: isMicMuted,
+    speaking: false,
+    supportCoins: 0,
+    seatIndex: initSeat,
+    joinedAt: firebase.database.ServerValue.TIMESTAMP
+  });
+
   roomMetaRef = db.ref('voiceRooms/' + rId);
   roomMetaRef.on('value', snap => {
     const info = snap.val();
     if (!info) return;
     currentRoomMeta = info;
 
-    const titleEl = document.getElementById('currentRoomTitle');
+    const titleEl = document.getElementById('ykVip_Title');
     if (titleEl) titleEl.textContent = info.title || 'دیوەخان';
 
     const th = ROOM_THEMES.find(t => t.id === info.theme) || ROOM_THEMES[0];
-    const tagEl = document.getElementById('vipThemeNameTag');
+    const tagEl = document.getElementById('ykVip_ThemeNameTag');
     if (tagEl) tagEl.textContent = info.customBg ? 'وێنەی تایبەت' : th.name;
 
-    const customLayer = document.getElementById('ykVipCustomBgLayer');
+    const customLayer = document.getElementById('ykVip_CustomBgLayer');
     if (customLayer) {
       if (info.customBg) {
         customLayer.style.backgroundImage = `url('${info.customBg}')`;
@@ -875,11 +851,11 @@ async function joinVoiceRoom(rId) {
     }
 
     const lv = getRoomLevelData(info.roomXp || 0);
-    const lvBadge = document.getElementById('vipRoomLevelBadge');
-    const xpFill = document.getElementById('vipRoomXpFill');
-    const xpText = document.getElementById('vipRoomXpText');
-    const seatsHint = document.getElementById('vipSeatsUnlockHint');
-    const totalGiftsEl = document.getElementById('vipRoomTotalGifts');
+    const lvBadge = document.getElementById('ykVip_LevelBadge');
+    const xpFill = document.getElementById('ykVip_XpFill');
+    const xpText = document.getElementById('ykVip_XpText');
+    const seatsHint = document.getElementById('ykVip_SeatsUnlockHint');
+    const totalGiftsEl = document.getElementById('ykVip_TotalGifts');
 
     if (lvBadge) lvBadge.textContent = `Lv.${lv.level}`;
     if (xpFill) xpFill.style.width = `${Math.max(8, lv.progressPct)}%`;
@@ -888,17 +864,6 @@ async function joinVoiceRoom(rId) {
     if (totalGiftsEl) totalGiftsEl.textContent = (info.totalGiftCoins || 0).toLocaleString();
 
     renderRoomSeats(currentRoomMembers);
-  });
-
-  const myMemberRef = db.ref(`voiceRooms/${rId}/members/${playerId}`);
-  myMemberRef.onDisconnect().remove();
-  await myMemberRef.set({
-    name: playerName,
-    avatar: playerAvatarData || '',
-    muted: isMicMuted,
-    speaking: false,
-    supportCoins: 0,
-    joinedAt: firebase.database.ServerValue.TIMESTAMP
   });
 
   db.ref(`voiceRooms/${rId}/chat`).push({
@@ -929,7 +894,7 @@ async function joinVoiceRoom(rId) {
   roomMembersRef = db.ref(`voiceRooms/${rId}/members`);
   roomMembersRef.on('value', snap => {
     currentRoomMembers = snap.val() || {};
-    const onlineEl = document.getElementById('vipRoomOnlineCount');
+    const onlineEl = document.getElementById('ykVip_OnlineCount');
     if (onlineEl) onlineEl.textContent = Object.keys(currentRoomMembers).length;
 
     renderRoomSeats(currentRoomMembers);
@@ -950,19 +915,19 @@ async function joinVoiceRoom(rId) {
 
   roomChatRef = db.ref(`voiceRooms/${rId}/chat`);
   roomChatRef.limitToLast(45).on('value', snap => {
-    const box = document.getElementById('roomChatMessages');
+    const box = document.getElementById('ykVip_ChatMessages');
     if (!box) return;
     const msgs = [];
     snap.forEach(c => msgs.push(c.val()));
 
     box.innerHTML = msgs.map(m => {
       if (m.type === 'join') {
-        return `<div><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-sm border border-amber-400/25 text-[11px] text-amber-200">
+        return `<div><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/55 backdrop-blur-sm border border-amber-400/25 text-[11px] text-amber-200">
           ✨ <strong>@${escapeRoomHtml(m.name)}</strong> ${escapeRoomHtml(m.text)}
         </span></div>`;
       }
       if (m.type === 'gift') {
-        return `<div class="p-2 rounded-2xl bg-gradient-to-l from-amber-500/30 via-rose-600/25 to-black/60 backdrop-blur-md border border-amber-400/50 flex items-center justify-between gap-2">
+        return `<div class="p-2 rounded-2xl bg-gradient-to-l from-amber-500/30 via-rose-600/25 to-black/65 backdrop-blur-md border border-amber-400/50 flex items-center justify-between gap-2">
           <div class="leading-tight">
             <div class="text-[11px] font-black text-amber-300">${escapeRoomHtml(m.senderName)} ➔ <span class="text-white">@${escapeRoomHtml(m.targetName)}</span></div>
             <div class="text-[10px] text-amber-100">${escapeRoomHtml(m.giftName)} (+${m.coins} 🪙)</div>
@@ -973,7 +938,7 @@ async function joinVoiceRoom(rId) {
           </div>
         </div>`;
       }
-      return `<div><span class="inline-block px-2.5 py-1 rounded-2xl bg-black/45 backdrop-blur-sm border border-white/10 leading-snug">
+      return `<div><span class="inline-block px-2.5 py-1 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/10 leading-snug">
         <span class="px-1.5 py-0.2 rounded bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-[9px] ml-1">VIP</span>
         <span class="font-black text-amber-300">${escapeRoomHtml(m.name)}:</span>
         <span class="text-white">${escapeRoomHtml(m.text)}</span>
@@ -990,40 +955,109 @@ async function joinVoiceRoom(rId) {
   });
 }
 
+// گۆڕینی کورسی بە دڵی خۆت (کلیک لەسەر هەر کورسییەکی بەتاڵی کراوە)
+function switchToRoomSeat(targetSeatIdx) {
+  if (!currentVoiceRoomId || !playerId) return;
+  const lv = getRoomLevelData((currentRoomMeta && currentRoomMeta.roomXp) || 0);
+  if (targetSeatIdx < 0 || targetSeatIdx >= lv.unlockedSeats) return;
+
+  // دڵنیابوونەوە لەوەی کەسێکی تر لەسەر ئەم کورسییە نییە
+  const occupiedByOther = Object.entries(currentRoomMembers || {}).some(
+    ([uid, m]) => uid !== playerId && m.seatIndex === targetSeatIdx
+  );
+  if (occupiedByOther) return;
+
+  db.ref(`voiceRooms/${currentVoiceRoomId}/members/${playerId}/seatIndex`).set(targetSeatIdx);
+  if (typeof playChessSound === 'function') playChessSound('move');
+}
+
+function stepDownFromSeat() {
+  if (!currentVoiceRoomId || !playerId) return;
+  db.ref(`voiceRooms/${currentVoiceRoomId}/members/${playerId}`).update({
+    seatIndex: -1,
+    speaking: false
+  });
+  if (typeof playChessSound === 'function') playChessSound('move');
+}
+
+function openMySeatMenu() {
+  const m = document.getElementById('ykVip_MySeatMenu');
+  if (m) m.classList.remove('hidden');
+}
+
+function closeMySeatMenu() {
+  const m = document.getElementById('ykVip_MySeatMenu');
+  if (m) m.classList.add('hidden');
+}
+
+// نیشاندانی ٨ کورسییەکە بەپێی seatIndex ی هەر کەسێک (دەتوانیت کورسییەکەت بگۆڕیت!)
 function renderRoomSeats(members) {
-  const grid = document.getElementById('roomSeatsGrid');
+  const grid = document.getElementById('ykVip_SeatsGrid');
   if (!grid) return;
 
   const lv = getRoomLevelData((currentRoomMeta && currentRoomMeta.roomXp) || 0);
   const unlocked = lv.unlockedSeats;
-  const entries = Object.entries(members || {});
   const hostId = currentRoomMeta && currentRoomMeta.hostId;
-  entries.sort((a, b) => (a[0] === hostId ? -1 : b[0] === hostId ? 1 : 0));
 
   if (hostId && members[hostId]) {
-    const hostAv = document.getElementById('vipHostAvatarBox');
+    const hostAv = document.getElementById('ykVip_HostAvatar');
     if (hostAv && members[hostId].avatar) {
       hostAv.innerHTML = `<img src="${members[hostId].avatar}" class="w-full h-full object-cover" />`;
     }
   }
 
+  // دانانی هەر ئەندامێک لەسەر کورسییەکەی خۆی (seatIndex)
+  const seatMap = new Array(8).fill(null);
+  const unassigned = [];
+  const audience = [];
+
+  Object.entries(members || {}).forEach(([uid, m]) => {
+    if (typeof m.seatIndex === 'number') {
+      if (m.seatIndex >= 0 && m.seatIndex < unlocked && !seatMap[m.seatIndex]) {
+        seatMap[m.seatIndex] = [uid, m];
+      } else if (m.seatIndex === -1) {
+        audience.push([uid, m]);
+      } else {
+        unassigned.push([uid, m]);
+      }
+    } else {
+      unassigned.push([uid, m]);
+    }
+  });
+
+  // ئەندامانی کۆن یان بێ ژمارەی کورسی دەچنە یەکەم کورسیی بەتاڵ
+  unassigned.forEach(entry => {
+    const emptyIdx = seatMap.findIndex((s, idx) => s === null && idx < unlocked);
+    if (emptyIdx !== -1) seatMap[emptyIdx] = entry;
+    else audience.push(entry);
+  });
+
+  const myMember = members && members[playerId];
+  const standBtn = document.getElementById('ykVip_StandUpBtn');
+  if (standBtn) {
+    const amSeated = myMember && typeof myMember.seatIndex === 'number' && myMember.seatIndex >= 0;
+    standBtn.classList.toggle('hidden', !amSeated);
+  }
+
   let html = '';
   for (let i = 0; i < 8; i++) {
     const isLocked = i >= unlocked;
-    const occupant = entries[i];
+    const occupant = seatMap[i];
 
     if (occupant) {
       const [uid, m] = occupant;
+      const isMe = (uid === playerId);
       const isHost = (uid === hostId);
       const isSpeaking = m.speaking && !m.muted;
       const support = m.supportCoins || 0;
-      const ringClass = isSpeaking ? 'yk-vip-ring-speak' : (isHost ? 'yk-vip-ring-host' : 'bg-white/25');
+      const ringClass = isSpeaking ? 'yk-vip-ring-speak' : (isHost ? 'yk-vip-ring-host' : 'yk-vip-ring-guest');
+      const clickHandler = isMe ? 'openMySeatMenu()' : `selectGiftRecipientAndOpen('${uid}')`;
 
       html += `
-        <div onclick="selectGiftRecipientAndOpen('${uid}')"
-          class="cursor-pointer relative rounded-2xl p-1.5 bg-black/40 backdrop-blur-md border ${isHost ? 'border-amber-400/70' : 'border-white/15'} flex flex-col items-center text-center gap-1 transition active:scale-95">
+        <div onclick="${clickHandler}"
+          class="cursor-pointer relative rounded-2xl p-1.5 bg-black/45 backdrop-blur-md border ${isMe ? 'border-emerald-400/80' : (isHost ? 'border-amber-400/75' : 'border-white/20')} flex flex-col items-center text-center gap-1 transition active:scale-95 shadow-lg">
           <div class="w-full flex items-center justify-between text-[9px] font-black px-0.5">
-            <span class="px-1.5 rounded-full bg-rose-500/35 text-amber-200">🪙${support}</span>
+            <span class="px-1.5 rounded-full bg-rose-500/40 text-amber-200">🪙${support}</span>
             <span class="text-amber-300">${isHost ? '👑' : `#${i + 1}`}</span>
           </div>
 
@@ -1039,26 +1073,28 @@ function renderRoomSeats(members) {
           </div>
 
           <div class="text-[10px] font-black text-white truncate w-full leading-tight">${escapeRoomHtml(m.name)}</div>
-          <span class="px-2 py-0.2 rounded-full bg-gradient-to-r from-purple-600/80 to-pink-600/80 border border-white/20 text-[9px] font-black text-white">
-            Support
+          <span class="px-2 py-0.2 rounded-full ${isMe ? 'bg-emerald-500/30 border-emerald-400/60 text-emerald-200' : 'bg-gradient-to-r from-purple-600/85 to-pink-600/85 border-white/25 text-white'} border text-[9px] font-black">
+            ${isMe ? 'تۆ (کۆنترۆڵ)' : '🎁 Support'}
           </span>
         </div>
       `;
     } else if (!isLocked) {
+      // کورسیی بەتاڵی کراوە — کلیک لێی بکە ڕاستەوخۆ دێیتە سەر ئەم کورسییە!
       html += `
-        <div class="rounded-2xl p-1.5 bg-black/30 backdrop-blur-sm border border-dashed border-amber-300/35 flex flex-col items-center justify-center text-center gap-1 min-h-[106px]">
-          <div class="w-10 h-10 rounded-full bg-white/5 border border-amber-300/30 flex items-center justify-center text-amber-300/90 text-base">
+        <div onclick="switchToRoomSeat(${i})"
+          class="cursor-pointer rounded-2xl p-1.5 bg-black/35 hover:bg-amber-500/20 backdrop-blur-md border border-dashed border-amber-300/50 hover:border-yellow-300 flex flex-col items-center justify-center text-center gap-1 min-h-[108px] transition active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-amber-400/15 border border-amber-300/45 flex items-center justify-center text-amber-200 text-lg font-black shadow">
             🪑
           </div>
-          <div class="text-[10px] font-bold text-amber-100">کورسی #${i + 1}</div>
-          <span class="text-[9px] text-emerald-300 font-black">کراوەیە</span>
+          <div class="text-[10px] font-black text-amber-100">کورسی #${i + 1}</div>
+          <span class="px-2 py-0.2 rounded-full bg-emerald-500/25 border border-emerald-400/50 text-[9px] text-emerald-200 font-black">دانیشتن +</span>
         </div>
       `;
     } else {
       const reqLv = i === 5 ? 2 : (i === 6 ? 3 : 5);
       html += `
         <div onclick="alert('ئەم کورسییە لە لیڤڵی ${reqLv}ی ژوور دەکرێتەوە! بە مانەوە لە ژوورەکە یان ناردنی دیاری لیڤڵەکە بەرز بکەرەوە.')"
-          class="cursor-pointer rounded-2xl p-1.5 bg-black/50 backdrop-blur-sm border border-white/10 flex flex-col items-center justify-center text-center gap-1 min-h-[106px] opacity-80">
+          class="cursor-pointer rounded-2xl p-1.5 bg-black/55 backdrop-blur-sm border border-white/10 flex flex-col items-center justify-center text-center gap-1 min-h-[108px] opacity-80">
           <div class="w-10 h-10 rounded-full bg-white/5 border border-white/15 flex items-center justify-center text-slate-400 text-base">
             🔒
           </div>
@@ -1069,10 +1105,23 @@ function renderRoomSeats(members) {
     }
   }
   grid.innerHTML = html;
+
+  // نیشاندانی شریتی ئامادەبووان لە ژێر کورسییەکاندا
+  const audRow = document.getElementById('ykVip_AudienceRow');
+  if (audRow) {
+    const allList = Object.entries(members || {});
+    audRow.innerHTML = allList.map(([uid, m]) => `
+      <div onclick="${uid === playerId ? 'openMySeatMenu()' : `selectGiftRecipientAndOpen('${uid}')`}"
+        title="${escapeRoomHtml(m.name)}"
+        class="cursor-pointer relative w-8 h-8 rounded-full border-2 ${m.seatIndex === -1 ? 'border-cyan-400' : 'border-amber-400'} bg-slate-800 overflow-hidden flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow">
+        ${m.avatar ? `<img src="${m.avatar}" class="w-full h-full object-cover" />` : escapeRoomHtml((m.name || 'ی')[0])}
+      </div>
+    `).join('');
+  }
 }
 
 function sendFloatingHeart() {
-  const layer = document.getElementById('ykHeartsLayer');
+  const layer = document.getElementById('ykVip_HeartsLayer');
   if (!layer) return;
   const icons = ['❤️', '💛', '✨', '👑', '🔥', '💖'];
   const el = document.createElement('div');
@@ -1088,7 +1137,7 @@ function selectGiftRecipientAndOpen(uid) {
 }
 
 function openGiftDrawerModal() {
-  const modal = document.getElementById('ykGiftDrawerModal');
+  const modal = document.getElementById('ykVip_GiftDrawer');
   if (!modal) return;
   modal.classList.remove('hidden');
   renderGiftRecipientsRow();
@@ -1096,7 +1145,7 @@ function openGiftDrawerModal() {
 }
 
 function closeGiftDrawerModal() {
-  const modal = document.getElementById('ykGiftDrawerModal');
+  const modal = document.getElementById('ykVip_GiftDrawer');
   if (modal) modal.classList.add('hidden');
 }
 
@@ -1110,7 +1159,7 @@ function setGiftCategory(cat, btn) {
 }
 
 function renderGiftRecipientsRow() {
-  const row = document.getElementById('ykGiftRecipientsRow');
+  const row = document.getElementById('ykVip_GiftRecipientsRow');
   if (!row) return;
   const members = Object.entries(currentRoomMembers || {});
   let html = `
@@ -1128,7 +1177,7 @@ function renderGiftRecipientsRow() {
           ${m.avatar ? `<img src="${m.avatar}" class="w-full h-full object-cover"/>` : escapeRoomHtml((m.name || 'ی')[0])}
         </span>
         <span class="max-w-[64px] truncate">${escapeRoomHtml(m.name)}</span>
-        <span class="text-[9px] opacity-75">#${idx + 1}</span>
+        <span class="text-[9px] opacity-75">${typeof m.seatIndex === 'number' && m.seatIndex >= 0 ? '#' + (m.seatIndex + 1) : '👥'}</span>
       </button>
     `;
   });
@@ -1155,7 +1204,7 @@ function selectGiftItem(giftId) {
 }
 
 function renderGiftsCatalogGrid() {
-  const grid = document.getElementById('ykGiftsGrid');
+  const grid = document.getElementById('ykVip_GiftsGrid');
   if (!grid) return;
   const list = selectedGiftCat === 'all'
     ? ROYAL_GIFTS_CATALOG
@@ -1180,7 +1229,7 @@ function renderGiftsCatalogGrid() {
 }
 
 function updateSelectedGiftCostHint() {
-  const hint = document.getElementById('ykSelectedGiftCostHint');
+  const hint = document.getElementById('ykVip_SelectedGiftCostHint');
   const gift = ROYAL_GIFTS_CATALOG.find(g => g.id === selectedGiftId) || ROYAL_GIFTS_CATALOG[0];
   if (hint && gift) {
     hint.textContent = `کۆی گشتی: 🪙 ${(gift.cost * selectedGiftQty).toLocaleString()}`;
@@ -1241,8 +1290,8 @@ function sendSelectedRoyalGift() {
 }
 
 function showComboButton(giftId, qty) {
-  const btn = document.getElementById('ykGiftComboBtn');
-  const txt = document.getElementById('ykComboCountText');
+  const btn = document.getElementById('ykVip_GiftComboBtn');
+  const txt = document.getElementById('ykVip_ComboCountText');
   if (!btn || !txt) return;
   if (lastSentGiftCombo && lastSentGiftCombo.giftId === giftId) lastSentGiftCombo.streak += qty;
   else lastSentGiftCombo = { giftId, streak: qty };
@@ -1263,7 +1312,7 @@ function triggerComboRepeat() {
 }
 
 function triggerFullScreenGiftAnimation(g) {
-  const bannerBox = document.getElementById('ykFloatingGiftBannerBox');
+  const bannerBox = document.getElementById('ykVip_FloatingGiftBanner');
   if (bannerBox) {
     bannerBox.innerHTML = `
       <div style="animation: ykGiftSlideIn 0.35s ease-out;"
@@ -1283,7 +1332,7 @@ function triggerFullScreenGiftAnimation(g) {
 
   for (let i = 0; i < 6; i++) setTimeout(sendFloatingHeart, i * 110);
 
-  const overlay = document.getElementById('ykFullGiftOverlay');
+  const overlay = document.getElementById('ykVip_FullGiftOverlay');
   if (!overlay) return;
   const isGrand = g.tier === 'legendary' || g.tier === 'mythic' || g.tier === 'epic';
   if (!isGrand) return;
@@ -1309,12 +1358,12 @@ function triggerFullScreenGiftAnimation(g) {
 }
 
 function openThemePickerModal() {
-  const m = document.getElementById('ykThemePickerModal');
+  const m = document.getElementById('ykVip_ThemePicker');
   if (m) m.classList.remove('hidden');
 }
 
 function closeThemePickerModal() {
-  const m = document.getElementById('ykThemePickerModal');
+  const m = document.getElementById('ykVip_ThemePicker');
   if (m) m.classList.add('hidden');
 }
 
@@ -1416,7 +1465,7 @@ function createPeerConnection(peerId) {
       audio.playsInline = true;
       audio.setAttribute('playsinline', 'true');
       audio.volume = 1.0;
-      const box = document.getElementById('remoteAudiosContainer') || document.body;
+      const box = document.getElementById('ykVip_RemoteAudios') || document.body;
       box.appendChild(audio);
     }
     audio.srcObject = e.streams[0];
@@ -1493,16 +1542,16 @@ async function toggleRoomMicrophone() {
 
 function toggleRoomSpeaker() {
   isSpeakerMuted = !isSpeakerMuted;
-  document.querySelectorAll('#remoteAudiosContainer audio').forEach(a => {
+  document.querySelectorAll('#ykVip_RemoteAudios audio').forEach(a => {
     a.muted = isSpeakerMuted;
     if (!isSpeakerMuted && a.paused && a.srcObject) a.play().catch(() => {});
   });
-  const btn = document.getElementById('roomSpeakerToggleBtn');
+  const btn = document.getElementById('ykVip_SpeakerBtn');
   if (btn) btn.textContent = isSpeakerMuted ? '🔇' : '🔊';
 }
 
 function updateMicButtonsUI() {
-  const btn = document.getElementById('roomMicToggleBtn');
+  const btn = document.getElementById('ykVip_MicBtn');
   if (!btn) return;
   if (isMicMuted || !localAudioStream) {
     btn.textContent = '🔇';
@@ -1514,7 +1563,7 @@ function updateMicButtonsUI() {
 }
 
 function sendRoomChatMessage() {
-  const inp = document.getElementById('roomChatInput');
+  const inp = document.getElementById('ykVip_ChatInput');
   const txt = (inp && inp.value.trim()) || '';
   if (!txt || !currentVoiceRoomId) return;
   inp.value = '';
