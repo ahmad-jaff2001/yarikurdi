@@ -17,14 +17,14 @@ const ROYAL_GIFTS_CATALOG = [
   { id: 'cat', name: 'پشیلە', icon: '🐱', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Cat_November_2010-1a.jpg?width=600', cost: 30, xp: 55, cat: 'cheap', anim: 'beast' },
   { id: 'flower_garden', name: 'باخچەیەکی پڕ لە گوڵ', icon: '🌺', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Keukenhof_Garden_(33).JPG?width=640', cost: 80, xp: 140, cat: 'cheap', anim: 'romance' },
 
-  { id: 'wolf', name: 'گورگی دڕندە', icon: '🐺', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Gray_Wolf_(Canis_lupus)_(119671562).jpg?width=640', cost: 250, xp: 400, cat: 'beasts', anim: 'beast' },
-  { id: 'leopard', name: 'پڵنگ', icon: '🐆', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/African_leopard,_Panthera_pardus_pardus,_near_Lake_Panic,_Kruger_National_Park,_South_Africa_(19448654130).jpg?width=640', cost: 400, xp: 650, cat: 'beasts', anim: 'beast' },
-  { id: 'lion', name: 'شێر', icon: '🦁', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Lion_waiting_in_Namibia.jpg?width=640', cost: 600, xp: 950, cat: 'beasts', anim: 'beast' },
-  { id: 'big_bear', name: 'ورچی گەورە', icon: '🐻', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2010-kodiak-bear-1.jpg?width=640', cost: 850, xp: 1300, cat: 'beasts', anim: 'beast' },
-  { id: 'big_whale', name: 'نەهەنگی گەورە', icon: '🐋', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Humpback_Whale_underwater_shot.jpg?width=640', cost: 1200, xp: 1850, cat: 'beasts', anim: 'ocean' },
-  { id: 'winged_lion', name: 'شێری باڵدار', icon: '🪽', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Winged_Lion_-_Getty_Museum_(79.AC.140).jpg?width=640', cost: 2200, xp: 3400, cat: 'beasts', anim: 'royal' },
-  { id: 'pegasus', name: 'ئەسپی باڵدار', icon: '🦄', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Pegasus_bronze_sculpture.jpg?width=640', cost: 2800, xp: 4200, cat: 'beasts', anim: 'royal' },
-
+  { id: 'cat', name: 'پشیلە', icon: '🐱', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/3D_animation_cat.png?width=600', cost: 30, xp: 55, cat: 'cheap', anim: 'beast' },
+  { id: 'wolf', name: 'گورگی دڕندە', icon: '🐺', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Wolf_head_logo_design.jpg?width=640', cost: 250, xp: 400, cat: 'beasts', anim: 'beast' },
+  { id: 'leopard', name: 'پڵنگ', icon: '🐆', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Leopard_Illustration.jpg?width=640', cost: 400, xp: 650, cat: 'beasts', anim: 'beast' },
+  { id: 'lion', name: 'شێر', icon: '🦁', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Lion_Art.jpg?width=640', cost: 600, xp: 950, cat: 'beasts', anim: 'beast' },
+  { id: 'big_bear', name: 'ورچی گەورە', icon: '🐻', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Bear_illustration.jpg?width=640', cost: 850, xp: 1300, cat: 'beasts', anim: 'beast' },
+  { id: 'big_whale', name: 'نەهەنگی گەورە', icon: '🐋', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Humpback_whale_illustration.jpg?width=640', cost: 1200, xp: 1850, cat: 'beasts', anim: 'ocean' },
+  { id: 'winged_lion', name: 'شێری باڵدار', icon: '🪽', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Winged_lion_of_Saint_Mark_1516.jpg?width=640', cost: 2200, xp: 3400, cat: 'beasts', anim: 'royal' },
+  { id: 'pegasus', name: 'ئەسپی باڵدار', icon: '🦄', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Pegasus_fantasy.jpg?width=640', cost: 2800, xp: 4200, cat: 'beasts', anim: 'royal' },
   { id: 'bmw', name: 'سەیارەی BMW', icon: '🚘', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/BMW_M4_(G82)_IMG_5391.jpg?width=640', cost: 1000, xp: 1550, cat: 'cars', anim: 'car' },
   { id: 'land_cruiser', name: 'لاند کرۆزەر', icon: '🚙', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Land_Cruiser_300_Sahara.jpg?width=640', cost: 1400, xp: 2100, cat: 'cars', anim: 'car' },
   { id: 'range_rover', name: 'ڕەنج ڕۆڤەر', icon: '🚙', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Range_Rover_2013.jpg?width=640', cost: 1800, xp: 2800, cat: 'cars', anim: 'car' },
@@ -1513,8 +1513,9 @@ function triggerFullScreenGiftAnimation(g) {function triggerFullScreenGiftAnimat
             animation: ykKenBurnsLive 4.1s ease-in-out forwards;
             -webkit-mask-image: radial-gradient(ellipse 48% 46% at 50% 50%, #000 58%, rgba(0,0,0,0.45) 78%, transparent 98%);
             mask-image: radial-gradient(ellipse 48% 46% at 50% 50%, #000 58%, rgba(0,0,0,0.45) 78%, transparent 98%);
-            filter: drop-shadow(0 18px 28px rgba(0,0,0,0.9)) drop-shadow(0 0 22px rgba(250,204,21,0.75)) contrast(1.12) saturate(1.18);
-          "
+filter: ${animType === 'beast' || animType === 'royal' || animType === 'ocean'
+              ? "drop-shadow(0 0 28px rgba(168,85,247,0.95)) drop-shadow(0 0 18px rgba(250,204,21,0.9)) contrast(1.28) saturate(1.65) brightness(1.08)"
+              : "drop-shadow(0 18px 28px rgba(0,0,0,0.9)) drop-shadow(0 0 22px rgba(250,204,21,0.75)) contrast(1.12) saturate(1.22)"};          "
           class="w-full h-full object-cover" />
       </div>
 
