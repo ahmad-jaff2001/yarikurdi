@@ -1,4 +1,4 @@
-/* === تابی سەرەوەی شاهانە + ئاڵای کوردستان + کارتی لاکێشەیی و فوول بۆ یارییەکان === */
+/* === دیزاینی شاهانەی YariKurdi (تابی سەرەوە + ئاڵای کوردستان + تۆڕی ٣ ستوونیی هاوشێوەی PITO) === */
 (function buildKurdishRoyalUI() {
   function injectTopBarCss() {
     if (document.getElementById('ykCleanTopBarCss')) return;
@@ -196,51 +196,77 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.92) !important;
       }
 
-      /* کارتی یارییەکان: لاکێشەیی پان، بچووک، و وێنەی ١٠٠٪ فوول بێ بۆشایی ڕەش */
-      .yk-plato-card {
+      /* تۆڕی ٣ ستوونیی یارییەکان (هاوشێوەی PITO) */
+      .yk-pito-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+      }
+      @media (min-width: 768px) {
+        .yk-pito-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+          gap: 14px !important;
+        }
+      }
+
+      /* کارتی یارییەکان: بچووک، خڕ، وێنەی ١٠٠٪ فوول بێ بۆشایی ڕەش */
+      .yk-pito-card {
         position: relative !important;
-        aspect-ratio: 16 / 10 !important;
+        width: 100% !important;
+        aspect-ratio: 4 / 5 !important;
         height: auto !important;
-        min-height: 105px !important;
-        max-height: 155px !important;
+        min-height: 0 !important;
+        max-height: none !important;
         padding: 0 !important;
         overflow: hidden !important;
         border-radius: 16px !important;
+        border: 1.5px solid rgba(250, 204, 21, 0.35) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-end !important;
+        transition: transform 0.18s ease !important;
       }
-      .yk-plato-card img {
+      .yk-pito-card:active {
+        transform: scale(0.95) !important;
+      }
+      .yk-pito-card img {
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
+        max-height: none !important;
         object-fit: cover !important;
         z-index: 0 !important;
       }
-      .yk-plato-card::after {
+      .yk-pito-card::after {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.78) 100%);
+        background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.85) 100%);
         pointer-events: none;
         z-index: 1;
       }
-      .yk-plato-card > *:not(img) {
+      .yk-pito-card > *:not(img) {
         position: relative !important;
         z-index: 2 !important;
       }
-      .yk-plato-card h3,
-      .yk-plato-card h4,
-      .yk-plato-card p,
-      .yk-plato-card span {
+      .yk-pito-card h3,
+      .yk-pito-card h4,
+      .yk-pito-card p {
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        color: #ffffff !important;
+        text-align: center !important;
+        padding: 4px 6px 8px 6px !important;
+        margin: 0 !important;
         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95) !important;
       }
     `;
     document.head.appendChild(st);
   }
 
-  function enhanceFlagAndGameCards() {
+  function enhanceFlagAndPitoGrid() {
     const allDivs = Array.from(document.querySelectorAll('div, section'));
     const flagBanner = allDivs.find(el => {
       const t = (el.textContent || '');
@@ -249,18 +275,25 @@
     if (flagBanner) flagBanner.classList.add('yk-kurdistan-banner-fix');
 
     const gameKeywords = ['شەتڕەنج', 'لودۆ', 'دۆمینە', 'کۆنکان', 'تاوڵە', 'دامە', 'مار'];
-    const candidates = Array.from(document.querySelectorAll('div, button, a')).filter(el => {
+    const cards = Array.from(document.querySelectorAll('div, button, a')).filter(el => {
       const t = (el.textContent || '').trim();
       const matched = gameKeywords.filter(k => t.includes(k));
-      // تەنها ئەو کارتە هەڵدەبژێرێت کە ناوی یەک یاری تێدایە (نەک چوارچێوەی هەموو پەڕەکە!)
       if (matched.length !== 1) return false;
       const imgs = el.querySelectorAll('img');
       return imgs.length === 1 && t.length < 45;
     });
 
-    candidates.forEach(card => {
-      if (card.parentElement && candidates.includes(card.parentElement)) return;
-      card.classList.add('yk-plato-card');
+    const gridsToStyle = new Set();
+    cards.forEach(card => {
+      if (card.parentElement && cards.includes(card.parentElement)) return;
+      card.classList.add('yk-pito-card');
+      if (card.parentElement) gridsToStyle.add(card.parentElement);
+    });
+
+    gridsToStyle.forEach(grid => {
+      if (grid.children.length >= 2) {
+        grid.classList.add('yk-pito-grid');
+      }
     });
   }
 
@@ -316,7 +349,7 @@
   function mountTopBar() {
     injectTopBarCss();
     hideOnlyOldTopNav();
-    enhanceFlagAndGameCards();
+    enhanceFlagAndPitoGrid();
     if (document.getElementById('ykCleanTopBar')) {
       syncTopBarData();
       return;
@@ -367,8 +400,8 @@
     document.getElementById('ykTbSettingsBtn').onclick = triggerProfileClick;
 
     syncTopBarData();
-    setTimeout(enhanceFlagAndGameCards, 600);
-    setTimeout(enhanceFlagAndGameCards, 1500);
+    setTimeout(enhanceFlagAndPitoGrid, 500);
+    setTimeout(enhanceFlagAndPitoGrid, 1500);
     setInterval(syncTopBarData, 1500);
   }
 
