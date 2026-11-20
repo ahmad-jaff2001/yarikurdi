@@ -130,8 +130,49 @@ function injectRoyalBazaarStyles() {
   document.head.appendChild(st);
 }
 
+function injectBazaarNavButtons() {
+  if (!document.getElementById('ykTopNavBazaarBtn')) {
+    const navAnchors = Array.from(document.querySelectorAll('button, a, div')).filter(el => {
+      const txt = (el.textContent || '').trim();
+      return txt === 'ڕیزبەندی' || txt === 'هاوڕێ و چات' || txt === 'ژوورەکان';
+    });
+    const refBtn = navAnchors[0];
+    if (refBtn && refBtn.parentElement) {
+      const btn = document.createElement('button');
+      btn.id = 'ykTopNavBazaarBtn';
+      btn.type = 'button';
+      btn.onclick = () => window.openBazaarModal();
+      btn.className = refBtn.className || 'px-3 py-1.5 rounded-full text-xs font-black text-emerald-300 hover:text-yellow-300 transition flex items-center gap-1.5';
+      btn.innerHTML = '<span>🏪</span><span>بازاڕ</span>';
+      refBtn.parentElement.appendChild(btn);
+    }
+  }
+
+  if (!document.getElementById('ykBottomNavBazaarBtn')) {
+    const bottomBars = Array.from(document.querySelectorAll('nav, div')).filter(el => {
+      const cls = el.className || '';
+      return typeof cls === 'string' && (cls.includes('bottom-0') || cls.includes('fixed bottom')) && el.querySelectorAll('button').length >= 3;
+    });
+    const bar = bottomBars[0];
+    if (bar) {
+      const bBtn = document.createElement('button');
+      bBtn.id = 'ykBottomNavBazaarBtn';
+      bBtn.type = 'button';
+      bBtn.onclick = () => window.openBazaarModal();
+      bBtn.className = 'flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-emerald-300 hover:text-yellow-300 transition';
+      bBtn.innerHTML = '<span class="text-lg leading-none">🏪</span><span class="text-[10px] font-black">بازاڕ</span>';
+      bar.appendChild(bBtn);
+    }
+  }
+}
+
 function getBazaarCoinsBalance() {
   if (typeof myUserCoins !== 'undefined') return Number(myUserCoins) || 0;
+  const el = document.getElementById('userCoinsDisplay') || document.getElementById('headerCoinsCount');
+  if (el) {
+    const n = parseInt((el.textContent || '').replace(/[^\d]/g, ''), 10);
+    if (!isNaN(n)) return n;
+  }
   return 0;
 }
 
@@ -282,6 +323,7 @@ window.openBazaarModal = function () {
 };
 
 window.openRoyalBazaar = window.openBazaarModal;
+window.openBazaar = window.openBazaarModal;
 
 window.closeBazaarModal = function () {
   const root = document.getElementById('ykRoyalBazaarModal');
@@ -290,3 +332,16 @@ window.closeBazaarModal = function () {
   root.classList.remove('flex');
   ykBazaarActiveCat = null;
 };
+
+(function initRoyalBazaarEngine() {
+  const boot = () => {
+    injectRoyalBazaarStyles();
+    injectBazaarNavButtons();
+    setTimeout(injectBazaarNavButtons, 700);
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
