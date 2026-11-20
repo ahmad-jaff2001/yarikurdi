@@ -1,4 +1,4 @@
-/* === تابی سەرەوەی شاهانە + ئاڵای کوردستان + بچووککردنەوەی هەموو کارتی یارییەکان === */
+/* === تابی سەرەوەی شاهانە + ئاڵای کوردستان + کارتی لاکێشەیی و فوول بۆ یارییەکان === */
 (function buildKurdishRoyalUI() {
   function injectTopBarCss() {
     if (document.getElementById('ykCleanTopBarCss')) return;
@@ -41,18 +41,15 @@
         border: 1px solid rgba(250, 204, 21, 0.3);
         padding: 3px 9px 3px 4px;
         border-radius: 9999px;
-        transition: transform 0.18s ease, border-color 0.18s ease;
         min-width: 0;
       }
-      .yk-tb-profile-group:active { transform: scale(0.95); }
       .yk-tb-avatar-box {
         position: relative;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 9999px;
         padding: 2px;
         background: linear-gradient(135deg, #facc15, #dc2626);
-        box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
         flex-shrink: 0;
       }
       .yk-tb-avatar-img {
@@ -66,20 +63,20 @@
         justify-content: center;
         font-weight: 900;
         color: #fff;
-        font-size: 15px;
+        font-size: 14px;
       }
       .yk-tb-lvl {
         position: absolute;
         bottom: -2px;
         right: -3px;
-        min-width: 18px;
-        height: 18px;
+        min-width: 17px;
+        height: 17px;
         padding: 0 3px;
         border-radius: 5px;
         background: linear-gradient(180deg, #dc2626, #7f1d1d);
         border: 1.5px solid #facc15;
         color: #fff;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 900;
         display: flex;
         align-items: center;
@@ -94,13 +91,12 @@
       }
       .yk-tb-username {
         color: #ffffff;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 900;
-        max-width: 92px;
+        max-width: 82px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
       }
       .yk-tb-user-sub {
         color: #fde047;
@@ -110,7 +106,7 @@
       .yk-tb-pills {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         flex: 1;
         justify-content: center;
       }
@@ -119,11 +115,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 4px;
-        min-width: 84px;
-        max-width: 120px;
+        min-width: 76px;
+        max-width: 115px;
         flex: 1;
-        height: 32px;
-        padding: 0 3px 0 6px;
+        height: 30px;
+        padding: 0 3px 0 5px;
         border-radius: 9999px;
         background: rgba(20, 4, 7, 0.78);
         border: 1.5px solid rgba(250, 204, 21, 0.32);
@@ -131,16 +127,16 @@
       .yk-tb-val {
         color: #ffffff;
         font-family: ui-monospace, SFMono-Regular, monospace;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 900;
       }
       .yk-tb-plus {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
         border-radius: 9999px;
         background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
         color: #422006;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 900;
         line-height: 1;
         display: flex;
@@ -157,19 +153,19 @@
         flex-shrink: 0;
       }
       .yk-tb-icon-btn {
-        width: 34px;
-        height: 34px;
+        width: 32px;
+        height: 32px;
         border-radius: 10px;
         background: rgba(255, 255, 255, 0.09);
         border: 1px solid rgba(250, 204, 21, 0.25);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 17px;
         cursor: pointer;
       }
 
-      /* ڕوونکردنەوەی بەنەری ئاڵای کوردستان */
+      /* بەنەری ئاڵای کوردستان */
       .yk-kurdistan-banner-fix {
         position: relative !important;
         overflow: hidden !important;
@@ -200,28 +196,45 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.92) !important;
       }
 
-      /* بچووککردنەوە و ڕێکخستنی هەموو کارتی یارییەکان (سەرەکی و داهاتوو) */
-      .yk-compact-game-card {
-        height: 135px !important;
-        min-height: 135px !important;
-        max-height: 145px !important;
-        aspect-ratio: auto !important;
+      /* کارتی یارییەکان: لاکێشەیی پان، بچووک، و وێنەی ١٠٠٪ فوول بێ بۆشایی ڕەش */
+      .yk-plato-card {
+        position: relative !important;
+        aspect-ratio: 16 / 10 !important;
+        height: auto !important;
+        min-height: 105px !important;
+        max-height: 155px !important;
+        padding: 0 !important;
         overflow: hidden !important;
+        border-radius: 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
       }
-      .yk-compact-game-card img,
-      .yk-compact-game-card svg {
-        max-height: 92px !important;
+      .yk-plato-card img {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
         object-fit: cover !important;
+        z-index: 0 !important;
       }
-      @media (min-width: 768px) {
-        .yk-compact-game-card {
-          height: 205px !important;
-          max-height: 215px !important;
-        }
-        .yk-compact-game-card img,
-        .yk-compact-game-card svg {
-          max-height: 155px !important;
-        }
+      .yk-plato-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.78) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .yk-plato-card > *:not(img) {
+        position: relative !important;
+        z-index: 2 !important;
+      }
+      .yk-plato-card h3,
+      .yk-plato-card h4,
+      .yk-plato-card p,
+      .yk-plato-card span {
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95) !important;
       }
     `;
     document.head.appendChild(st);
@@ -233,20 +246,22 @@
       const t = (el.textContent || '');
       return t.includes('دەستمان بگرە') && t.includes('دیوەخان') && el.offsetHeight > 40 && el.offsetHeight < 260;
     });
-    if (flagBanner && !flagBanner.classList.contains('yk-kurdistan-banner-fix')) {
-      flagBanner.classList.add('yk-kurdistan-banner-fix');
-    }
+    if (flagBanner) flagBanner.classList.add('yk-kurdistan-banner-fix');
 
     const gameKeywords = ['شەتڕەنج', 'لودۆ', 'دۆمینە', 'کۆنکان', 'تاوڵە', 'دامە', 'مار'];
-    const cards = Array.from(document.querySelectorAll('div, button, a')).filter(el => {
+    const candidates = Array.from(document.querySelectorAll('div, button, a')).filter(el => {
       const t = (el.textContent || '').trim();
-      const hasGame = gameKeywords.some(k => t.includes(k));
-      const hasVisual = el.querySelector('img, svg, canvas');
-      const isCardSize = el.offsetHeight > 140 && el.offsetWidth > 100 && el.offsetWidth < 420;
-      const isNotGridContainer = el.children.length <= 6;
-      return hasGame && hasVisual && isCardSize && isNotGridContainer;
+      const matched = gameKeywords.filter(k => t.includes(k));
+      // تەنها ئەو کارتە هەڵدەبژێرێت کە ناوی یەک یاری تێدایە (نەک چوارچێوەی هەموو پەڕەکە!)
+      if (matched.length !== 1) return false;
+      const imgs = el.querySelectorAll('img');
+      return imgs.length === 1 && t.length < 45;
     });
-    cards.forEach(card => card.classList.add('yk-compact-game-card'));
+
+    candidates.forEach(card => {
+      if (card.parentElement && candidates.includes(card.parentElement)) return;
+      card.classList.add('yk-plato-card');
+    });
   }
 
   function hideOnlyOldTopNav() {
@@ -307,8 +322,8 @@
       return;
     }
 
-    const coinSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FACC15" stroke="#CA8A04" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="#FEF08A" opacity="0.55"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="900" fill="#854D0E">$</text></svg>`;
-    const gemSvg = `<svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2L21 9L12 22L3 9L12 2Z" fill="#38BDF8" stroke="#0284C7" stroke-width="1.8"/><path d="M12 2L16.5 9L12 22L7.5 9L12 2Z" fill="#BAE6FD" opacity="0.6"/></svg>`;
+    const coinSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FACC15" stroke="#CA8A04" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="#FEF08A" opacity="0.55"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="900" fill="#854D0E">$</text></svg>`;
+    const gemSvg = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L21 9L12 22L3 9L12 2Z" fill="#38BDF8" stroke="#0284C7" stroke-width="1.8"/><path d="M12 2L16.5 9L12 22L7.5 9L12 2Z" fill="#BAE6FD" opacity="0.6"/></svg>`;
 
     const bar = document.createElement('div');
     bar.id = 'ykCleanTopBar';
