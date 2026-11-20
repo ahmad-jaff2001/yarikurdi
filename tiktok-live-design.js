@@ -1,7 +1,7 @@
-/* === دیزاینی شاهانەی دیوەخانی YariKurdi (Royal Kurdish Voice Room UI) === */
+/* === دیزاینی شاهانەی دیوەخانی YariKurdi (وەشانی سەلامەت و بێ کێشە) === */
 (function initRoyalDiwexanUI() {
   let isBuilt = false;
-  let isDecoratingSeats = false;
+  let seatsObserver = null;
   let seenMembers = new Set();
   let entranceQueue = [];
   let isShowingEntrance = false;
@@ -11,13 +11,11 @@
     const style = document.createElement('style');
     style.id = 'ykRoyalDiwexanCss';
     style.textContent = `
-      /* شاردنەوەی نەڤبارەکانی دەرەوە کاتێک لەناو ژووری دەنگیدایت */
       body.yk-diwexan-fullscreen #ykCleanTopBar,
       body.yk-diwexan-fullscreen .floating-bottom-dock {
         display: none !important;
       }
 
-      /* چوارچێوەی سەرەکیی ژوورەکە (فوول شاشە لە مۆبایل، شاشەی مۆبایلی شیک لە کۆمپیوتەر) */
       #insideRoomPanel.yk-diwexan-stage {
         position: fixed !important;
         inset: 0 !important;
@@ -53,7 +51,6 @@
         font-family: 'Noto Kufi Arabic', system-ui, sans-serif;
       }
 
-      /* ١. شریتی سەرەوەی ژوور */
       .yk-dx-topbar {
         position: relative;
         z-index: 10;
@@ -150,7 +147,6 @@
         overflow: hidden;
       }
 
-      /* ٢. بەنەری قەڵای شاهانە و خانەخوێ */
       .yk-dx-citadel-banner {
         position: relative;
         z-index: 10;
@@ -243,7 +239,6 @@
         justify-content: center;
       }
 
-      /* ٣. تۆڕی ٥ ستوونیی کورسییەکانی دەنگدان (Glassmorphism) */
       .yk-dx-seats-wrap {
         position: relative;
         z-index: 10;
@@ -299,7 +294,6 @@
 
       .yk-dx-empty-seat {
         cursor: pointer;
-        border-style: solid !important;
         border-color: rgba(251, 191, 36, 0.22) !important;
         transition: all 0.2s ease;
       }
@@ -321,7 +315,6 @@
         justify-content: center;
       }
 
-      /* ٤. بەنەری پڕشنگداری هاتنەژوورەوە («فلان هاتە ژوورەوە! 👑✨») */
       .yk-dx-entrance-stage {
         position: relative;
         z-index: 25;
@@ -369,7 +362,6 @@
         100% { opacity: 0; transform: translateX(-36px) scale(0.92); }
       }
 
-      /* ٥. بەشی چاتی زیندوو (بڵقی شووشەیی + کارتی شاباش) */
       .yk-dx-chat-wrap {
         position: relative;
         z-index: 10;
@@ -411,7 +403,6 @@
         box-shadow: 0 0 18px rgba(250, 204, 21, 0.25) !important;
       }
 
-      /* ٦. شریتی خوارەوە: دوگمەی شاباش + بنووسە + مایک */
       .yk-dx-bottombar {
         position: relative;
         z-index: 20;
@@ -504,7 +495,6 @@
         justify-content: center;
       }
 
-      /* پانێڵی خێرای شاباش */
       .yk-dx-gift-drawer {
         position: absolute;
         left: 10px;
@@ -543,7 +533,6 @@
     document.head.appendChild(style);
   }
 
-  /* پیشاندانی بەنەری پڕشنگداری هاتنەژوورەوە بۆ هەر کەسێک */
   window.showDiwexanEntrance = function (name, avatarUrl) {
     if (!name) return;
     entranceQueue.push({ name: String(name).trim(), avatarUrl: avatarUrl || '' });
@@ -599,18 +588,18 @@
 
   function decorateSeatsGrid() {
     const grid = document.getElementById('roomSeatsGrid');
-    if (!grid || isDecoratingSeats) return;
+    const panel = document.getElementById('insideRoomPanel');
+    if (!grid || !panel || panel.classList.contains('hidden')) return;
 
-    isDecoratingSeats = true;
+    // ڕاگرتنی کاتی چاودێرەکە پێش دەستکاریکردنی DOM تا هەرگیز لۆپ دروست نەبێت
+    if (seatsObserver) seatsObserver.disconnect();
     try {
-      // سڕینەوەی کورسییە بۆشە زیادە کۆنەکان پێش ڕێکخستنەوە
       grid.querySelectorAll('[data-yk-empty="1"]').forEach(el => el.remove());
 
       const realSeats = Array.from(grid.children);
       const countEl = document.getElementById('ykDxMemberCount');
       if (countEl) countEl.textContent = Math.max(1, realSeats.length);
 
-      // دۆزینەوەی ئەندامی نوێ بۆ پیشاندانی «هاتە ژوورەوە»
       realSeats.forEach((seat, idx) => {
         const rawText = (seat.textContent || '').trim().split('\n')[0].trim();
         const img = seat.querySelector('img');
@@ -630,7 +619,6 @@
           window.showDiwexanEntrance(rawText, avatarSrc);
         }
 
-        // زیادکردنی باجی هاوخاوەن / ڕیش‌سپی بۆ یەکەمین کورسییەکان
         if (!seat.querySelector('.yk-dx-role-chip') && idx < 4) {
           const chip = document.createElement('span');
           chip.className = 'yk-dx-role-chip ' + (idx === 0 ? 'yk-dx-role-cohost' : 'yk-dx-role-elder');
@@ -639,7 +627,6 @@
         }
       });
 
-      // تەواوکردنی ١٠ کورسی (٢ ڕیزی ٥ دانەیی) بە کورسیی شووشەیی بۆش
       const needed = Math.max(0, 10 - realSeats.length);
       for (let i = 0; i < needed; i++) {
         const empty = document.createElement('div');
@@ -652,7 +639,7 @@
         grid.appendChild(empty);
       }
     } finally {
-      isDecoratingSeats = false;
+      if (seatsObserver) seatsObserver.observe(grid, { childList: true });
     }
   }
 
@@ -684,7 +671,6 @@
     const shell = document.createElement('div');
     shell.className = 'yk-dx-shell';
     shell.innerHTML = `
-      <!-- شریتی سەرەوە -->
       <div class="yk-dx-topbar">
         <button type="button" class="yk-dx-circle-btn" title="دەرچوون" onclick="if(typeof leaveVoiceRoom==='function'){leaveVoiceRoom();}">➜</button>
 
@@ -706,7 +692,6 @@
         <button type="button" id="ykDxSpeakerProxy" class="yk-dx-circle-btn" title="دەنگ">🔊</button>
       </div>
 
-      <!-- بەنەری قەڵا و خانەخوێ -->
       <div class="yk-dx-citadel-banner">
         <div class="yk-dx-host-info">
           <div class="yk-dx-host-avatar-ring">
@@ -723,16 +708,10 @@
         </div>
       </div>
 
-      <!-- تۆڕی کورسییەکان -->
       <div id="ykDxSeatsSlot" class="yk-dx-seats-wrap"></div>
-
-      <!-- شوێنی بەنەری پڕشنگداری هاتنەژوورەوە -->
       <div id="ykDxEntranceStage" class="yk-dx-entrance-stage"></div>
-
-      <!-- چاتی زیندوو -->
       <div id="ykDxChatSlot" class="yk-dx-chat-wrap"></div>
 
-      <!-- پانێڵی شاباشی خێرا -->
       <div id="ykDxGiftDrawer" class="yk-dx-gift-drawer hidden">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:900;color:#fde047;">
           <span>🎁 ناردنی شاباش بۆ دیوەخان</span>
@@ -758,7 +737,6 @@
         </div>
       </div>
 
-      <!-- شریتی خوارەوە -->
       <div class="yk-dx-bottombar">
         <div id="ykDxMicSlot" class="yk-dx-mic-wrap"></div>
         <div class="yk-dx-input-box" id="ykDxInputSlot">
@@ -772,24 +750,15 @@
       </div>
     `;
 
-    // گواستنەوەی ئێلێمێنتە ڕەسەنەکانی ناو index.html بۆ ناو دیزاینە نوێیەکە تا هیچ فەنکشنێک نەپچڕێت
-    const titleSlot = shell.querySelector('#ykDxTitleSlot');
-    titleSlot.prepend(titleEl);
-
+    shell.querySelector('#ykDxTitleSlot').prepend(titleEl);
     seatsGrid.className = 'yk-dx-seats-grid';
     shell.querySelector('#ykDxSeatsSlot').appendChild(seatsGrid);
-
     chatMessages.className = 'yk-dx-chat-list';
     shell.querySelector('#ykDxChatSlot').appendChild(chatMessages);
-
     chatInput.placeholder = 'بنووسە...';
     shell.querySelector('#ykDxInputSlot').prepend(chatInput);
+    if (micBtn) shell.querySelector('#ykDxMicSlot').appendChild(micBtn);
 
-    if (micBtn) {
-      shell.querySelector('#ykDxMicSlot').appendChild(micBtn);
-    }
-
-    // بەستنەوەی دوگمەی دەنگ و شاباش
     const speakerProxy = shell.querySelector('#ykDxSpeakerProxy');
     if (speakerProxy && speakerBtn) {
       speakerProxy.onclick = function () {
@@ -799,15 +768,13 @@
     }
     shell.querySelector('#ykDxShabashBtn').onclick = handleShabashClick;
 
-    // شاردنەوەی چوارچێوە کۆنە بەتاڵەکان و دانانی شێڵە شاهانەکە
     Array.from(panel.children).forEach(ch => { ch.style.display = 'none'; });
     panel.appendChild(shell);
 
-    // چاودێریکردنی گۆڕانکاری لە کورسییەکان و چات
-    new MutationObserver(decorateSeatsGrid).observe(seatsGrid, { childList: true });
+    seatsObserver = new MutationObserver(decorateSeatsGrid);
+    seatsObserver.observe(seatsGrid, { childList: true });
     new MutationObserver(decorateChatMessages).observe(chatMessages, { childList: true });
 
-    // چاودێریکردنی کاتی کردنەوە و داخستنی ژوورەکە
     const roomVisibilityObserver = new MutationObserver(() => {
       const isOpen = !panel.classList.contains('hidden');
       document.body.classList.toggle('yk-diwexan-fullscreen', isOpen);
@@ -823,14 +790,15 @@
       }
     });
     roomVisibilityObserver.observe(panel, { attributes: true, attributeFilter: ['class'] });
-
-    decorateSeatsGrid();
-    decorateChatMessages();
   }
 
   function boot() {
-    injectDiwexanStyles();
-    buildDiwexanShell();
+    try {
+      injectDiwexanStyles();
+      buildDiwexanShell();
+    } catch (err) {
+      console.error('Diwexan UI error:', err);
+    }
   }
 
   if (document.readyState === 'loading') {
