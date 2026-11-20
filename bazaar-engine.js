@@ -132,11 +132,11 @@ function injectRoyalBazaarStyles() {
 
 function injectBazaarNavButtons() {
   if (!document.getElementById('ykTopNavBazaarBtn')) {
-    const navAnchors = Array.from(document.querySelectorAll('button, a, div')).filter(el => {
+    const candidates = Array.from(document.querySelectorAll('button, a'));
+    const refBtn = candidates.find(el => {
       const txt = (el.textContent || '').trim();
-      return txt === 'ڕیزبەندی' || txt === 'هاوڕێ و چات' || txt === 'ژوورەکان';
+      return txt.includes('ڕیزبەندی') || txt.includes('هاوڕێ و چات');
     });
-    const refBtn = navAnchors[0];
     if (refBtn && refBtn.parentElement) {
       const btn = document.createElement('button');
       btn.id = 'ykTopNavBazaarBtn';
@@ -150,17 +150,19 @@ function injectBazaarNavButtons() {
 
   if (!document.getElementById('ykBottomNavBazaarBtn')) {
     const bottomBars = Array.from(document.querySelectorAll('nav, div')).filter(el => {
-      const cls = el.className || '';
-      return typeof cls === 'string' && (cls.includes('bottom-0') || cls.includes('fixed bottom')) && el.querySelectorAll('button').length >= 3;
+      const cls = typeof el.className === 'string' ? el.className : '';
+      return (cls.includes('bottom-') || cls.includes('fixed')) && el.querySelectorAll('button').length >= 4 && el.getBoundingClientRect().top > window.innerHeight * 0.65;
     });
-    const bar = bottomBars[0];
+    const bar = bottomBars[bottomBars.length - 1];
     if (bar) {
+      const sampleBtn = bar.querySelector('button');
       const bBtn = document.createElement('button');
       bBtn.id = 'ykBottomNavBazaarBtn';
       bBtn.type = 'button';
       bBtn.onclick = () => window.openBazaarModal();
-      bBtn.className = 'flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-emerald-300 hover:text-yellow-300 transition';
-      bBtn.innerHTML = '<span class="text-lg leading-none">🏪</span><span class="text-[10px] font-black">بازاڕ</span>';
+      bBtn.className = sampleBtn ? sampleBtn.className.replace(/bg-yellow-\d+|text-slate-\d+/g, '') : 'flex items-center justify-center p-2 text-emerald-300 hover:text-yellow-300 transition';
+      bBtn.title = 'بازاڕ';
+      bBtn.innerHTML = '<span class="text-lg leading-none">🏪</span>';
       bar.appendChild(bBtn);
     }
   }
@@ -337,7 +339,8 @@ window.closeBazaarModal = function () {
   const boot = () => {
     injectRoyalBazaarStyles();
     injectBazaarNavButtons();
-    setTimeout(injectBazaarNavButtons, 700);
+    setTimeout(injectBazaarNavButtons, 500);
+    setTimeout(injectBazaarNavButtons, 1500);
   };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
