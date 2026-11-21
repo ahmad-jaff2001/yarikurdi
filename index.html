@@ -24,23 +24,136 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<link rel="icon" type="image/png" href="logo-royal.png" />
+  <link rel="apple-touch-icon" href="logo-royal.png" />
+  <style>
+    @keyframes ykSplashZoomIn {
+      0%   { opacity: 0; transform: scale(0.82) translateY(18px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes ykSplashFloat {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50%      { transform: translateY(-9px) scale(1.03); }
+    }
+    @keyframes ykSplashRays {
+      0%   { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes ykSplashShimmer {
+      0%   { transform: translateX(180%) skewX(-24deg); }
+      100% { transform: translateX(-180%) skewX(-24deg); }
+    }
+    @keyframes ykSplashBarMove {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-220%); }
+    }
+
+    #royalSplashScreen {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 18px !important;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(168, 85, 247, 0.45) 0%, rgba(76, 29, 149, 0.3) 38%, transparent 72%),
+        radial-gradient(circle at 50% 100%, rgba(250, 204, 21, 0.2) 0%, transparent 55%),
+        linear-gradient(180deg, #16032e 0%, #090114 55%, #190330 100%) !important;
+      overflow: hidden !important;
+      transition: opacity 0.55s ease !important;
+    }
+    #royalSplashScreen.fade-out {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .yk-splash-sunburst {
+      position: absolute;
+      top: 44%;
+      left: 50%;
+      width: 135vmax;
+      height: 135vmax;
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(217, 70, 239, 0.09) 0deg 8deg,
+        transparent 8deg 22deg,
+        rgba(250, 204, 21, 0.08) 22deg 30deg,
+        transparent 30deg 45deg
+      );
+      animation: ykSplashRays 48s linear infinite;
+      mask-image: radial-gradient(circle at center, #000 0%, rgba(0,0,0,0.4) 36%, transparent 64%);
+      -webkit-mask-image: radial-gradient(circle at center, #000 0%, rgba(0,0,0,0.4) 36%, transparent 64%);
+      pointer-events: none;
+    }
+    .yk-splash-logo-wrap {
+      position: relative;
+      z-index: 2;
+      width: min(86vw, 370px);
+      border-radius: 26px;
+      padding: 3px;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 32%, #d946ef 68%, #fef08a 100%);
+      box-shadow:
+        0 22px 55px rgba(0, 0, 0, 0.85),
+        0 0 42px rgba(192, 38, 211, 0.65),
+        0 0 24px rgba(250, 204, 21, 0.55);
+      animation: ykSplashZoomIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards, ykSplashFloat 3.4s ease-in-out 0.7s infinite;
+      overflow: hidden;
+    }
+    .yk-splash-logo-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 45%;
+      background: linear-gradient(90deg, transparent, rgba(254, 249, 195, 0.55), transparent);
+      animation: ykSplashShimmer 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .yk-splash-logo-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 23px;
+      object-fit: cover;
+    }
+    .yk-splash-progress-track {
+      position: relative;
+      z-index: 2;
+      width: 210px;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      overflow: hidden;
+      box-shadow: 0 0 16px rgba(192, 38, 211, 0.45);
+    }
+    .yk-splash-progress-bar {
+      width: 46%;
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #d946ef, #fef08a, #f59e0b);
+      box-shadow: 0 0 14px rgba(250, 204, 21, 0.9);
+      animation: ykSplashBarMove 1.4s ease-in-out infinite;
+    }
+  </style>
   
   
 </head>
 
 <body>
-<!-- شاشەی سەرەتایی شاهانە (وەک ئەپی مۆبایل) -->
+<!-- شاشەی سەرەتایی شاهانەی جووڵاو -->
   <div id="royalSplashScreen">
-    <div class="splash-crown-ring mb-5">
-      <span class="text-5xl">👑</span>
+    <div class="yk-splash-sunburst"></div>
+    <div class="yk-splash-logo-wrap">
+      <img src="logo-royal.png" alt="YariKurdi" class="yk-splash-logo-img" />
     </div>
-    <h1 class="text-4xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 mb-2">
-      YariKurdi
-    </h1>
-    <p class="text-xs text-slate-400 mb-6">مەیدانی یارییە کوردییەکان</p>
-    <div class="flex items-center gap-2.5 bg-white/5 border border-yellow-500/25 px-4 py-2 rounded-full">
+    <div class="yk-splash-progress-track">
+      <div class="yk-splash-progress-bar"></div>
+    </div>
+    <div class="relative z-10 flex items-center gap-2.5 bg-[#1b0536]/90 border border-yellow-400/55 px-5 py-2 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.5)]">
       <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping"></span>
-      <span id="splashStatusText" class="text-xs font-bold text-yellow-300">پشکنینی هەژمار...</span>
+      <span id="splashStatusText" class="text-xs font-extrabold text-yellow-300">پشکنینی هەژمار...</span>
     </div>
   </div>
   <img id="dragGhost" src="" alt="" style="display:none; pointer-events:none;" />
