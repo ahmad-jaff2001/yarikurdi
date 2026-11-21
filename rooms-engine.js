@@ -480,7 +480,6 @@ function purchaseCoinPackage(pkgId) {
     closeCoinStoreModal();
   }
 }
-
 function loadActiveVoiceRooms() {
   injectVipRoomStyles();
   syncPlayerCoinsListener();
@@ -528,8 +527,9 @@ function loadActiveVoiceRooms() {
     const rooms = [];
     snap.forEach(c => {
       const val = c.val();
-      if (val && val.members) {
-        rooms.push({ id: c.key, ...val, count: Object.keys(val.members).length });
+      if (val && val.title) {
+        const count = val.members ? Object.keys(val.members).length : 0;
+        rooms.push({ id: c.key, ...val, count });
       }
     });
 
@@ -549,16 +549,20 @@ function loadActiveVoiceRooms() {
       const bgStyle = r.customBg
         ? `background-image: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.88)), url('${r.customBg}'); background-size: cover; background-position: center;`
         : `background-image: ${th.preview}; background-size: cover; background-position: center;`;
+      const isCreator = (typeof playerId !== 'undefined' && r.hostId === playerId);
       return `
         <div class="relative overflow-hidden rounded-3xl p-5 flex flex-col justify-between gap-4 border-2 border-amber-400/55 shadow-2xl transition hover:scale-[1.02]" style="${bgStyle}">
           <div class="space-y-2">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-1.5">
               <span class="px-2.5 py-0.5 rounded-full bg-black/65 border border-amber-400/50 text-amber-300 text-[11px] font-black">
                 💎 Lv.${lv.level} • ${r.customBg ? 'وێنەی تایبەت' : th.name}
               </span>
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/60 text-emerald-200 text-xs font-black">
-                🎧 ${r.count}
-              </span>
+              <div class="flex items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/60 text-emerald-200 text-xs font-black">
+                  🎧 ${r.count}
+                </span>
+                ${isCreator ? `<button onclick="deleteOwnVoiceRoom('${r.id}')" title="سڕینەوەی دیوەخانەکەت" class="w-6 h-6 rounded-full bg-rose-600/80 hover:bg-rose-600 text-white text-xs flex items-center justify-center">🗑️</button>` : ''}
+              </div>
             </div>
             <h3 class="text-base font-black text-white drop-shadow">${escapeRoomHtml(r.title)}</h3>
             <div class="flex items-center justify-between text-[11px] text-amber-100/90">
@@ -576,6 +580,12 @@ function loadActiveVoiceRooms() {
       `;
     }).join('');
   });
+}
+
+function deleteOwnVoiceRoom(rId) {
+  if (confirm('دڵنیایت لە سڕینەوەی ئەم دیوەخانە؟')) {
+    db.ref('voiceRooms/' + rId).remove();
+  }
 }
 
 async function createVoiceRoom() {
@@ -1944,11 +1954,7 @@ function leaveVoiceRoom() {
   if (currentVoiceRoomId) {
     const rId = currentVoiceRoomId;
     currentVoiceRoomId = null;
-    db.ref(`voiceRooms/${rId}/members/${playerId}`).remove().then(() => {
-      db.ref(`voiceRooms/${rId}/members`).once('value', s => {
-        if (!s.exists()) db.ref(`voiceRooms/${rId}`).remove();
-      });
-    });
+   db.ref(`voiceRooms/${rId}/members/${playerId}`).remove();
   }
 
   const root = document.getElementById('ykVipRoomRoot');
