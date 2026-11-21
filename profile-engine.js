@@ -1,16 +1,23 @@
 /* ==========================================================================
-   YariKurdi - Universal Player Profile, Friend Requests & Live Notifications
+   YariKurdi - Royal Purple & Gold Profile Engine (Owner VIP vs Standard)
    ========================================================================== */
 
 (function () {
   const OWNER_EMAIL = 'ah6753038@gmail.com';
   const OWNER_UID = 'u_ahmadhassan';
 
+  // کاتێک دواتر وێنەی کەڤەر یان چوارچێوەت بۆ بازاڕ نارد، لێرە ناوی فایلەکەی دادەنێین:
+  const VIP_ASSETS = {
+    sherwanaCoverImg: '', // ئەگەر وێنەی تایبەتت دانا ناوەکەی لێرە دەنووسین، ئێستا وێنە شاهانەکەی قەڵای شێروانە بە خۆڕایی کار دەکات
+    vipFrameImg: ''
+  };
+
   let currentProfileUid = null;
   let incomingRequests = {};
   let myFriends = {};
   let initialLoadDone = false;
   let originalSelectGiftFn = null;
+  let cachedOwnerUid = OWNER_UID;
 
   function getRTDB() {
     if (typeof db !== 'undefined' && db && typeof db.ref === 'function') return db;
@@ -38,9 +45,129 @@
     return null;
   }
 
+  function isPlatformOwner(uid, email) {
+    if (!uid && !email) return false;
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    if (cleanEmail === OWNER_EMAIL) return true;
+    if (uid === OWNER_UID || uid === cachedOwnerUid) return true;
+    return false;
+  }
+
   function defaultAvatar(name) {
     const letter = (name || 'ی').trim().charAt(0);
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f59e0b&color=0f172a&bold=true&size=128`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(letter)}&background=f59e0b&color=19092b&bold=true&size=160`;
+  }
+
+  // وێنەی گرافیکی قەڵای شێروانە (تایبەت بە خاوەنی پلاتفۆرم و دواتر بۆ بازاڕ)
+  function getSherwanaCastleCoverSVG() {
+    if (VIP_ASSETS.sherwanaCoverImg) {
+      return `<img src="${VIP_ASSETS.sherwanaCoverImg}" style="width:100%;height:100%;object-fit:cover;" />`;
+    }
+    return `
+      <svg viewBox="0 0 600 260" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;">
+        <defs>
+          <linearGradient id="ykSunset" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f59e0b"/>
+            <stop offset="45%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#92400e"/>
+          </linearGradient>
+          <linearGradient id="ykHill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#b45309"/>
+            <stop offset="100%" stop-color="#451a03"/>
+          </linearGradient>
+          <linearGradient id="ykCastle" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fde68a"/>
+            <stop offset="50%" stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="260" fill="url(#ykSunset)"/>
+        <circle cx="135" cy="95" r="52" fill="#fef9c3" opacity="0.75"/>
+        <!-- چیاکانی پشتەوە -->
+        <path d="M0 175 L110 105 L230 165 L370 95 L510 155 L600 115 L600 260 L0 260 Z" fill="#b45309" opacity="0.45"/>
+        <!-- تەپۆڵکەی قەڵای شێروانە -->
+        <path d="M95 260 L175 148 L425 148 L505 260 Z" fill="url(#ykHill)"/>
+        <!-- کۆشکی قەڵای شێروانە -->
+        <rect x="195" y="76" width="210" height="74" rx="3" fill="url(#ykCastle)" stroke="#78350f" stroke-width="2"/>
+        <!-- قوللە گۆشەییەکان -->
+        <rect x="182" y="64" width="26" height="88" rx="6" fill="url(#ykCastle)" stroke="#78350f" stroke-width="2"/>
+        <rect x="392" y="64" width="26" height="88" rx="6" fill="url(#ykCastle)" stroke="#78350f" stroke-width="2"/>
+        <!-- کۆشکی سەرەوەی ناوەڕاست -->
+        <rect x="262" y="46" width="76" height="32" rx="3" fill="url(#ykCastle)" stroke="#78350f" stroke-width="2"/>
+        <polygon points="256,46 300,26 344,46" fill="#92400e"/>
+        <!-- پەنجەرە کەوانەییەکانی قەڵا -->
+        <g fill="#451a03">
+          <rect x="218" y="88" width="12" height="20" rx="6"/>
+          <rect x="242" y="88" width="12" height="20" rx="6"/>
+          <rect x="266" y="88" width="12" height="20" rx="6"/>
+          <rect x="322" y="88" width="12" height="20" rx="6"/>
+          <rect x="346" y="88" width="12" height="20" rx="6"/>
+          <rect x="370" y="88" width="12" height="20" rx="6"/>
+          <rect x="218" y="118" width="12" height="20" rx="6"/>
+          <rect x="242" y="118" width="12" height="20" rx="6"/>
+          <rect x="346" y="118" width="12" height="20" rx="6"/>
+          <rect x="370" y="118" width="12" height="20" rx="6"/>
+          <rect x="288" y="112" width="24" height="38" rx="12"/>
+        </g>
+        <!-- سێبەری تێکەڵبوون لەگەڵ پاشبنەما مۆرەکە -->
+        <linearGradient id="ykFadeBottom" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="65%" stop-color="#19092b" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#19092b" stop-opacity="0.98"/>
+        </linearGradient>
+        <rect width="600" height="260" fill="url(#ykFadeBottom)"/>
+      </svg>
+    `;
+  }
+
+  // کەڤەری سادە و ئاسایی بۆ یاریزانە ئاساییەکان
+  function getStandardCoverHTML() {
+    return `
+      <div style="width:100%;height:100%;background:radial-gradient(circle at 50% 25%, #4c1d95 0%, #2e1065 55%, #19092b 100%);position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;opacity:0.18;background-image:radial-gradient(#facc15 1.2px, transparent 1.2px);background-size:22px 22px;"></div>
+        <div style="position:absolute;bottom:0;inset-inline:0;height:45%;background:linear-gradient(to bottom, transparent, #19092b);"></div>
+      </div>
+    `;
+  }
+
+  // چوارچێوەی باڵداری زێڕینی VIP (تەنها بۆ خاوەنی پلاتفۆرم)
+  function getVipWingedFrameSVG() {
+    if (VIP_ASSETS.vipFrameImg) {
+      return `<img src="${VIP_ASSETS.vipFrameImg}" style="position:absolute;inset:-18px;width:calc(100% + 36px);height:calc(100% + 36px);pointer-events:none;z-index:5;" />`;
+    }
+    return `
+      <svg viewBox="0 0 220 200" style="position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:176px;height:160px;pointer-events:none;z-index:5;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.75));">
+        <defs>
+          <linearGradient id="ykWingGold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fef08a"/>
+            <stop offset="45%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+        </defs>
+        <!-- باڵی چەپ -->
+        <path d="M58 112 C22 104, 6 76, 14 54 C28 70, 44 76, 62 76 C34 86, 26 96, 58 102 Z" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+        <path d="M62 126 C28 124, 14 104, 22 86 C34 98, 46 104, 64 106 Z" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+        <!-- باڵی ڕاست -->
+        <path d="M162 112 C198 104, 214 76, 206 54 C192 70, 176 76, 158 76 C186 86, 194 96, 162 102 Z" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+        <path d="M158 126 C192 124, 206 104, 198 86 C186 98, 174 104, 156 106 Z" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+        <!-- تاجی VIP سەرەوە -->
+        <polygon points="82,42 90,22 102,34 110,16 118,34 130,22 138,42" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+        <rect x="84" y="39" width="52" height="15" rx="7" fill="#2e1065" stroke="#facc15" stroke-width="1.8"/>
+        <text x="110" y="50" text-anchor="middle" fill="#fde047" font-size="10" font-weight="900" font-family="sans-serif">VIP</text>
+        <!-- ئەڵماسی خوارەوەی بازنە -->
+        <polygon points="110,148 122,160 110,172 98,160" fill="url(#ykWingGold)" stroke="#78350f" stroke-width="1.5"/>
+      </svg>
+    `;
+  }
+
+  function getKurdishFlagSVG() {
+    return `
+      <svg viewBox="0 0 36 24" style="width:24px;height:16px;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,0.5);flex-shrink:0;">
+        <rect width="36" height="8" y="0" fill="#ef4444"/>
+        <rect width="36" height="8" y="8" fill="#ffffff"/>
+        <rect width="36" height="8" y="16" fill="#16a34a"/>
+        <circle cx="18" cy="12" r="4.2" fill="#facc15"/>
+      </svg>
+    `;
   }
 
   function injectUI() {
@@ -51,12 +178,11 @@
     style.textContent = `
       .yk-social-fab {
         position: fixed;
-        top: 14px;
+        top: 74px;
         left: 14px;
-        z-index: 9985;
-        background: rgba(15, 23, 42, 0.88);
-        backdrop-filter: blur(10px);
-        border: 1.5px solid rgba(250, 204, 21, 0.5);
+        z-index: 9980;
+        background: linear-gradient(135deg, #2e1065, #19092b);
+        border: 1.5px solid rgba(250, 204, 21, 0.65);
         color: #facc15;
         width: 42px;
         height: 42px;
@@ -66,7 +192,7 @@
         justify-content: center;
         font-size: 19px;
         cursor: pointer;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
         transition: transform 0.15s ease;
       }
       .yk-social-fab:active { transform: scale(0.92); }
@@ -85,15 +211,15 @@
         display: none;
         align-items: center;
         justify-content: center;
-        border: 2px solid #0f172a;
+        border: 2px solid #19092b;
       }
       .yk-toast {
         position: fixed;
         top: -110px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 10050;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
+        z-index: 10060;
+        background: linear-gradient(135deg, #2e1065, #19092b);
         border: 1.5px solid #facc15;
         color: #fff;
         padding: 10px 16px;
@@ -101,118 +227,227 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.75);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         transition: top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         max-width: 92vw;
         direction: rtl;
       }
       .yk-toast.show { top: 16px; }
-      .yk-modal-backdrop {
+
+      /* پەنجەرەی سەرەکی پڕۆفایل بە شێوازی مۆر و زێڕینی YariKurdi */
+      .yk-prof-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(5, 8, 20, 0.82);
-        backdrop-filter: blur(8px);
-        z-index: 10040;
+        background: rgba(10, 4, 20, 0.88);
+        backdrop-filter: blur(10px);
+        z-index: 10045;
         display: none;
         align-items: center;
         justify-content: center;
-        padding: 16px;
+        padding: 10px;
         direction: rtl;
+        font-family: 'Noto Kufi Arabic', system-ui, sans-serif;
       }
-      .yk-modal-backdrop.open { display: flex; }
-      .yk-card {
-        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-        border: 1.5px solid rgba(250, 204, 21, 0.45);
-        border-radius: 26px;
+      .yk-prof-overlay.open { display: flex; }
+
+      .yk-prof-shell {
         width: 100%;
-        max-width: 370px;
-        padding: 22px;
+        max-width: 420px;
+        max-height: 94dvh;
+        overflow-y: auto;
+        background: radial-gradient(circle at 50% 20%, #341356 0%, #19092b 65%, #11051f 100%);
+        border: 1.5px solid rgba(250, 204, 21, 0.55);
+        border-radius: 28px;
         color: #fff;
         position: relative;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
-        text-align: center;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 25px rgba(168, 85, 247, 0.25);
+        scrollbar-width: none;
       }
-      .yk-close-btn {
+      .yk-prof-shell::-webkit-scrollbar { display: none; }
+
+      .yk-prof-topbar {
         position: absolute;
-        top: 14px;
-        left: 14px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        border: none;
-        color: #cbd5e1;
-        font-size: 15px;
-        cursor: pointer;
+        top: 12px;
+        inset-inline: 14px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        pointer-events: none;
       }
-      .yk-avatar-ring {
-        width: 86px;
-        height: 86px;
+      .yk-prof-title {
+        font-size: 20px;
+        font-weight: 900;
+        color: #fde047;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.85);
+      }
+      .yk-prof-close {
+        pointer-events: auto;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(25, 9, 43, 0.78);
+        border: 1.5px solid rgba(250, 204, 21, 0.5);
+        color: #fde047;
+        font-size: 16px;
+        font-weight: 900;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* بەشی کەڤەر */
+      .yk-cover-box {
+        position: relative;
+        width: 100%;
+        height: 185px;
+        overflow: hidden;
+        border-bottom: 1.5px solid rgba(250, 204, 21, 0.4);
+      }
+      /* نەخشی فەرشی کوردی لە لێواری چەپ و ڕاستی کەڤەری VIP */
+      .yk-kilim-side {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 18px;
+        z-index: 6;
+        background: repeating-linear-gradient(
+          45deg,
+          #991b1b 0px,
+          #991b1b 6px,
+          #facc15 6px,
+          #facc15 10px,
+          #14532d 10px,
+          #14532d 16px
+        );
+        border-inline: 1.5px solid #fde047;
+        opacity: 0.92;
+      }
+
+      /* وێنەی پڕۆفایل و چوارچێوە */
+      .yk-avatar-stage {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        margin: -54px auto 8px;
+        z-index: 15;
+      }
+      .yk-avatar-circle {
+        width: 96px;
+        height: 96px;
         border-radius: 50%;
         padding: 3px;
-        background: linear-gradient(135deg, #facc15, #f97316);
-        margin: 0 auto 10px;
-        box-shadow: 0 8px 25px rgba(250, 204, 21, 0.35);
+        background: linear-gradient(135deg, #fde047, #d97706);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+        position: relative;
+        z-index: 2;
       }
-      .yk-avatar-ring img {
+      .yk-avatar-circle img {
         width: 100%;
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        background: #0f172a;
+        background: #19092b;
       }
-      .yk-owner-tag {
+
+      /* ناونیشانی خاوەنی پلاتفۆرم */
+      .yk-owner-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(90deg, #fde047, #f59e0b);
+        color: #19092b;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 4px 14px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
+      }
+
+      /* کارتە شووشەییە مۆرەکان بە لێواری زێڕین */
+      .yk-royal-panel {
+        background: rgba(36, 14, 62, 0.72);
+        border: 1px solid rgba(250, 204, 21, 0.35);
+        border-radius: 18px;
+        padding: 12px 14px;
+        margin: 10px 14px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .yk-ribbon-tag {
         display: inline-block;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 800;
-        padding: 3px 12px;
-        border-radius: 999px;
-        margin-bottom: 6px;
+        background: linear-gradient(90deg, #4c1d95, #2e1065);
+        border: 1px solid rgba(250, 204, 21, 0.55);
+        color: #fde047;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 3px 14px;
+        border-radius: 8px 16px 16px 8px;
       }
-      .yk-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+
+      /* خەڵاتەکان (Badges) */
+      .yk-badges-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 8px;
-        margin: 14px 0;
+        margin-top: 10px;
       }
-      .yk-stat-box {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.09);
-        border-radius: 14px;
-        padding: 9px 6px;
+      .yk-badge-item {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(25, 9, 43, 0.85);
+        border: 1.5px solid rgba(250, 204, 21, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        position: relative;
       }
-      .yk-stat-val { font-size: 16px; font-weight: 900; color: #facc15; }
-      .yk-stat-lbl { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-      .yk-btn-primary {
-        width: 100%;
-        padding: 11px;
+      .yk-badge-item.locked {
+        opacity: 0.55;
+        filter: grayscale(0.6);
+      }
+
+      /* شریتی دوگمەکانی خوارەوە */
+      .yk-bottom-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px 16px;
+      }
+      .yk-gold-action {
+        flex: 1;
+        padding: 11px 10px;
         border-radius: 14px;
-        border: none;
-        font-weight: 800;
-        font-size: 14px;
+        border: 1.5px solid #fef08a;
+        background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+        color: #19092b;
+        font-weight: 900;
+        font-size: 13.5px;
         cursor: pointer;
-        background: linear-gradient(135deg, #facc15, #eab308);
-        color: #0f172a;
-        box-shadow: 0 6px 20px rgba(250, 204, 21, 0.3);
+        box-shadow: 0 6px 18px rgba(234, 179, 8, 0.4);
+        transition: transform 0.15s;
       }
-      .yk-btn-secondary {
-        width: 100%;
-        padding: 10px;
+      .yk-gold-action:active { transform: scale(0.96); }
+      .yk-dark-action {
+        padding: 10px 12px;
         border-radius: 14px;
-        border: 1px solid rgba(251, 113, 133, 0.45);
-        background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(190, 18, 60, 0.35));
-        color: #fecdd3;
+        border: 1px solid rgba(250, 204, 21, 0.45);
+        background: rgba(46, 16, 101, 0.85);
+        color: #fde047;
         font-weight: 800;
-        font-size: 13px;
+        font-size: 12px;
         cursor: pointer;
-        margin-top: 8px;
+        text-align: center;
       }
+
+      /* سندوقی هاوڕێیان */
       .yk-tabs {
         display: flex;
         gap: 8px;
-        background: rgba(0, 0, 0, 0.35);
+        background: rgba(15, 5, 28, 0.65);
         padding: 5px;
         border-radius: 14px;
         margin: 12px 0;
@@ -223,12 +458,12 @@
         border-radius: 10px;
         border: none;
         background: transparent;
-        color: #94a3b8;
+        color: #c4b5fd;
         font-weight: 800;
         font-size: 12.5px;
         cursor: pointer;
       }
-      .yk-tab.active { background: #facc15; color: #0f172a; }
+      .yk-tab.active { background: #facc15; color: #19092b; }
       .yk-list {
         max-height: 280px;
         overflow-y: auto;
@@ -241,7 +476,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(46, 16, 101, 0.65);
+        border: 1px solid rgba(250, 204, 21, 0.2);
         padding: 9px 12px;
         border-radius: 14px;
       }
@@ -258,51 +494,115 @@
 
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
+      <!-- دوگمەی سندوقی هاوڕێیان و داواکارییەکان -->
       <button id="yk-social-fab" class="yk-social-fab" title="هاوڕێیان و داواکاری ئەد" onclick="openSocialInbox()">
         👥
         <span id="yk-req-badge" class="yk-badge-count">0</span>
       </button>
 
+      <!-- نۆتیفیکەیشنی ڕاستەوخۆ -->
       <div id="yk-live-toast" class="yk-toast">
         <img id="yk-toast-img" src="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid #facc15;" />
         <div style="text-align:right;flex:1;">
           <div style="font-weight:800;font-size:12.5px;color:#facc15;">داواکاری هاوڕێیەتی نوێ</div>
-          <div id="yk-toast-msg" style="font-size:11.5px;color:#e2e8f0;"></div>
+          <div id="yk-toast-msg" style="font-size:11.5px;color:#f3e8ff;"></div>
         </div>
-        <button onclick="openSocialInbox(); document.getElementById('yk-live-toast').classList.remove('show');" class="yk-mini-btn" style="background:#facc15;color:#0f172a;">بینین</button>
+        <button onclick="openSocialInbox(); document.getElementById('yk-live-toast').classList.remove('show');" class="yk-mini-btn" style="background:#facc15;color:#19092b;">بینین</button>
       </div>
 
-      <div id="yk-profile-modal" class="yk-modal-backdrop" onclick="if(event.target===this) closeUserProfile()">
-        <div class="yk-card">
-          <button class="yk-close-btn" onclick="closeUserProfile()">✕</button>
-          <div class="yk-avatar-ring"><img id="yk-prof-img" src="" /></div>
-          <div id="yk-prof-owner" class="yk-owner-tag" style="display:none;">خاوەنی پلاتفۆرم 👑</div>
-          <h3 id="yk-prof-name" style="font-size:19px;font-weight:900;margin-bottom:3px;">...</h3>
-          <div id="yk-prof-id" style="font-size:11px;color:#94a3b8;">ID: ...</div>
+      <!-- مۆداڵی پڕۆفایلی یاریزان -->
+      <div id="yk-profile-modal" class="yk-prof-overlay" onclick="if(event.target===this) closeUserProfile()">
+        <div class="yk-prof-shell">
+          <div class="yk-prof-topbar">
+            <span style="width:34px;"></span>
+            <span class="yk-prof-title">پڕۆفایل</span>
+            <button class="yk-prof-close" onclick="closeUserProfile()">✕</button>
+          </div>
 
-          <div class="yk-stats-grid">
-            <div class="yk-stat-box">
-              <div id="yk-prof-elo" class="yk-stat-val">1200</div>
-              <div class="yk-stat-lbl">خاڵی ئێلۆ</div>
-            </div>
-            <div class="yk-stat-box">
-              <div id="yk-prof-wins" class="yk-stat-val">0</div>
-              <div class="yk-stat-lbl">بردنەوە</div>
-            </div>
-            <div class="yk-stat-box">
-              <div id="yk-prof-level" class="yk-stat-val">1</div>
-              <div class="yk-stat-lbl">ئاست</div>
+          <!-- کەڤەری پشتەوە (قەڵای شێروانە تەنها بۆ خاوەنی پلاتفۆرم، کەڤەری سادە بۆ ئەوانی تر) -->
+          <div id="yk-prof-cover" class="yk-cover-box"></div>
+
+          <!-- وێنەی پڕۆفایل و چوارچێوە -->
+          <div class="yk-avatar-stage">
+            <div id="yk-prof-frame-layer"></div>
+            <div class="yk-avatar-circle">
+              <img id="yk-prof-img" src="" />
             </div>
           </div>
 
-          <div id="yk-prof-actions"></div>
+          <!-- ناو و ئایدی و نیشانەی خاوەنی پلاتفۆرم -->
+          <div style="text-align:center;padding:0 16px;">
+            <h3 id="yk-prof-name" style="font-size:21px;font-weight:900;color:#fff;margin-bottom:2px;">...</h3>
+            <div onclick="copyProfileId()" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#d8b4fe;cursor:pointer;margin-bottom:8px;">
+              <span id="yk-prof-id">ID: ...</span>
+              <span title="کۆپیکردن">📋</span>
+            </div>
+            <div id="yk-prof-owner-row" style="display:none;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">
+              <span class="yk-owner-pill">خاوەنی پلاتفۆرم 👑</span>
+              ${getKurdishFlagSVG()}
+            </div>
+          </div>
+
+          <!-- شریتی ئاست (Level) -->
+          <div class="yk-royal-panel" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <span style="font-size:13px;font-weight:900;color:#fde047;white-space:nowrap;">ئاست Level</span>
+            <div style="display:flex;align-items:center;gap:8px;flex:1;">
+              <span id="yk-prof-level-badge" style="background:linear-gradient(135deg,#10b981,#047857);border:1.5px solid #fde047;color:#fff;font-size:12px;font-weight:900;padding:2px 9px;border-radius:8px;">1</span>
+              <div style="flex:1;height:18px;background:rgba(15,5,28,0.85);border:1px solid rgba(250,204,21,0.45);border-radius:999px;overflow:hidden;position:relative;">
+                <div id="yk-prof-xp-bar" style="height:100%;width:45%;background:linear-gradient(90deg,#10b981,#34d399);"></div>
+                <span id="yk-prof-xp-text" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:900;color:#fff;">5/25</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- کارتی یارییەکان و ئامارەکان -->
+          <div class="yk-royal-panel">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <span class="yk-ribbon-tag">یارییەکان</span>
+              <span style="font-size:13px;font-weight:900;color:#c4b5fd;">YariKurdi</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;padding-bottom:10px;border-bottom:1px dashed rgba(250,204,21,0.25);">
+              <div>گشتی Total: <span style="color:#fde047;">🪙 <span id="yk-prof-coins">250</span></span></div>
+              <div>ڕێژەی بردنەوە: <span id="yk-prof-winrate" style="color:#34d399;">0%</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-around;padding-top:10px;font-size:11.5px;color:#e9d5ff;">
+              <div style="text-align:center;">
+                <div style="font-size:20px;">🏆</div>
+                <div>ئێلۆ: <strong id="yk-prof-elo" style="color:#fde047;">1200</strong></div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:20px;">⚔️</div>
+                <div>بردنەوە: <strong id="yk-prof-wins" style="color:#34d399;">0</strong></div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:20px;">🎮</div>
+                <div>یارییەکان: <strong id="yk-prof-games" style="color:#fde047;">0</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- دەستکەوتەکان (Badges) -->
+          <div class="yk-royal-panel">
+            <span class="yk-ribbon-tag">دەستکەوتەکان</span>
+            <div class="yk-badges-row">
+              <div class="yk-badge-item" title="یاریزانی یاری کوردی">🏆</div>
+              <div class="yk-badge-item" title="شەتڕەنجباز">♟️</div>
+              <div class="yk-badge-item locked" title="قفڵکراوە">🔒</div>
+              <div class="yk-badge-item locked" title="قفڵکراوە">🔒</div>
+              <div class="yk-badge-item locked" title="قفڵکراوە">🔒</div>
+            </div>
+          </div>
+
+          <!-- دوگمەکانی خوارەوە (ناردنی ئەد / کەڤەری قفڵکراوی بازاڕ) -->
+          <div id="yk-prof-bottom" class="yk-bottom-bar"></div>
         </div>
       </div>
 
-      <div id="yk-inbox-modal" class="yk-modal-backdrop" onclick="if(event.target===this) closeSocialInbox()">
-        <div class="yk-card">
-          <button class="yk-close-btn" onclick="closeSocialInbox()">✕</button>
-          <h3 style="font-size:17px;font-weight:900;color:#facc15;">هاوڕێیان و داواکارییەکان</h3>
+      <!-- مۆداڵی سندوقی هاوڕێیان و داواکارییەکان -->
+      <div id="yk-inbox-modal" class="yk-prof-overlay" onclick="if(event.target===this) closeSocialInbox()">
+        <div class="yk-prof-shell" style="padding:20px;max-width:380px;">
+          <button class="yk-prof-close" style="position:absolute;top:14px;left:14px;" onclick="closeSocialInbox()">✕</button>
+          <h3 style="font-size:18px;font-weight:900;color:#fde047;text-align:center;">هاوڕێیان و داواکارییەکان</h3>
           <div class="yk-tabs">
             <button id="yk-tab-req" class="yk-tab active" onclick="switchSocialTab('requests')">داواکارییەکان (<span id="yk-tab-req-count">0</span>)</button>
             <button id="yk-tab-fr" class="yk-tab" onclick="switchSocialTab('friends')">هاوڕێکانم (<span id="yk-tab-fr-count">0</span>)</button>
@@ -314,22 +614,27 @@
     document.body.appendChild(wrapper);
   }
 
-  // بەستنەوەی ئۆتۆماتیکی بە کورسی و خانەخوێی ناو ژوورەکان بەبێ دەستکاریکردنی rooms-engine.js
+  window.copyProfileId = function () {
+    if (!currentProfileUid) return;
+    if (navigator.clipboard) navigator.clipboard.writeText(currentProfileUid).catch(() => {});
+    alert('ئایدی یاریزان کۆپی کرا: ' + currentProfileUid);
+  };
+
+  window.showLockedCoverNotice = function () {
+    alert('🔒 کەڤەری شاهانەی قەڵای شێروانە (🪙 3,999 سکە)\n\nئەم کەڤەرە تایبەتە و بەم زووانە لە بەشی بازاڕ بەردەست دەبێت بۆ کڕین!');
+  };
+
   function hookRoomAndGameClicks() {
     if (typeof window.selectGiftRecipientAndOpen === 'function' && !window.selectGiftRecipientAndOpen._ykHooked) {
       originalSelectGiftFn = window.selectGiftRecipientAndOpen;
       window.selectGiftRecipientAndOpen = function (uid) {
-        if (uid && uid !== 'ALL') {
-          openUserProfile(uid);
-        } else if (originalSelectGiftFn) {
-          originalSelectGiftFn(uid);
-        }
+        if (uid && uid !== 'ALL') openUserProfile(uid);
+        else if (originalSelectGiftFn) originalSelectGiftFn(uid);
       };
       window.selectGiftRecipientAndOpen._ykHooked = true;
     }
   }
 
-  // کلیککردن لەسەر ناوی یاریزانان لە چاتی ناو ژوور یان ڕیزبەندی
   document.addEventListener('click', async function (e) {
     const targetWithUid = e.target.closest('[data-uid]');
     if (targetWithUid) {
@@ -351,7 +656,7 @@
       }
     }
 
-    // لیستی ڕیزبەندی (Leaderboard)
+    // لیستی ڕیزبەندی
     const lbRow = e.target.closest('#leaderboardList > div');
     if (lbRow) {
       const nameSpan = lbRow.querySelector('.text-white.font-bold');
@@ -368,32 +673,60 @@
   });
 
   window.openUserProfile = async function (uid) {
-    if (!uid) return;
+    const me = getMe();
+    const targetUid = uid || (me && me.uid);
+    if (!targetUid) return;
+
     injectUI();
-    currentProfileUid = uid;
+    currentProfileUid = targetUid;
 
     const modal = document.getElementById('yk-profile-modal');
     modal.classList.add('open');
 
     document.getElementById('yk-prof-name').textContent = 'چاوەڕوان بە...';
-    document.getElementById('yk-prof-id').textContent = `ID: ${String(uid).slice(0, 12)}`;
+    document.getElementById('yk-prof-id').textContent = `ID: ${String(targetUid).slice(0, 14)}`;
     document.getElementById('yk-prof-img').src = defaultAvatar('?');
-    document.getElementById('yk-prof-owner').style.display = 'none';
-    document.getElementById('yk-prof-actions').innerHTML = '';
+    document.getElementById('yk-prof-owner-row').style.display = 'none';
+    document.getElementById('yk-prof-frame-layer').innerHTML = '';
+    document.getElementById('yk-prof-cover').innerHTML = getStandardCoverHTML();
 
     const database = getRTDB();
     let userData = null;
 
     if (database) {
       try {
-        const snap = await database.ref(`players/${uid}`).once('value');
+        const snap = await database.ref(`players/${targetUid}`).once('value');
         if (snap.exists()) userData = snap.val();
       } catch (e) {}
     }
 
-    const roomMember = (typeof currentRoomMembers !== 'undefined' && currentRoomMembers) ? currentRoomMembers[uid] : null;
+    const roomMember = (typeof currentRoomMembers !== 'undefined' && currentRoomMembers) ? currentRoomMembers[targetUid] : null;
     const name = (userData && userData.name) || (roomMember && roomMember.name) || 'یاریزانی یاری کوردی';
     const photo = (userData && (userData.avatar || userData.photo)) || (roomMember && roomMember.avatar) || defaultAvatar(name);
+    const email = (userData && userData.email) || ((me && me.uid === targetUid && window.auth && auth.currentUser) ? auth.currentUser.email : '');
+
+    // پشکنین: ئایا ئەم پڕۆفایلە هی خاوەنی پلاتفۆرمە؟
+    const ownerCheck = isPlatformOwner(targetUid, email);
+
+    if (ownerCheck) {
+      document.getElementById('yk-prof-cover').innerHTML = `
+        <div class="yk-kilim-side" style="right:0;"></div>
+        <div class="yk-kilim-side" style="left:0;"></div>
+        ${getSherwanaCastleCoverSVG()}
+      `;
+      document.getElementById('yk-prof-frame-layer').innerHTML = getVipWingedFrameSVG();
+      document.getElementById('yk-prof-owner-row').style.display = 'inline-flex';
+    } else {
+      // یاریزانە ئاساییەکان: کەڤەری سادە، مەگەر دواتر لە بازاڕ کەڤەرێکی کڕیبێت
+      const equippedCover = userData && userData.equippedCover;
+      if (equippedCover === 'sherwana') {
+        document.getElementById('yk-prof-cover').innerHTML = getSherwanaCastleCoverSVG();
+      } else {
+        document.getElementById('yk-prof-cover').innerHTML = getStandardCoverHTML();
+      }
+      document.getElementById('yk-prof-frame-layer').innerHTML = '';
+      document.getElementById('yk-prof-owner-row').style.display = 'none';
+    }
 
     let eloVal = 1200;
     if (userData && userData.elo) {
@@ -414,20 +747,32 @@
       }
     }
 
+    let gamesVal = 0;
+    if (userData && userData.games) {
+      if (typeof userData.games === 'object') {
+        gamesVal = Object.values(userData.games).reduce((a, b) => a + (Number(b) || 0), 0);
+      } else {
+        gamesVal = Number(userData.games) || 0;
+      }
+    }
+
+    const winRate = gamesVal > 0 ? ((winsVal / gamesVal) * 100).toFixed(1) + '%' : '0%';
+    const coinsVal = (userData && typeof userData.coins !== 'undefined') ? Number(userData.coins) : 250;
     const level = Math.max(1, Math.floor(winsVal / 5) + 1);
-    const email = (userData && userData.email) || '';
+    const xpProgress = (winsVal % 5) * 5;
 
     document.getElementById('yk-prof-name').textContent = name;
     document.getElementById('yk-prof-img').src = photo;
     document.getElementById('yk-prof-elo').textContent = eloVal;
     document.getElementById('yk-prof-wins').textContent = winsVal;
-    document.getElementById('yk-prof-level').textContent = level;
+    document.getElementById('yk-prof-games').textContent = gamesVal;
+    document.getElementById('yk-prof-winrate').textContent = winRate;
+    document.getElementById('yk-prof-coins').textContent = coinsVal.toLocaleString();
+    document.getElementById('yk-prof-level-badge').textContent = level;
+    document.getElementById('yk-prof-xp-bar').style.width = `${Math.max(12, (xpProgress / 25) * 100)}%`;
+    document.getElementById('yk-prof-xp-text').textContent = `${xpProgress}/25`;
 
-    if (uid === OWNER_UID || email === OWNER_EMAIL) {
-      document.getElementById('yk-prof-owner').style.display = 'inline-block';
-    }
-
-    renderProfileButtons(uid, name, photo);
+    renderProfileBottomButtons(targetUid, name, photo, ownerCheck);
   };
 
   window.closeUserProfile = function () {
@@ -441,48 +786,55 @@
     else if (typeof openGiftDrawerModal === 'function') openGiftDrawerModal();
   };
 
-  async function renderProfileButtons(targetUid, targetName, targetPhoto) {
-    const actionsEl = document.getElementById('yk-prof-actions');
+  async function renderProfileBottomButtons(targetUid, targetName, targetPhoto, isTargetOwner) {
+    const bottomEl = document.getElementById('yk-prof-bottom');
     const me = getMe();
 
-    if (!me) {
-      actionsEl.innerHTML = `<div style="font-size:12px;color:#94a3b8;">بۆ ناردنی ئەد سەرەتا ناوت تۆمار بکە</div>`;
-      return;
-    }
-    if (me.uid === targetUid) {
-      actionsEl.innerHTML = `<div style="font-size:13px;color:#facc15;font-weight:700;">ئەمە پڕۆفایلی خۆتە ✨</div>`;
+    if (!me || me.uid === targetUid) {
+      // پڕۆفایلی خۆت
+      if (isTargetOwner) {
+        bottomEl.innerHTML = `
+          <div class="yk-gold-action" style="text-align:center;cursor:default;">👑 پڕۆفایلی شاهانەی خاوەنی پلاتفۆرم</div>
+        `;
+      } else {
+        bottomEl.innerHTML = `
+          <button onclick="showLockedCoverNotice()" class="yk-dark-action" style="flex:1;display:flex;align-items:center;justify-content:space-between;">
+            <span>🔒 قەڵای شێروانە</span>
+            <span style="color:#fde047;">🪙 3,999</span>
+          </button>
+        `;
+      }
       return;
     }
 
     const database = getRTDB();
     let status = 'none';
 
-    if (myFriends[targetUid]) {
-      status = 'friends';
-    } else if (incomingRequests[targetUid]) {
-      status = 'incoming';
-    } else if (database) {
+    if (myFriends[targetUid]) status = 'friends';
+    else if (incomingRequests[targetUid]) status = 'incoming';
+    else if (database) {
       const sentSnap = await database.ref(`friendRequests/${targetUid}/${me.uid}`).once('value');
       if (sentSnap.exists()) status = 'sent';
     }
 
     const safeName = targetName.replace(/'/g, '');
-    let html = '';
+    let addBtnHtml = '';
     if (status === 'friends') {
-      html = `<button class="yk-btn-primary" style="background:#10b981;color:#fff;" disabled>هاوڕێن ✓</button>`;
+      addBtnHtml = `<button class="yk-gold-action" style="background:#10b981;border-color:#6ee7b7;color:#fff;" disabled>هاوڕێن ✓</button>`;
     } else if (status === 'sent') {
-      html = `<button class="yk-btn-primary" style="background:#475569;color:#cbd5e1;" disabled>داواکاری نێردراوە ⏳</button>`;
+      addBtnHtml = `<button class="yk-gold-action" style="background:#4c1d95;border-color:#a78bfa;color:#e9d5ff;" disabled>داواکاری نێردراوە ⏳</button>`;
     } else if (status === 'incoming') {
-      html = `<button class="yk-btn-primary" onclick="acceptFriendRequest('${targetUid}', '${safeName}', '${targetPhoto}')">وەرگرتنی ئەد ✓</button>`;
+      addBtnHtml = `<button class="yk-gold-action" onclick="acceptFriendRequest('${targetUid}', '${safeName}', '${targetPhoto}')">وەرگرتنی ئەد ✓</button>`;
     } else {
-      html = `<button class="yk-btn-primary" onclick="sendFriendRequest('${targetUid}', '${safeName}', '${targetPhoto}')">ناردنی ئەد ➕</button>`;
+      addBtnHtml = `<button class="yk-gold-action" onclick="sendFriendRequest('${targetUid}', '${safeName}', '${targetPhoto}')">ناردنی ئەد ➕</button>`;
     }
 
+    let giftBtnHtml = '';
     if (typeof currentVoiceRoomId !== 'undefined' && currentVoiceRoomId) {
-      html += `<button class="yk-btn-secondary" onclick="openGiftForUserFromProfile('${targetUid}')">ناردنی شاباش و دیاری ☕</button>`;
+      giftBtnHtml = `<button class="yk-dark-action" onclick="openGiftForUserFromProfile('${targetUid}')">☕ شاباش</button>`;
     }
 
-    actionsEl.innerHTML = html;
+    bottomEl.innerHTML = `${addBtnHtml}${giftBtnHtml}`;
   }
 
   window.sendFriendRequest = async function (targetUid, targetName, targetPhoto) {
@@ -498,7 +850,7 @@
     });
 
     if (currentProfileUid === targetUid) {
-      renderProfileButtons(targetUid, targetName, targetPhoto);
+      renderProfileBottomButtons(targetUid, targetName, targetPhoto, isPlatformOwner(targetUid, ''));
     }
   };
 
@@ -523,7 +875,7 @@
     await database.ref(`friendRequests/${me.uid}/${senderUid}`).remove();
 
     if (currentProfileUid === senderUid) {
-      renderProfileButtons(senderUid, senderName, senderPhoto);
+      renderProfileBottomButtons(senderUid, senderName, senderPhoto, isPlatformOwner(senderUid, ''));
     }
     renderInboxList('requests');
   };
@@ -561,16 +913,16 @@
     if (tab === 'requests') {
       const reqs = Object.values(incomingRequests);
       if (reqs.length === 0) {
-        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">هیچ داواکارییەکی نوێ نییە</div>`;
+        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:#c4b5fd;font-size:13px;">هیچ داواکارییەکی نوێ نییە</div>`;
         return;
       }
       listEl.innerHTML = reqs.map(r => `
         <div class="yk-list-item">
           <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="closeSocialInbox(); openUserProfile('${r.uid}')">
-            <img src="${r.photo || defaultAvatar(r.name)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
+            <img src="${r.photo || defaultAvatar(r.name)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid #facc15;" />
             <div>
-              <div style="font-weight:800;font-size:13.5px;">${r.name}</div>
-              <div style="font-size:11px;color:#94a3b8;">داوای هاوڕێیەتی دەکات</div>
+              <div style="font-weight:800;font-size:13.5px;color:#fff;">${r.name}</div>
+              <div style="font-size:11px;color:#d8b4fe;">داوای هاوڕێیەتی دەکات</div>
             </div>
           </div>
           <div style="display:flex;gap:6px;">
@@ -582,16 +934,16 @@
     } else {
       const frs = Object.values(myFriends);
       if (frs.length === 0) {
-        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">هێشتا هیچ هاوڕێیەکت نییە</div>`;
+        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:#c4b5fd;font-size:13px;">هێشتا هیچ هاوڕێیەکت نییە</div>`;
         return;
       }
       listEl.innerHTML = frs.map(f => `
         <div class="yk-list-item" style="cursor:pointer;" onclick="closeSocialInbox(); openUserProfile('${f.uid}')">
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${f.photo || defaultAvatar(f.name)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
-            <div style="font-weight:800;font-size:13.5px;">${f.name}</div>
+            <img src="${f.photo || defaultAvatar(f.name)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid #facc15;" />
+            <div style="font-weight:800;font-size:13.5px;color:#fff;">${f.name}</div>
           </div>
-          <span style="font-size:11px;color:#facc15;font-weight:700;">پڕۆفایل ←</span>
+          <span style="font-size:11px;color:#fde047;font-weight:700;">پڕۆفایل ←</span>
         </div>
       `).join('');
     }
@@ -607,6 +959,10 @@
   }
 
   function startRealtimeSync(myUid, database) {
+    database.ref('platformConfig/ownerUid').once('value').then(s => {
+      if (s.exists() && s.val()) cachedOwnerUid = s.val();
+    }).catch(() => {});
+
     database.ref(`friendRequests/${myUid}`).on('value', snap => {
       const data = snap.val() || {};
       const prevKeys = Object.keys(incomingRequests);
