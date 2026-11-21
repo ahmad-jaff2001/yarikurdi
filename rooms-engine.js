@@ -503,14 +503,14 @@ function loadActiveVoiceRooms() {
         </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-amber-400/20">
+      <div id="createRoomBar" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-amber-400/20">
         <input id="newRoomTitleInput" type="text" placeholder="ناوی دیوەخانەکەت (بۆ نموونە: دیوەخانی هەولێر)..."
           class="sm:col-span-5 px-4 py-2.5 rounded-xl bg-[#120804] border border-amber-400/35 text-xs text-white focus:outline-none focus:border-yellow-400" />
         <select id="newRoomThemeSelect"
           class="sm:col-span-4 px-3 py-2.5 rounded-xl bg-[#120804] border border-amber-400/35 text-xs text-amber-200 font-bold">
           ${ROOM_THEMES.map(t => `<option value="${t.id}">🏰 ${t.name}</option>`).join('')}
         </select>
-        <button onclick="createVoiceRoom()" class="sm:col-span-3 gold-btn py-2.5 px-4 rounded-xl text-xs font-black whitespace-nowrap">
+        <button id="createOrEnterRoomBtn" onclick="createVoiceRoom()" class="sm:col-span-3 gold-btn py-2.5 px-4 rounded-xl text-xs font-black whitespace-nowrap">
           + کردنەوەی دیوەخان
         </button>
       </div>
@@ -524,14 +524,47 @@ function loadActiveVoiceRooms() {
   db.ref('voiceRooms').on('value', snap => {
     const grid = document.getElementById('activeRoomsGrid');
     if (!grid) return;
-    const rooms = [];
+
+    const byOwner = {};
+    const duplicatesToRemove = [];
+
     snap.forEach(c => {
       const val = c.val();
-      if (val && val.title) {
-        const count = val.members ? Object.keys(val.members).length : 0;
-        rooms.push({ id: c.key, ...val, count });
+      if (!val || !val.title) return;
+      const ownerKey = val.hostId || c.key;
+      const count = val.members ? Object.keys(val.members).length : 0;
+      const score = (Number(val.roomXp) || 0) + (Number(val.totalGiftCoins) || 0) * 10 + count * 5;
+      const item = { id: c.key, ...val, count, _score: score };
+
+      if (!byOwner[ownerKey]) {
+        byOwner[ownerKey] = item;
+      } else if (item._score > byOwner[ownerKey]._score) {
+        duplicatesToRemove.push(byOwner[ownerKey].id);
+        byOwner[ownerKey] = item;
+      } else {
+        duplicatesToRemove.push(item.id);
       }
     });
+
+    // سڕینەوەی تەنها ژوورە دووبارە زیادەکان تا بۆ هەر کەسێک یەک دیوەخان بمێنێتەوە
+    duplicatesToRemove.forEach(dupId => {
+      db.ref('voiceRooms/' + dupId).remove();
+    });
+
+    const rooms = Object.values(byOwner).sort((a, b) => b._score - a._score);
+
+    // ئەگەر بەکارهێنەری ئێستا خاوەنی دیوەخان بێت، دوگمەکەی سەرەوە دەگۆڕێت بۆ چوونە ناو دیوەخانەکەی خۆی
+    const myExistingRoom = (typeof playerId !== 'undefined') ? byOwner[playerId] : null;
+    const actionBtn = document.getElementById('createOrEnterRoomBtn');
+    const titleInp = document.getElementById('newRoomTitleInput');
+    if (actionBtn) {
+      if (myExistingRoom) {
+        actionBtn.textContent = '👑 دیوەخانەکەی خۆت';
+        if (titleInp) titleInp.placeholder = 'گۆڕینی ناوی دیوەخانەکەت (ئارەزوومەندانە)...';
+      } else {
+        actionBtn.textContent = '+ کردنەوەی دیوەخان';
+      }
+    }
 
     if (rooms.length === 0) {
       grid.innerHTML = `
@@ -549,7 +582,6 @@ function loadActiveVoiceRooms() {
       const bgStyle = r.customBg
         ? `background-image: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.88)), url('${r.customBg}'); background-size: cover; background-position: center;`
         : `background-image: ${th.preview}; background-size: cover; background-position: center;`;
-      const isCreator = (typeof playerId !== 'undefined' && r.hostId === playerId);
       return `
         <div class="relative overflow-hidden rounded-3xl p-5 flex flex-col justify-between gap-4 border-2 border-amber-400/55 shadow-2xl transition hover:scale-[1.02]" style="${bgStyle}">
           <div class="space-y-2">
@@ -557,12 +589,9 @@ function loadActiveVoiceRooms() {
               <span class="px-2.5 py-0.5 rounded-full bg-black/65 border border-amber-400/50 text-amber-300 text-[11px] font-black">
                 💎 Lv.${lv.level} • ${r.customBg ? 'وێنەی تایبەت' : th.name}
               </span>
-              <div class="flex items-center gap-1.5">
-                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/60 text-emerald-200 text-xs font-black">
-                  🎧 ${r.count}
-                </span>
-                ${isCreator ? `<button onclick="deleteOwnVoiceRoom('${r.id}')" title="سڕینەوەی دیوەخانەکەت" class="w-6 h-6 rounded-full bg-rose-600/80 hover:bg-rose-600 text-white text-xs flex items-center justify-center">🗑️</button>` : ''}
-              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/60 text-emerald-200 text-xs font-black">
+                🎧 ${r.count}
+              </span>
             </div>
             <h3 class="text-base font-black text-white drop-shadow">${escapeRoomHtml(r.title)}</h3>
             <div class="flex items-center justify-between text-[11px] text-amber-100/90">
@@ -582,10 +611,41 @@ function loadActiveVoiceRooms() {
   });
 }
 
-function deleteOwnVoiceRoom(rId) {
-  if (confirm('دڵنیایت لە سڕینەوەی ئەم دیوەخانە؟')) {
-    db.ref('voiceRooms/' + rId).remove();
+async function createVoiceRoom() {
+  const titleInput = document.getElementById('newRoomTitleInput');
+  const themeSelect = document.getElementById('newRoomThemeSelect');
+  const customTitle = titleInput ? titleInput.value.trim() : '';
+  const theme = (themeSelect && themeSelect.value) || 'diwexan';
+
+  // پشکنین: ئەگەر پێشتر دیوەخانی هەبێت، دروستی ناکاتەوە بەڵکو دەچێتە ناو دیوەخانەکەی خۆی
+  const existingSnap = await db.ref('voiceRooms').orderByChild('hostId').equalTo(playerId).once('value');
+  if (existingSnap.exists()) {
+    let existingId = null;
+    existingSnap.forEach(c => { if (!existingId) existingId = c.key; });
+    if (existingId) {
+      if (customTitle) {
+        await db.ref('voiceRooms/' + existingId).update({ title: customTitle, theme });
+      }
+      if (titleInput) titleInput.value = '';
+      joinVoiceRoom(existingId);
+      return;
+    }
   }
+
+  const title = customTitle || `دیوەخانی ${playerName}`;
+  const rId = 'vroom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
+  await db.ref('voiceRooms/' + rId).set({
+    title,
+    theme,
+    customBg: '',
+    hostId: playerId,
+    hostName: playerName,
+    roomXp: 0,
+    totalGiftCoins: 0,
+    createdAt: firebase.database.ServerValue.TIMESTAMP
+  });
+  if (titleInput) titleInput.value = '';
+  joinVoiceRoom(rId);
 }
 
 async function createVoiceRoom() {

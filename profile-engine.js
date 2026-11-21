@@ -18,6 +18,7 @@
   let originalSelectGiftFn = null;
   let originalOpenProfileFn = null;
   let cachedOwnerUid = OWNER_UID;
+  let allowLegacyEdit = false;
 
   function getRTDB() {
     if (typeof db !== 'undefined' && db && typeof db.ref === 'function') return db;
@@ -590,25 +591,50 @@
     alert('🔒 کەڤەری شاهانەی قەڵای شێروانە (🪙 3,999 سکە)\n\nئەم کەڤەرە تایبەتە و بەم زووانە لە بەشی بازاڕ بەردەست دەبێت بۆ کڕین!');
   };
 
-  // کردنەوەی پەنجەرە کۆنەکەی دەستکاریکردنی پڕۆفایل کاتێک یاریزان کلیک لە دوگمەی «دەستکاری ✏️» دەکات
-  window.openLegacyProfileEditor = function () {
-    closeUserProfile();
-    if (typeof originalOpenProfileFn === 'function') {
-      originalOpenProfileFn();
-      return;
-    }
-    const allEls = document.querySelectorAll('div');
-    for (const el of allEls) {
-      if (el.id !== 'yk-profile-modal' && el.textContent && el.textContent.includes('دەستکاریکردنی پڕۆفایل')) {
-        const modalContainer = el.closest('.fixed') || el;
-        modalContainer.classList.remove('hidden');
-        modalContainer.style.display = 'flex';
-        break;
+  function findLegacyProfileModal() {
+    const candidates = document.querySelectorAll('.fixed, [id*="profile" i], [id*="account" i]');
+    for (const el of candidates) {
+      if (el.id === 'yk-profile-modal' || el.id === 'yk-inbox-modal') continue;
+      if (el.textContent && el.textContent.includes('دەستکاریکردنی پڕۆفایل')) {
+        return el.closest('.fixed') || el;
       }
     }
+    return null;
+  }
+
+  // چاودێریکردنی ڕاستەوخۆی پەنجەرە کۆنەکەی پڕۆفایل تا لەجێی ئەو پڕۆفایلە شاهانەکە بکرێتەوە
+  function watchLegacyProfileModal() {
+    const legacyModal = findLegacyProfileModal();
+    if (!legacyModal || legacyModal._ykObserved) return;
+    legacyModal._ykObserved = true;
+
+    const obs = new MutationObserver(() => {
+      const isVisible = !legacyModal.classList.contains('hidden') && legacyModal.style.display !== 'none';
+      if (isVisible && !allowLegacyEdit) {
+        legacyModal.classList.add('hidden');
+        legacyModal.style.display = 'none';
+        openUserProfile();
+      }
+    });
+    obs.observe(legacyModal, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+
+  window.openLegacyProfileEditor = function () {
+    allowLegacyEdit = true;
+    closeUserProfile();
+    const legacyModal = findLegacyProfileModal();
+    if (legacyModal) {
+      legacyModal.classList.remove('hidden');
+      legacyModal.style.display = 'flex';
+    } else if (typeof originalOpenProfileFn === 'function') {
+      originalOpenProfileFn();
+    }
+    setTimeout(() => { allowLegacyEdit = false; }, 1000);
   };
 
   function hookRoomAndGameClicks() {
+    watchLegacyProfileModal();
+
     if (typeof window.selectGiftRecipientAndOpen === 'function' && !window.selectGiftRecipientAndOpen._ykHooked) {
       originalSelectGiftFn = window.selectGiftRecipientAndOpen;
       window.selectGiftRecipientAndOpen = function (uid) {
@@ -618,8 +644,7 @@
       window.selectGiftRecipientAndOpen._ykHooked = true;
     }
 
-    // بەستنەوەی فەنکشنی پڕۆفایلی پەڕەی سەرەکی (index.html)
-    const fnNames = ['openProfileModal', 'showProfileModal', 'openUserEditModal', 'openAccountModal'];
+    const fnNames = ['openProfileModal', 'showProfileModal', 'openUserEditModal', 'openAccountModal', 'toggleProfileModal'];
     for (const fn of fnNames) {
       if (typeof window[fn] === 'function' && !window[fn]._ykHooked) {
         originalOpenProfileFn = window[fn];
@@ -630,35 +655,6 @@
       }
     }
   }
-
-  // گرتنی کلیک لەسەر کارتی پڕۆفایلی سەرەوەی پەڕەی سەرەکی (index.html)
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('#yk-profile-modal') || e.target.closest('#yk-inbox-modal') || e.target.closest('#yk-social-fab')) return;
-
-    let el = e.target;
-    while (el && el !== document.body) {
-      const rect = el.getBoundingClientRect();
-      const onclickAttr = el.getAttribute ? (el.getAttribute('onclick') || '') : '';
-      const txt = (el.textContent || '').trim();
-
-      if (
-        rect.top >= 0 &&
-        rect.top < 90 &&
-        rect.height > 25 &&
-        rect.height < 85 &&
-        rect.width > 60 &&
-        rect.width < 260 &&
-        (/profile/i.test(onclickAttr) || txt.includes('پڕۆفایل'))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        openUserProfile();
-        return;
-      }
-      el = el.parentElement;
-    }
-  }, true);
 
   document.addEventListener('click', async function (e) {
     const targetWithUid = e.target.closest('[data-uid]');
