@@ -1848,22 +1848,19 @@
       new MutationObserver(() => enforceRoyalRed()).observe(document.head, { childList: true });
     })();
   </script>
-  <!-- قفڵکردنی کۆتایی: لابردنی تیشکەکان، بازنە زەردەکان و سپیکردنی ناوی یارییەکان -->
+  <!-- قفڵکردنی دیزاینی سووری مەخمەلیی ساف بەبێ هیچ قورساییەک -->
   <script>
     (function () {
-      let isApplying = false;
-
       const LOCK_CSS = `
+        /* لابردنی تیشکە خولاوەکان و پڕیشکەکان */
         #ykMasterpieceBg,
         .yk-splash-sunburst,
         [class*="sunburst" i],
-        [class*="ray" i],
-        [id*="sunburst" i],
-        [id*="ray" i] {
+        [id*="sunburst" i] {
           display: none !important;
-          opacity: 0 !important;
         }
 
+        /* پاشبنەمای سووری مەخمەلیی تێر و ساف */
         html, html body {
           background-color: #120204 !important;
           background-image: radial-gradient(ellipse at 50% 0%, #5c0d16 0%, #2d050a 42%, #120204 88%) !important;
@@ -1876,6 +1873,19 @@
           background: none !important;
         }
 
+        /* شریتی سەرەوە و دیوەخان */
+        html body header,
+        html body .yk-top-bar {
+          background: linear-gradient(180deg, #470910 0%, #260408 100%) !important;
+          border-bottom: 1px solid rgba(212, 180, 117, 0.25) !important;
+        }
+        html body .yk-diwexan-hero {
+          background: linear-gradient(90deg, #290509 0%, #540c14 55%, #240408 100%) !important;
+          border: 1px solid rgba(212, 180, 117, 0.45) !important;
+          border-radius: 18px !important;
+        }
+
+        /* کارتەکانی یاری و ناوە سپییە ڕوونەکان */
         html body .pito-game-card {
           background: #180306 !important;
           border: 1px solid rgba(212, 180, 117, 0.35) !important;
@@ -1883,7 +1893,6 @@
           box-shadow: 0 10px 24px rgba(0, 0, 0, 0.82) !important;
         }
         html body .pito-game-card::after { display: none !important; }
-
         html body .pito-game-card > span {
           background: rgba(34, 12, 10, 0.9) !important;
           background-image: none !important;
@@ -1891,11 +1900,9 @@
           color: #e5c687 !important;
           box-shadow: none !important;
         }
-
         html body .pito-card-overlay {
           background: linear-gradient(to top, rgba(12, 2, 4, 0.96) 10%, rgba(18, 3, 5, 0.3) 50%, transparent 100%) !important;
         }
-
         html body .pito-card-title,
         html body .pito-card-overlay span {
           color: #ffffff !important;
@@ -1908,6 +1915,7 @@
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.98) !important;
         }
 
+        /* شریتی خوارەوە */
         html body nav.floating-bottom-dock,
         html body .floating-bottom-dock {
           background: rgba(18, 3, 5, 0.96) !important;
@@ -1916,69 +1924,32 @@
           border-radius: 22px !important;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.92) !important;
         }
+        html body .dock-item {
+          background: transparent !important;
+          background-image: none !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #e2e8f0 !important;
+        }
+        html body .dock-item.active {
+          background: rgba(212, 180, 117, 0.18) !important;
+          border: 1px solid rgba(212, 180, 117, 0.45) !important;
+          color: #f3d999 !important;
+          transform: translateY(-2px) !important;
+        }
       `;
 
-      function enforceCleanDesign() {
-        if (isApplying) return;
-        isApplying = true;
+      const lock = document.createElement('style');
+      lock.id = 'yk-royal-red-lock';
+      lock.textContent = LOCK_CSS;
+      document.head.appendChild(lock);
 
-        try {
-          // ١. چەسپاندنی CSS لە کۆتایی head
-          let lock = document.getElementById('yk-royal-red-lock');
-          if (!lock) {
-            lock = document.createElement('style');
-            lock.id = 'yk-royal-red-lock';
-            lock.textContent = LOCK_CSS;
-          }
-          if (document.head && document.head.lastElementChild !== lock) {
-            document.head.appendChild(lock);
-          }
-
-          // ٢. سڕینەوەی تیشکە خولاوەکان (conic-gradient) لە هەر توخمێکدا بێت
-          document.querySelectorAll('div, section, span, canvas').forEach(el => {
-            if (el.id === 'arrowCanvas') return;
-            const inlineBg = (el.getAttribute('style') || '').toLowerCase();
-            if (inlineBg.includes('conic-gradient') || inlineBg.includes('sunburst')) {
-              el.style.setProperty('display', 'none', 'important');
-            }
-          });
-
-          // ٣. سپیکردنی ڕاستەوخۆی ناوی یارییەکان (لەسەر Inline Style)
-          document.querySelectorAll('.pito-card-title, .pito-card-overlay span').forEach(el => {
-            el.style.setProperty('color', '#ffffff', 'important');
-            el.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
-            el.style.setProperty('background', 'none', 'important');
-            el.style.setProperty('background-image', 'none', 'important');
-          });
-
-          // ٤. لابردنی بازنە زەردە گەورەکانی شریتی خوارەوە
-          document.querySelectorAll('.dock-item').forEach(btn => {
-            const isActive = btn.classList.contains('active');
-            btn.style.setProperty('background', isActive ? 'rgba(212, 180, 117, 0.18)' : 'transparent', 'important');
-            btn.style.setProperty('background-image', 'none', 'important');
-            btn.style.setProperty('box-shadow', 'none', 'important');
-            btn.style.setProperty('border', isActive ? '1px solid rgba(212, 180, 117, 0.45)' : 'none', 'important');
-            btn.style.setProperty('color', isActive ? '#f3d999' : '#e2e8f0', 'important');
-          });
-        } finally {
-          isApplying = false;
+      // تەنها چاودێریی head دەکات تا ستایلەکە هەمیشە لە کۆتاییدا بمێنێتەوە
+      new MutationObserver(() => {
+        if (document.head && document.head.lastElementChild !== lock) {
+          document.head.appendChild(lock);
         }
-      }
-
-      enforceCleanDesign();
-      window.addEventListener('DOMContentLoaded', enforceCleanDesign);
-      window.addEventListener('load', () => {
-        enforceCleanDesign();
-        setTimeout(enforceCleanDesign, 300);
-        setTimeout(enforceCleanDesign, 900);
-      });
-
-      new MutationObserver(() => enforceCleanDesign()).observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class']
-      });
+      }).observe(document.head, { childList: true });
     })();
   </script>
 </body>
