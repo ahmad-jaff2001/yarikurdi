@@ -16,19 +16,20 @@
   <script src="leaderboard-engine.js"></script>
   <script src="admin-engine.js"></script>
   <script src="bazaar-engine.js?v=2" defer></script>
+  <!-- وەرزەکان بە شێوەی کاتی ڕاگیراون تا بڵاوکردنەوەی فەرمی:
   <script src="season-engine.js" defer></script>
+  -->
   <script src="payment-engine.js" defer></script>
   <script src="gifts-engine.js" defer></script>
-  <link rel="stylesheet" href="theme-design.css" />
+  <link rel="stylesheet" href="theme-design.css?v=2" />
   <script src="tiktok-live-design.js?v=3" defer></script>
   <script src="ui-design.js?v=9" defer></script>
-
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<link rel="icon" type="image/png" href="logo-royal.png" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <link rel="icon" type="image/png" href="logo-royal.png" />
   <link rel="apple-touch-icon" href="logo-royal.png" />
   <style>
     @keyframes ykSplashZoomIn {
@@ -62,9 +63,9 @@
       justify-content: center !important;
       gap: 18px !important;
       background:
-        radial-gradient(circle at 50% 38%, rgba(168, 85, 247, 0.45) 0%, rgba(76, 29, 149, 0.3) 38%, transparent 72%),
+        radial-gradient(circle at 50% 38%, rgba(185, 28, 28, 0.48) 0%, rgba(127, 29, 29, 0.34) 38%, transparent 72%),
         radial-gradient(circle at 50% 100%, rgba(250, 204, 21, 0.2) 0%, transparent 55%),
-        linear-gradient(180deg, #16032e 0%, #090114 55%, #190330 100%) !important;
+        linear-gradient(180deg, #2b0408 0%, #120204 55%, #260407 100%) !important;
       overflow: hidden !important;
       transition: opacity 0.55s ease !important;
     }
@@ -80,7 +81,7 @@
       height: 135vmax;
       background: repeating-conic-gradient(
         from 0deg,
-        rgba(217, 70, 239, 0.09) 0deg 8deg,
+        rgba(220, 38, 38, 0.1) 0deg 8deg,
         transparent 8deg 22deg,
         rgba(250, 204, 21, 0.08) 22deg 30deg,
         transparent 30deg 45deg
@@ -96,11 +97,11 @@
       width: min(86vw, 370px);
       border-radius: 26px;
       padding: 3px;
-      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 32%, #d946ef 68%, #fef08a 100%);
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 32%, #dc2626 68%, #fef08a 100%);
       box-shadow:
         0 22px 55px rgba(0, 0, 0, 0.85),
-        0 0 42px rgba(192, 38, 211, 0.65),
-        0 0 24px rgba(250, 204, 21, 0.55);
+        0 0 42px rgba(220, 38, 38, 0.58),
+        0 0 24px rgba(250, 204, 21, 0.48);
       animation: ykSplashZoomIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards, ykSplashFloat 3.4s ease-in-out 0.7s infinite;
       overflow: hidden;
     }
@@ -130,23 +131,21 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(250, 204, 21, 0.45);
       overflow: hidden;
-      box-shadow: 0 0 16px rgba(192, 38, 211, 0.45);
+      box-shadow: 0 0 16px rgba(220, 38, 38, 0.45);
     }
     .yk-splash-progress-bar {
       width: 46%;
       height: 100%;
       border-radius: 9999px;
-      background: linear-gradient(90deg, #d946ef, #fef08a, #f59e0b);
+      background: linear-gradient(90deg, #dc2626, #fef08a, #f59e0b);
       box-shadow: 0 0 14px rgba(250, 204, 21, 0.9);
       animation: ykSplashBarMove 1.4s ease-in-out infinite;
     }
   </style>
-  
-  
 </head>
 
 <body>
-<!-- شاشەی سەرەتایی شاهانەی جووڵاو -->
+  <!-- شاشەی سەرەتایی شاهانەی جووڵاو -->
   <div id="royalSplashScreen">
     <div class="yk-splash-sunburst"></div>
     <div class="yk-splash-logo-wrap">
@@ -155,7 +154,7 @@
     <div class="yk-splash-progress-track">
       <div class="yk-splash-progress-bar"></div>
     </div>
-    <div class="relative z-10 flex items-center gap-2.5 bg-[#1b0536]/90 border border-yellow-400/55 px-5 py-2 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.5)]">
+    <div class="relative z-10 flex items-center gap-2.5 bg-[#2b0509]/90 border border-yellow-400/55 px-5 py-2 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.5)]">
       <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping"></span>
       <span id="splashStatusText" class="text-xs font-extrabold text-yellow-300">پشکنینی هەژمار...</span>
     </div>
@@ -163,20 +162,21 @@
   <img id="dragGhost" src="" alt="" style="display:none; pointer-events:none;" />
 
   <!-- ==================== AUTH GATE MODAL (LOGIN / REGISTER) ==================== -->
-  <div id="authModal" class="hidden inset-0 bg-[#040914]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+  <div id="authModal" class="hidden inset-0 bg-[#140305]/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="royal-card max-w-md w-full rounded-3xl p-6 md:p-8 space-y-6 border-2 border-yellow-500/40">
       <div class="text-center space-y-2">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[#050b18] font-extrabold text-3xl shadow-lg">♔</div>
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[#1a0305] font-extrabold text-3xl shadow-lg">♔</div>
         <h2 class="text-2xl font-extrabold gold-text">بەخێربێیت بۆ YariKurdi</h2>
-        <p class="text-xs text-slate-400">ئەکاونتێک دروست بکە یان بچۆرە ناو ئەکاونتەکەت تا خاڵ و هاوڕێکانت پارێزراو بن</p>
+        <p class="text-xs text-rose-100/75">ئەکاونتێک دروست بکە یان بچۆرە ناو ئەکاونتەکەت تا خاڵ و هاوڕێکانت پارێزراو بن</p>
       </div>
 
       <!-- Auth Tabs -->
-      <div class="grid grid-cols-2 gap-2 bg-[#081124] p-1 rounded-xl border border-yellow-500/20">
-        <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition">چوونەژوورەوە</button>
+      <div class="grid grid-cols-2 gap-2 bg-[#1c0407] p-1 rounded-xl border border-yellow-500/20">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#1a0305] transition">چوونەژوورەوە</button>
         <button id="tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">دروستکردنی ئەکاونت</button>
       </div>
-<!-- Google Sign-In Button -->
+
+      <!-- Google Sign-In Button -->
       <button type="button" onclick="signInWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs flex items-center justify-center gap-2.5 shadow-lg transition">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google" />
         <span>چوونەژوورەوە بە ئەکاونتی Google (Gmail)</span>
@@ -184,20 +184,20 @@
 
       <div class="relative flex py-1 items-center">
         <div class="flex-grow border-t border-yellow-500/20"></div>
-        <span class="flex-shrink mx-3 text-[11px] text-slate-400">یان بە ئەکاونتی تایبەت</span>
+        <span class="flex-shrink mx-3 text-[11px] text-rose-200/70">یان بە ئەکاونتی تایبەت</span>
         <div class="flex-grow border-t border-yellow-500/20"></div>
       </div>
-      <div id="authErrorBox" class="hidden p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs text-center font-bold"></div>
+      <div id="authErrorBox" class="hidden p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-xs text-center font-bold"></div>
 
       <!-- Login Form -->
       <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی بەکارهێنەر (Username):</label>
-          <input id="loginUsername" type="text" required placeholder="نموونە: ahmad_kurd" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">ناوی بەکارهێنەر (Username):</label>
+          <input id="loginUsername" type="text" required placeholder="نموونە: ahmad_kurd" class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی (Password):</label>
-          <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">وشەی نهێنی (Password):</label>
+          <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
         </div>
         <button type="submit" class="gold-btn w-full py-3 rounded-xl text-sm">چوونەژوورەوە بۆ مەیدان ➔</button>
       </form>
@@ -206,23 +206,23 @@
       <form id="registerForm" onsubmit="handleRegister(event)" class="hidden space-y-3.5">
         <div class="flex flex-col items-center gap-2">
           <label for="regAvatarInput" class="cursor-pointer group relative">
-            <div id="regAvatarPreview" class="w-16 h-16 rounded-2xl bg-[#15284d] border-2 border-dashed border-yellow-400 flex items-center justify-center text-2xl text-yellow-300 overflow-hidden">📷</div>
+            <div id="regAvatarPreview" class="w-16 h-16 rounded-2xl bg-[#38080e] border-2 border-dashed border-yellow-400 flex items-center justify-center text-2xl text-yellow-300 overflow-hidden">📷</div>
             <span class="block text-[10px] text-yellow-300 text-center mt-1 font-bold">هەڵبژاردنی وێنە (ئارەزوومەندانە)</span>
           </label>
           <input id="regAvatarInput" type="file" accept="image/*" onchange="previewAvatarFile(this, 'regAvatarPreview', 'reg')" class="hidden" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی نمایشکردن (ناوی تەواو یان نازناو):</label>
-          <input id="regDisplayName" type="text" required placeholder="نموونە: ئەحمەد جاف" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">ناوی نمایشکردن (ناوی تەواو یان نازناو):</label>
+          <input id="regDisplayName" type="text" required placeholder="نموونە: ئەحمەد جاف" class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی بەکارهێنەر (Username بە ئینگلیزی):</label>
-          <input id="regUsername" type="text" required placeholder="nmunay_kurd" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">ناوی بەکارهێنەر (Username بە ئینگلیزی):</label>
+          <input id="regUsername" type="text" required placeholder="nmunay_kurd" class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی (Password):</label>
-          <input id="regPassword" type="password" required minlength="4" placeholder="لانیکەم ٤ پیت یان ژمارە" class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">وشەی نهێنی (Password):</label>
+          <input id="regPassword" type="password" required minlength="4" placeholder="لانیکەم ٤ پیت یان ژمارە" class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
         </div>
         <button type="submit" class="gold-btn w-full py-3 rounded-xl text-sm">دروستکردنی ئەکاونت و دەستپێکردن ✓</button>
       </form>
@@ -234,45 +234,47 @@
     <div class="royal-card max-w-md w-full rounded-3xl p-6 space-y-5 border-2 border-yellow-400">
       <div class="flex items-center justify-between border-b border-yellow-500/20 pb-3">
         <h3 class="text-lg font-extrabold gold-text">⚙️ دەستکاریکردنی پرۆفایل</h3>
-        <button onclick="closeEditProfileModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+        <button onclick="closeEditProfileModal()" class="text-rose-200 hover:text-white text-lg font-bold">✕</button>
       </div>
 
       <form onsubmit="saveProfileEdits(event)" class="space-y-4">
         <div class="flex flex-col items-center gap-2">
           <label for="editAvatarInput" class="cursor-pointer relative">
-            <div id="editAvatarPreview" class="w-20 h-20 rounded-2xl bg-[#15284d] border-2 border-yellow-400 flex items-center justify-center text-3xl text-yellow-300 font-extrabold overflow-hidden shadow-lg">ی</div>
+            <div id="editAvatarPreview" class="w-20 h-20 rounded-2xl bg-[#38080e] border-2 border-yellow-400 flex items-center justify-center text-3xl text-yellow-300 font-extrabold overflow-hidden shadow-lg">ی</div>
             <span class="block text-[11px] text-yellow-300 text-center mt-1.5 font-bold bg-yellow-500/10 px-3 py-1 rounded-lg border border-yellow-500/30">گۆڕینی وێنەی پرۆفایل 📸</span>
           </label>
           <input id="editAvatarInput" type="file" accept="image/*" onchange="previewAvatarFile(this, 'editAvatarPreview', 'edit')" class="hidden" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">ناوی نمایشکردن:</label>
-          <input id="editDisplayName" type="text" required class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">ناوی نمایشکردن:</label>
+          <input id="editDisplayName" type="text" required class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">وشەی نهێنی نوێ (ئەگەر ناتەوێت بیگۆڕیت بە بەتاڵی جێی بهێڵە):</label>
-          <input id="editNewPassword" type="password" minlength="4" placeholder="وشەی نهێنی نوێ..." class="w-full bg-[#091326] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
+          <label class="block text-xs font-bold text-rose-100 mb-1">وشەی نهێنی نوێ (ئەگەر ناتەوێت بیگۆڕیت بە بەتاڵی جێی بهێڵە):</label>
+          <input id="editNewPassword" type="password" minlength="4" placeholder="وشەی نهێنی نوێ..." class="w-full bg-[#1a0407] border border-yellow-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400" style="direction: ltr;" />
         </div>
 
-        <div class="bg-[#081124] p-3 rounded-xl border border-yellow-500/20 flex items-center justify-between text-xs">
-          <span class="text-slate-400">ناوی بەکارهێنەر (Username):</span>
+        <div class="bg-[#1a0407] p-3 rounded-xl border border-yellow-500/20 flex items-center justify-between text-xs">
+          <span class="text-rose-200/75">ناوی بەکارهێنەر (Username):</span>
           <span id="editUsernameReadonly" class="font-mono font-bold text-yellow-300">---</span>
-        </div><!-- Level & XP Progress Box -->
-       <div class="bg-[#081124] p-3.5 rounded-2xl border border-yellow-500/20 space-y-2">
-         <div class="flex items-center justify-between text-xs font-bold">
-           <span id="profileLevelTitle" class="text-yellow-300">Lvl 1 • سەرەتایی</span>
-           <span id="profileXpText" class="text-slate-400 font-mono text-[11px]">0 / 25 XP</span>
-         </div>
-         <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-           <div id="profileXpBar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-300 transition-all duration-500" style="width: 0%"></div>
-         </div>
-       </div>
+        </div>
+
+        <!-- Level & XP Progress Box -->
+        <div class="bg-[#1a0407] p-3.5 rounded-2xl border border-yellow-500/20 space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span id="profileLevelTitle" class="text-yellow-300">Lvl 1 • سەرەتایی</span>
+            <span id="profileXpText" class="text-rose-200/75 font-mono text-[11px]">0 / 25 XP</span>
+          </div>
+          <div class="w-full h-2.5 bg-black/50 rounded-full overflow-hidden border border-yellow-500/20">
+            <div id="profileXpBar" class="h-full bg-gradient-to-r from-yellow-500 to-amber-300 transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
 
         <div class="grid grid-cols-2 gap-2 pt-1">
           <button type="submit" class="gold-btn py-2.5 rounded-xl text-xs">پاشەکەوتکردن ✓</button>
-          <button type="button" onclick="logoutAccount()" class="py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30">چوونەدەرەوە 🚪</button>
+          <button type="button" onclick="logoutAccount()" class="py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/30 hover:bg-red-500/30">چوونەدەرەوە 🚪</button>
         </div>
       </form>
     </div>
@@ -281,7 +283,7 @@
   <!-- Incoming Challenge Toast -->
   <div id="challengeToast" class="hidden fixed bottom-5 left-5 right-5 md:left-auto md:w-96 z-50 royal-card rounded-2xl p-4 border-2 border-yellow-400 shadow-2xl space-y-3">
     <div class="flex items-center gap-3">
-      <div class="w-11 h-11 rounded-xl bg-yellow-500 text-[#050b18] flex items-center justify-center text-2xl font-extrabold animate-bounce">⚔️</div>
+      <div class="w-11 h-11 rounded-xl bg-yellow-500 text-[#1a0305] flex items-center justify-center text-2xl font-extrabold animate-bounce">⚔️</div>
       <div>
         <div class="text-xs font-extrabold text-yellow-300">بانگهێشتی یاری!</div>
         <div id="challengeToastText" class="text-xs text-white mt-0.5">هاوڕێیەک داوای یاریت لێدەکات</div>
@@ -289,91 +291,58 @@
     </div>
     <div class="grid grid-cols-2 gap-2">
       <button onclick="acceptIncomingChallenge()" class="gold-btn py-2 rounded-xl text-xs">قبوڵکردن ✓</button>
-      <button onclick="declineIncomingChallenge()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">ڕەتکردنەوە ✕</button>
+      <button onclick="declineIncomingChallenge()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/30">ڕەتکردنەوە ✕</button>
     </div>
   </div>
 
-  <!-- VIEW 1: MODERN GAME HUB (3-COLUMN VISUAL CARDS & SEASON BANNERS) -->
-<section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-3 pb-32 overflow-y-auto overscroll-contain relative" style="max-height: calc(100dvh - 82px); -webkit-overflow-scrolling: touch;">      <div class="space-y-0.5">
-       
-   <!-- پانێڵی پشتگیریمان بکە بە ئاڵای کوردستان -->
-      <div class="relative overflow-hidden rounded-2xl border border-amber-400/50 shadow-lg mb-3 p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3"
-           style="background: linear-gradient(180deg, rgba(185,28,28,0.88) 0%, rgba(185,28,28,0.88) 33%, rgba(255,255,255,0.92) 33%, rgba(255,255,255,0.92) 66%, rgba(21,128,61,0.88) 66%, rgba(21,128,61,0.88) 100%);">
-        <!-- خۆری کوردستان لە ناوەڕاست -->
-        <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-90">
-          <svg viewBox="0 0 100 100" class="w-24 h-24 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]">
-            <circle cx="50" cy="50" r="16" fill="#facc15"/>
-            <g fill="#facc15">
-              <polygon points="50,8 53,34 47,34"/><polygon points="50,92 53,66 47,66"/>
-              <polygon points="8,50 34,53 34,47"/><polygon points="92,50 66,53 66,47"/>
-              <polygon points="20,20 40,36 36,40"/><polygon points="80,80 60,64 64,60"/>
-              <polygon points="80,20 64,40 60,36"/><polygon points="20,80 36,60 40,64"/>
-              <polygon points="34,11 45,35 39,37"/><polygon points="66,89 55,65 61,63"/>
-              <polygon points="66,11 61,37 55,35"/><polygon points="34,89 39,63 45,65"/>
-              <polygon points="11,34 37,39 35,45"/><polygon points="89,66 63,61 65,55"/>
-              <polygon points="89,34 65,45 63,39"/><polygon points="11,66 35,55 37,61"/>
-            </g>
-          </svg>
-        </div>
-        <!-- سێبەرێکی شووشەیی تاریک بۆ خوێندنەوەی نووسینەکان -->
-        <div class="absolute inset-0 bg-gradient-to-l from-[#050a15]/85 via-[#050a15]/45 to-[#050a15]/80 pointer-events-none"></div>
+  <!-- VIEW 1: ROYAL RED & GOLD GAME HUB -->
+  <section id="view-hub" class="max-w-5xl mx-auto px-3 sm:px-5 pt-3 pb-32 overflow-y-auto overscroll-contain relative" style="max-height: calc(100dvh - 82px); -webkit-overflow-scrolling: touch;">
+    <div class="space-y-4">
 
-       <!-- نووسینەکان -->
-        <div class="relative z-10 text-center sm:text-right">
-          <div class="text-base sm:text-lg font-black text-amber-300 drop-shadow-[0_2px_6px_rgba(0,0,0,1)]">
-            دەستمان بگرە تا بەردەوام بین 👑
+      <!-- کارتی سەرەکیی دیوەخان (بەبێ ئاڵا و بەبێ وەرزەکان) -->
+      <div onclick="switchView('rooms')" class="yk-diwexan-hero cursor-pointer relative overflow-hidden rounded-3xl px-5 py-4 flex items-center justify-between gap-3 border border-amber-300/65 shadow-[0_14px_34px_rgba(0,0,0,0.55)] transition-transform active:scale-[0.98]"
+           style="background: linear-gradient(135deg, #d8ba84 0%, #9b7a44 45%, #5c191e 100%);">
+        <div class="relative z-10 flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-[#2a070b]/85 border border-amber-300/70 flex items-center justify-center text-2xl shadow-lg">
+            🎙️
           </div>
-          <p class="text-xs sm:text-sm font-bold text-white drop-shadow-[0_2px_5px_rgba(0,0,0,1)]">
-            بۆ داهاتوویەکی گەشتر بۆ یارییە کوردییەکان
-          </p>
+          <div>
+            <div class="text-xl sm:text-2xl font-black text-[#1c0608] drop-shadow-[0_1px_0_rgba(255,245,215,0.45)]">
+              دیوەخان
+            </div>
+            <div class="inline-flex items-center gap-1.5 mt-0.5 px-2.5 py-0.5 rounded-full bg-black/35 border border-amber-200/30">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-[11px] font-extrabold text-amber-100">ئێستا چالاکە</span>
+            </div>
+          </div>
         </div>
-        <!-- دوگمەی دیوەخان -->
-        <button onclick="switchView('rooms')" class="relative z-10 gold-btn px-5 py-2 rounded-full text-xs sm:text-sm font-black whitespace-nowrap shadow-xl hover:scale-105 transition-transform">
-          دیوەخان 🎙️
-        </button>
+        <div class="relative z-10 flex items-center gap-2">
+          <span class="px-4 py-2 rounded-full bg-[#240609]/90 border border-amber-300/60 text-amber-200 text-xs font-black shadow-lg">
+            چوونەژوورەوە ➔
+          </span>
+        </div>
       </div>
 
- <!-- Season Pass Progress Banner -->
-    <div class="rounded-2xl bg-gradient-to-l from-[#2b170c] via-[#3b2010] to-[#1f1008] border-2 border-amber-400/60 p-3 space-y-2 shadow-lg">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] px-3 py-0.5 rounded-full bg-amber-400/20 text-yellow-300 border border-amber-400/40 font-black">☀️ دیوەخانی YariKurdi • وەرزی ١</span>
-        <span id="hubSeasonLevelTag" class="text-[11px] font-black text-emerald-400">ئاستی 1</span>
+      <!-- سەردێڕی یارییەکان -->
+      <div class="flex items-center justify-between px-1 pt-1 relative z-10">
+        <h2 class="text-base sm:text-lg font-black text-white tracking-wide">یارییەکان</h2>
+        <span id="onlineCountText" class="text-[11px] font-bold text-amber-200/85">سەرهێڵ</span>
       </div>
-      <div class="w-full h-3.5 rounded-full bg-black/60 border border-amber-400/40 overflow-hidden p-0.5">
-        <div id="hubSeasonBar" class="h-full rounded-full bg-gradient-to-l from-[#dc2626] via-[#facc15] to-[#15803d] transition-all duration-500" style="width: 35%"></div>
-      </div>
-    </div>
 
-    <!-- یارییە ئامادەکان -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 relative z-10">
+      <!-- یارییە ئامادەکان -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
         <!-- ١. شەتڕەنج -->
         <div onclick="switchView('chess')" class="pito-game-card cursor-pointer">
           <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=600&q=80" alt="شەتڕەنج" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
+          <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-sm border border-amber-400/45 text-[10px] font-extrabold text-amber-200 shadow">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">شەتڕەنج</span>
           </div>
         </div>
 
-        <!-- ٢. لودۆ -->
-        <div onclick="switchView('ludo')" class="pito-game-card cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80" alt="لودۆ" />
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
-          <div class="pito-card-overlay">
-            <span class="pito-card-title">لودۆ</span>
-          </div>
-        </div>
-        <!-- هەڵۆی زاگرۆس -->
-<div onclick="window.location.href='halo-game.html'" class="pito-game-card cursor-pointer">
-  <img src="https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80" alt="هەڵۆی زاگرۆس" />
-  <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow">ئامادەیە</span>
-  <div class="pito-card-overlay">
-    <span class="pito-card-title">هەڵۆی زاگرۆس</span>
-  </div>
-</div>
-<!-- ٣. دۆمینە -->
+        <!-- ٢. دۆمینە -->
         <div onclick="switchView('domino')" class="pito-game-card cursor-pointer">
-          <div class="w-full h-full bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#090d16] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+          <div class="w-full h-full bg-gradient-to-br from-[#2a060a] via-[#4a0b12] to-[#1a0305] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
             <div class="absolute w-32 h-32 rounded-full bg-amber-400/15 blur-2xl"></div>
             <div class="relative w-16 h-28 rounded-xl shadow-2xl border-2 border-amber-300/70 overflow-hidden transform -rotate-12 -translate-x-2 flex flex-col bg-white">
               <div class="h-1/3 bg-[#ED2939] flex items-center justify-around px-2">
@@ -421,203 +390,189 @@
               </div>
             </div>
           </div>
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow z-20">ئامادەیە</span>
+          <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-sm border border-amber-400/45 text-[10px] font-extrabold text-amber-200 shadow z-20">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">دۆمینە</span>
+          </div>
+        </div>
+
+        <!-- ٣. لودۆ -->
+        <div onclick="switchView('ludo')" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80" alt="لودۆ" />
+          <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-sm border border-amber-400/45 text-[10px] font-extrabold text-amber-200 shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">لودۆ</span>
           </div>
         </div>
 
         <!-- ٤. کۆنکان -->
         <div onclick="switchView('konkan')" class="pito-game-card cursor-pointer">
           <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=600&q=80" alt="کۆنکان" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-          <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/95 text-[10px] font-extrabold text-white shadow z-20">ئامادەیە</span>
-          <div class="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-black/65 backdrop-blur-md px-2 py-1 rounded-full border border-white/25 shadow-lg">
-            <svg viewBox="0 0 900 600" style="width: 22px; height: 14px; border-radius: 2px; flex-shrink: 0;">
-              <rect width="900" height="200" fill="#ED2939"/>
-              <rect y="200" width="900" height="200" fill="#FFFFFF"/>
-              <rect y="400" width="900" height="200" fill="#278E43"/>
-              <circle cx="450" cy="300" r="85" fill="#FEBD11"/>
-              <g fill="#FEBD11">
-                <polygon points="450,150 462,235 438,235"/><polygon points="450,450 462,365 438,365"/>
-                <polygon points="300,300 385,312 385,288"/><polygon points="600,300 515,312 515,288"/>
-                <polygon points="344,194 405,255 388,272"/><polygon points="556,406 495,345 512,328"/>
-                <polygon points="556,194 512,272 495,255"/><polygon points="344,406 388,328 405,345"/>
-              </g>
-            </svg>
-            <span class="text-[10px] font-black text-white leading-none">کوردی</span>
-          </div>
+          <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-sm border border-amber-400/45 text-[10px] font-extrabold text-amber-200 shadow z-20">ئامادەیە</span>
           <div class="pito-card-overlay">
             <span class="pito-card-title">کۆنکان</span>
           </div>
         </div>
-     
+
+        <!-- ٥. هەڵۆی زاگرۆس -->
+        <div onclick="window.location.href='halo-game.html'" class="pito-game-card cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=600&q=80" alt="هەڵۆی زاگرۆس" />
+          <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full bg-black/65 backdrop-blur-sm border border-amber-400/45 text-[10px] font-extrabold text-amber-200 shadow">ئامادەیە</span>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">هەڵۆی زاگرۆس</span>
+          </div>
+        </div>
+      </div>
 
       <!-- سەردێڕی یارییە چاوەڕوانکراوەکان -->
-       </div>
-      <div class="pt-4 pb-1 flex items-center justify-between border-t border-white/10 relative z-10">
-        <span class="text-xs font-extrabold text-yellow-400">⏳ یارییەکانی داهاتوو (ئامادە دەکرێن)</span>
-        <span class="text-[10px] text-slate-400">بەم زووانە زیاد دەکرێن</span>
+      <div class="pt-4 pb-1 flex items-center justify-between border-t border-amber-400/20 relative z-10">
+        <span class="text-xs font-extrabold text-amber-300">⏳ یارییەکانی داهاتوو (ئامادە دەکرێن)</span>
+        <span class="text-[10px] text-rose-200/70">بەم زووانە زیاد دەکرێن</span>
       </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 relative z-10 pb-8">
-      <!-- تاوڵە -->
-      <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
-        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
-          <defs>
-            <linearGradient id="woodBg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#3e1f0d"/>
-              <stop offset="100%" stop-color="#1c0d05"/>
-            </linearGradient>
-          </defs>
-          <rect width="300" height="400" fill="url(#woodBg)"/>
-          <rect x="16" y="20" width="268" height="360" rx="14" fill="#5c2e14" stroke="#d4af37" stroke-width="4"/>
-          <rect x="28" y="32" width="244" height="336" rx="8" fill="#e6ccb2"/>
-          <line x1="150" y1="32" x2="150" y2="368" stroke="#3e1f0d" stroke-width="6"/>
-          <!-- سێگۆشەکانی سەرەوە -->
-          <polygon points="34,32 52,32 43,165" fill="#7f1d1d"/><polygon points="54,32 72,32 63,165" fill="#1e293b"/>
-          <polygon points="74,32 92,32 83,165" fill="#7f1d1d"/><polygon points="94,32 112,32 103,165" fill="#1e293b"/>
-          <polygon points="114,32 132,32 123,165" fill="#7f1d1d"/><polygon points="168,32 186,32 177,165" fill="#1e293b"/>
-          <polygon points="188,32 206,32 197,165" fill="#7f1d1d"/><polygon points="208,32 226,32 217,165" fill="#1e293b"/>
-          <polygon points="228,32 246,32 237,165" fill="#7f1d1d"/><polygon points="248,32 266,32 257,165" fill="#1e293b"/>
-          <!-- سێگۆشەکانی خوارەوە -->
-          <polygon points="34,368 52,368 43,235" fill="#1e293b"/><polygon points="54,368 72,368 63,235" fill="#7f1d1d"/>
-          <polygon points="74,368 92,368 83,235" fill="#1e293b"/><polygon points="94,368 112,368 103,235" fill="#7f1d1d"/>
-          <polygon points="114,368 132,368 123,235" fill="#1e293b"/><polygon points="168,368 186,368 177,235" fill="#7f1d1d"/>
-          <polygon points="188,368 206,368 197,235" fill="#1e293b"/><polygon points="208,368 226,368 217,235" fill="#7f1d1d"/>
-          <polygon points="228,368 246,368 237,235" fill="#1e293b"/><polygon points="248,368 266,368 257,235" fill="#7f1d1d"/>
-          <!-- پولەکان و زارەکان -->
-          <circle cx="43" cy="48" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
-          <circle cx="43" cy="70" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
-          <circle cx="257" cy="352" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
-          <circle cx="257" cy="330" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
-          <rect x="85" y="182" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-          <circle cx="93" cy="190" r="2.5" fill="#0f172a"/><circle cx="105" cy="202" r="2.5" fill="#0f172a"/><circle cx="99" cy="196" r="2.5" fill="#dc2626"/>
-          <rect x="185" y="188" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-          <circle cx="193" cy="196" r="2.5" fill="#0f172a"/><circle cx="205" cy="196" r="2.5" fill="#0f172a"/>
-          <circle cx="193" cy="208" r="2.5" fill="#0f172a"/><circle cx="205" cy="208" r="2.5" fill="#0f172a"/>
-        </svg>
-        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">تاوڵە</span>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 relative z-10 pb-8">
+        <!-- تاوڵە -->
+        <div onclick="alert('یاریی تاوڵە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+          <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="woodBg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#3e1f0d"/>
+                <stop offset="100%" stop-color="#1c0d05"/>
+              </linearGradient>
+            </defs>
+            <rect width="300" height="400" fill="url(#woodBg)"/>
+            <rect x="16" y="20" width="268" height="360" rx="14" fill="#5c2e14" stroke="#d4af37" stroke-width="4"/>
+            <rect x="28" y="32" width="244" height="336" rx="8" fill="#e6ccb2"/>
+            <line x1="150" y1="32" x2="150" y2="368" stroke="#3e1f0d" stroke-width="6"/>
+            <polygon points="34,32 52,32 43,165" fill="#7f1d1d"/><polygon points="54,32 72,32 63,165" fill="#1e293b"/>
+            <polygon points="74,32 92,32 83,165" fill="#7f1d1d"/><polygon points="94,32 112,32 103,165" fill="#1e293b"/>
+            <polygon points="114,32 132,32 123,165" fill="#7f1d1d"/><polygon points="168,32 186,32 177,165" fill="#1e293b"/>
+            <polygon points="188,32 206,32 197,165" fill="#7f1d1d"/><polygon points="208,32 226,32 217,165" fill="#1e293b"/>
+            <polygon points="228,32 246,32 237,165" fill="#7f1d1d"/><polygon points="248,32 266,32 257,165" fill="#1e293b"/>
+            <polygon points="34,368 52,368 43,235" fill="#1e293b"/><polygon points="54,368 72,368 63,235" fill="#7f1d1d"/>
+            <polygon points="74,368 92,368 83,235" fill="#1e293b"/><polygon points="94,368 112,368 103,235" fill="#7f1d1d"/>
+            <polygon points="114,368 132,368 123,235" fill="#1e293b"/><polygon points="168,368 186,368 177,235" fill="#7f1d1d"/>
+            <polygon points="188,368 206,368 197,235" fill="#1e293b"/><polygon points="208,368 226,368 217,235" fill="#7f1d1d"/>
+            <polygon points="228,368 246,368 237,235" fill="#1e293b"/><polygon points="248,368 266,368 257,235" fill="#7f1d1d"/>
+            <circle cx="43" cy="48" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
+            <circle cx="43" cy="70" r="10" fill="#1e293b" stroke="#d4af37" stroke-width="2"/>
+            <circle cx="257" cy="352" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
+            <circle cx="257" cy="330" r="10" fill="#f8fafc" stroke="#d4af37" stroke-width="2"/>
+            <rect x="85" y="182" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="93" cy="190" r="2.5" fill="#0f172a"/><circle cx="105" cy="202" r="2.5" fill="#0f172a"/><circle cx="99" cy="196" r="2.5" fill="#dc2626"/>
+            <rect x="185" y="188" width="28" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="193" cy="196" r="2.5" fill="#0f172a"/><circle cx="205" cy="196" r="2.5" fill="#0f172a"/>
+            <circle cx="193" cy="208" r="2.5" fill="#0f172a"/><circle cx="205" cy="208" r="2.5" fill="#0f172a"/>
+          </svg>
+          <div class="pito-badge-ready bg-amber-500 text-[#1a0305]">بەم زووانە 🔒</div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">تاوڵە</span>
+          </div>
+        </div>
+
+        <!-- دامەی کوردی -->
+        <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+          <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+            <rect width="300" height="400" fill="#1c0508"/>
+            <rect x="20" y="45" width="260" height="260" rx="14" fill="#2e0a0f" stroke="#d4af37" stroke-width="4"/>
+            <g transform="translate(30, 55)">
+              <rect x="0" y="0" width="60" height="60" fill="#f8fafc"/><rect x="60" y="0" width="60" height="60" fill="#1e293b"/>
+              <rect x="120" y="0" width="60" height="60" fill="#f8fafc"/><rect x="180" y="0" width="60" height="60" fill="#1e293b"/>
+              <rect x="0" y="60" width="60" height="60" fill="#1e293b"/><rect x="60" y="60" width="60" height="60" fill="#f8fafc"/>
+              <rect x="120" y="60" width="60" height="60" fill="#1e293b"/><rect x="180" y="60" width="60" height="60" fill="#f8fafc"/>
+              <rect x="0" y="120" width="60" height="60" fill="#f8fafc"/><rect x="60" y="120" width="60" height="60" fill="#1e293b"/>
+              <rect x="120" y="120" width="60" height="60" fill="#f8fafc"/><rect x="180" y="120" width="60" height="60" fill="#1e293b"/>
+              <rect x="0" y="180" width="60" height="60" fill="#1e293b"/><rect x="60" y="180" width="60" height="60" fill="#f8fafc"/>
+              <rect x="120" y="180" width="60" height="60" fill="#1e293b"/><rect x="180" y="180" width="60" height="60" fill="#f8fafc"/>
+              <circle cx="90" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+              <circle cx="210" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+              <circle cx="30" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+              <circle cx="150" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
+              <circle cx="90" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+              <circle cx="210" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+              <circle cx="30" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+              <circle cx="150" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
+              <text x="150" y="156" text-anchor="middle" font-size="16" fill="#d4af37">👑</text>
+            </g>
+          </svg>
+          <div class="pito-badge-ready bg-amber-500 text-[#1a0305]">بەم زووانە 🔒</div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">دامەی کوردی</span>
+          </div>
+        </div>
+
+        <!-- مار و پەیژە -->
+        <div onclick="alert('یاریی مار و پەیژە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
+          <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
+            <defs>
+              <radialGradient id="royalBoardBg" cx="50%" cy="42%" r="65%">
+                <stop offset="0%" stop-color="#3b080e"/>
+                <stop offset="60%" stop-color="#1e0407"/>
+                <stop offset="100%" stop-color="#100204"/>
+              </radialGradient>
+              <linearGradient id="goldMetallic" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="45%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#854d0e"/>
+              </linearGradient>
+              <linearGradient id="emeraldSerpent" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#34d399"/>
+                <stop offset="50%" stop-color="#065f46"/>
+                <stop offset="100%" stop-color="#022c22"/>
+              </linearGradient>
+              <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.75"/>
+              </filter>
+            </defs>
+            <rect width="300" height="400" fill="url(#royalBoardBg)"/>
+            <g transform="translate(150, 185)" filter="url(#deepShadow)">
+              <polygon points="0,-118 128,0 0,118 -128,0" fill="#1e1b18" stroke="url(#goldMetallic)" stroke-width="5"/>
+              <polygon points="0,-108 116,0 0,108 -116,0" fill="#180407" stroke="#d4af37" stroke-width="1.5" opacity="0.9"/>
+              <g stroke="#d4af37" stroke-width="1" opacity="0.35">
+                <line x1="-58" y1="-54" x2="58" y2="54"/>
+                <line x1="0" y1="-108" x2="0" y2="108"/>
+                <line x1="58" y1="-54" x2="-58" y2="54"/>
+                <line x1="-58" y1="54" x2="58" y2="-54"/>
+                <line x1="-116" y1="0" x2="116" y2="0"/>
+              </g>
+              <polygon points="0,-54 29,-27 0,0 -29,-27" fill="#064e3b" opacity="0.7"/>
+              <polygon points="-58,0 -29,27 -58,54 -87,27" fill="#78350f" opacity="0.65"/>
+              <polygon points="58,0 87,27 58,54 29,27" fill="#064e3b" opacity="0.7"/>
+              <polygon points="0,54 29,81 0,108 -29,81" fill="#78350f" opacity="0.65"/>
+              <g filter="url(#deepShadow)">
+                <line x1="-68" y1="38" x2="-15" y2="-75" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="-44" y1="48" x2="9" y2="-65" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="-60" y1="20" x2="-36" y2="30" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="-49" y1="-3" x2="-25" y2="7" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="-38" y1="-26" x2="-14" y2="-16" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="-27" y1="-49" x2="-3" y2="-39" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
+              </g>
+              <g filter="url(#deepShadow)">
+                <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="url(#emeraldSerpent)" stroke-width="11" stroke-linecap="round"/>
+                <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="4,7" stroke-linecap="round"/>
+                <polygon points="38,-60 47,-48 38,-43 29,-48" fill="#065f46" stroke="#d4af37" stroke-width="1.5"/>
+                <circle cx="35" cy="-51" r="1.5" fill="#fbbf24"/>
+                <circle cx="41" cy="-51" r="1.5" fill="#fbbf24"/>
+              </g>
+              <g transform="translate(-8, 12)" filter="url(#deepShadow)">
+                <rect x="-14" y="-14" width="28" height="28" rx="5" fill="#f8fafc" stroke="url(#goldMetallic)" stroke-width="2.5"/>
+                <circle cx="-6" cy="-6" r="2.2" fill="#0f172a"/>
+                <circle cx="6" cy="6" r="2.2" fill="#0f172a"/>
+                <circle cx="0" cy="0" r="2.5" fill="#b91c1c"/>
+              </g>
+            </g>
+          </svg>
+          <div class="pito-badge-ready bg-amber-500 text-[#1a0305]">بەم زووانە 🔒</div>
+          <div class="pito-card-overlay">
+            <span class="pito-card-title">مار و پەیژە</span>
+          </div>
         </div>
       </div>
 
-      <!-- دامەی کوردی -->
-      <div onclick="alert('یاریی دامەی کوردی لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
-        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
-          <rect width="300" height="400" fill="#0f172a"/>
-          <rect x="20" y="45" width="260" height="260" rx="14" fill="#1e293b" stroke="#d4af37" stroke-width="4"/>
-          <!-- چوارگۆشەکانی تەختەی دامە -->
-          <g transform="translate(30, 55)">
-            <rect x="0" y="0" width="60" height="60" fill="#f8fafc"/><rect x="60" y="0" width="60" height="60" fill="#1e293b"/>
-            <rect x="120" y="0" width="60" height="60" fill="#f8fafc"/><rect x="180" y="0" width="60" height="60" fill="#1e293b"/>
-            <rect x="0" y="60" width="60" height="60" fill="#1e293b"/><rect x="60" y="60" width="60" height="60" fill="#f8fafc"/>
-            <rect x="120" y="60" width="60" height="60" fill="#1e293b"/><rect x="180" y="60" width="60" height="60" fill="#f8fafc"/>
-            <rect x="0" y="120" width="60" height="60" fill="#f8fafc"/><rect x="60" y="120" width="60" height="60" fill="#1e293b"/>
-            <rect x="120" y="120" width="60" height="60" fill="#f8fafc"/><rect x="180" y="120" width="60" height="60" fill="#1e293b"/>
-            <rect x="0" y="180" width="60" height="60" fill="#1e293b"/><rect x="60" y="180" width="60" height="60" fill="#f8fafc"/>
-            <rect x="120" y="180" width="60" height="60" fill="#1e293b"/><rect x="180" y="180" width="60" height="60" fill="#f8fafc"/>
-            <!-- پولە شاهانەکانی دامە -->
-            <circle cx="90" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
-            <circle cx="210" cy="30" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
-            <circle cx="30" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
-            <circle cx="150" cy="90" r="20" fill="#dc2626" stroke="#fbbf24" stroke-width="3"/>
-            <circle cx="90" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
-            <circle cx="210" cy="150" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
-            <circle cx="30" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
-            <circle cx="150" cy="210" r="20" fill="#f8fafc" stroke="#d4af37" stroke-width="3"/>
-            <text x="150" y="156" text-anchor="middle" font-size="16" fill="#d4af37">👑</text>
-          </g>
-        </svg>
-        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">دامەی کوردی</span>
-        </div>
-      </div>
-
-     <div onclick="alert('یاریی مار و پەیژە لە قۆناغی دروستکردندایە و بەم زووانە بەردەست دەبێت')" class="pito-game-card border-amber-500/30 group">
-        <svg viewBox="0 0 300 400" class="w-full h-full object-cover">
-          <defs>
-            <radialGradient id="royalBoardBg" cx="50%" cy="42%" r="65%">
-              <stop offset="0%" stop-color="#1e293b"/>
-              <stop offset="60%" stop-color="#0f172a"/>
-              <stop offset="100%" stop-color="#050b18"/>
-            </radialGradient>
-            <linearGradient id="goldMetallic" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#fef08a"/>
-              <stop offset="45%" stop-color="#d4af37"/>
-              <stop offset="100%" stop-color="#854d0e"/>
-            </linearGradient>
-            <linearGradient id="emeraldSerpent" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#34d399"/>
-              <stop offset="50%" stop-color="#065f46"/>
-              <stop offset="100%" stop-color="#022c22"/>
-            </linearGradient>
-            <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.75"/>
-            </filter>
-          </defs>
-
-          <!-- پاشبنەمای تاریک و شاهانە -->
-          <rect width="300" height="400" fill="url(#royalBoardBg)"/>
-
-          <!-- تەختەی مەڕمەڕی ٣ ڕەهەندی (Isometric) -->
-          <g transform="translate(150, 185)" filter="url(#deepShadow)">
-            <!-- لێواری زێڕینی تەختەکە -->
-            <polygon points="0,-118 128,0 0,118 -128,0" fill="#1e1b18" stroke="url(#goldMetallic)" stroke-width="5"/>
-            <polygon points="0,-108 116,0 0,108 -116,0" fill="#0f172a" stroke="#d4af37" stroke-width="1.5" opacity="0.9"/>
-
-            <!-- هێڵە ئەندازەییەکانی تەختەی یارییەکە -->
-            <g stroke="#d4af37" stroke-width="1" opacity="0.35">
-              <line x1="-58" y1="-54" x2="58" y2="54"/>
-              <line x1="0" y1="-108" x2="0" y2="108"/>
-              <line x1="58" y1="-54" x2="-58" y2="54"/>
-              <line x1="-58" y1="54" x2="58" y2="-54"/>
-              <line x1="-116" y1="0" x2="116" y2="0"/>
-            </g>
-
-            <!-- خانە زمڕودی و زێڕینەکان -->
-            <polygon points="0,-54 29,-27 0,0 -29,-27" fill="#064e3b" opacity="0.7"/>
-            <polygon points="-58,0 -29,27 -58,54 -87,27" fill="#78350f" opacity="0.65"/>
-            <polygon points="58,0 87,27 58,54 29,27" fill="#064e3b" opacity="0.7"/>
-            <polygon points="0,54 29,81 0,108 -29,81" fill="#78350f" opacity="0.65"/>
-
-            <!-- پەیژەی زێڕینی کانزایی (Metallic Gold Ladder) -->
-            <g filter="url(#deepShadow)">
-              <line x1="-68" y1="38" x2="-15" y2="-75" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
-              <line x1="-44" y1="48" x2="9" y2="-65" stroke="url(#goldMetallic)" stroke-width="5" stroke-linecap="round"/>
-              <line x1="-60" y1="20" x2="-36" y2="30" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="-49" y1="-3" x2="-25" y2="7" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="-38" y1="-26" x2="-14" y2="-16" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="-27" y1="-49" x2="-3" y2="-39" stroke="#fef08a" stroke-width="3.5" stroke-linecap="round"/>
-            </g>
-
-            <!-- ماری شاهانەی زمڕودی بە نەخشی زێڕین -->
-            <g filter="url(#deepShadow)">
-              <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="url(#emeraldSerpent)" stroke-width="11" stroke-linecap="round"/>
-              <path d="M 38 -52 C 78 -35, 10 -12, 58 14 C 95 34, 22 52, 46 78" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="4,7" stroke-linecap="round"/>
-              <!-- سەری مارەکە -->
-              <polygon points="38,-60 47,-48 38,-43 29,-48" fill="#065f46" stroke="#d4af37" stroke-width="1.5"/>
-              <circle cx="35" cy="-51" r="1.5" fill="#fbbf24"/>
-              <circle cx="41" cy="-51" r="1.5" fill="#fbbf24"/>
-            </g>
-
-            <!-- زاری عاجی و زێڕین لە ناوەڕاستدا -->
-            <g transform="translate(-8, 12)" filter="url(#deepShadow)">
-              <rect x="-14" y="-14" width="28" height="28" rx="5" fill="#f8fafc" stroke="url(#goldMetallic)" stroke-width="2.5"/>
-              <circle cx="-6" cy="-6" r="2.2" fill="#0f172a"/>
-              <circle cx="6" cy="6" r="2.2" fill="#0f172a"/>
-              <circle cx="0" cy="0" r="2.5" fill="#b91c1c"/>
-            </g>
-          </g>
-        </svg>
-        <div class="pito-badge-ready bg-amber-500 text-[#050b18]">بەم زووانە 🔒</div>
-        <div class="pito-card-overlay">
-          <span class="pito-card-title">مار و پەیژە</span>
-        </div>
-      </div>
+    </div>
   </section>
-<!-- VIEW: LUDO -->
+
+  <!-- VIEW: LUDO -->
   <section id="view-ludo" class="hidden max-w-lg mx-auto px-3 py-3">
     <div class="yalla-ludo-wrap space-y-2.5">
       <!-- Top Bar -->
@@ -630,7 +585,7 @@
         </div>
         <button onclick="initLudoGame()" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs text-white" title="یاری نوێ">🔄</button>
       </div>
-<!-- Online Matchmaking & Room Bar -->
+      <!-- Online Matchmaking & Room Bar -->
       <div class="p-2 rounded-2xl bg-black/35 border border-yellow-500/25 space-y-2">
         <div class="grid grid-cols-3 gap-1.5 text-[11px] font-extrabold">
           <button onclick="findOnlineLudoMatch()" class="py-2 px-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow hover:brightness-110">🌍 یاریی ئۆنلاین</button>
@@ -645,7 +600,7 @@
           </div>
         </div>
       </div>
-      <!-- Top Opponent Strip (Red - Top Right like video) -->
+      <!-- Top Opponent Strip -->
       <div class="flex items-center justify-end gap-2.5 px-1">
         <div id="ludoOppDiceBox" class="yalla-dice-box opacity-80">🎲</div>
         <div class="flex items-center gap-2 bg-black/30 px-2.5 py-1.5 rounded-2xl border border-red-500/30">
@@ -659,9 +614,10 @@
 
       <!-- Classic Wooden Framed Ludo Board -->
       <div class="yalla-wood-frame">
-<div id="ludoBoard" dir="ltr" class="w-full aspect-square rounded-xl overflow-hidden"></div>      </div>
+        <div id="ludoBoard" dir="ltr" class="w-full aspect-square rounded-xl overflow-hidden"></div>
+      </div>
 
-      <!-- Bottom My Player Strip (Yellow - Bottom Left like video) -->
+      <!-- Bottom My Player Strip -->
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2.5">
           <div class="flex items-center gap-2 bg-black/30 px-2.5 py-1.5 rounded-2xl border border-yellow-400/40">
@@ -676,7 +632,7 @@
         <div id="ludoStatusText" class="text-[11px] text-yellow-200 font-bold max-w-[135px] text-right leading-tight">کلیک لە زارەکە بکە</div>
       </div>
 
-      <!-- Bottom Yalla-style Controls: Mic, Emoji, Quick Chat -->
+      <!-- Bottom Controls -->
       <div class="flex items-center justify-between pt-1.5 border-t border-white/10 px-1">
         <div class="flex items-center gap-2">
           <button id="ludoMicBtn" onclick="toggleLiveVoiceMic('ludo-global-room', 'ludoMicBtn', 'ludoMyAvatar')" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-lg shadow-lg border border-white/20 transition-all" title="کردنەوەی مایکرۆفۆن">🎙️</button>
@@ -687,10 +643,11 @@
       </div>
     </div>
   </section>
+
   <!-- VIEW 2: CHESS -->
   <section id="view-chess" class="hidden max-w-6xl mx-auto px-4 py-6">
     <div class="mb-3 flex items-center justify-between">
-      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#0d1930] hover:bg-[#16274a] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#2a060b] hover:bg-[#3f0910] border border-yellow-500/30 text-xs font-extrabold text-yellow-400 flex items-center gap-1.5 shadow-lg">
         <span>↩</span>
         <span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
       </button>
@@ -698,31 +655,31 @@
     <div id="chessSetupPanel" class="max-w-xl mx-auto royal-card rounded-3xl p-6 md:p-8 space-y-6">
       <div class="text-center space-y-1">
         <h2 class="text-2xl font-extrabold gold-text">مەیدانی شەتڕەنجی خێرا</h2>
-        <p class="text-xs text-slate-400">کاتی یاری هەڵبژێرە و یاری ئۆنلاین یان ڕاهێنان لەگەڵ بۆت دەستپێبکە</p>
+        <p class="text-xs text-rose-100/75">کاتی یاری هەڵبژێرە و یاری ئۆنلاین یان ڕاهێنان لەگەڵ بۆت دەستپێبکە</p>
       </div>
       <div class="space-y-2">
-        <label class="text-xs font-bold text-slate-300">کاتی یاری:</label>
+        <label class="text-xs font-bold text-rose-100">کاتی یاری:</label>
         <div class="grid grid-cols-4 gap-2" id="timeButtons">
-          <button onclick="selectTime(60, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">1+0</button>
-          <button onclick="selectTime(180, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18] border border-yellow-400">3+0</button>
-          <button onclick="selectTime(180, 2, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">3+2</button>
-          <button onclick="selectTime(300, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#0d1933] border border-yellow-500/25 text-slate-300">5+0</button>
+          <button onclick="selectTime(60, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#240509] border border-yellow-500/25 text-rose-100">1+0</button>
+          <button onclick="selectTime(180, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#1a0305] border border-yellow-400">3+0</button>
+          <button onclick="selectTime(180, 2, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#240509] border border-yellow-500/25 text-rose-100">3+2</button>
+          <button onclick="selectTime(300, 0, this)" class="time-btn py-2.5 rounded-xl text-xs font-extrabold bg-[#240509] border border-yellow-500/25 text-rose-100">5+0</button>
         </div>
       </div>
-      <div class="p-4 rounded-2xl bg-[#091326] border border-emerald-500/30 space-y-3">
-        <div class="flex items-center justify-between"><span class="text-sm font-extrabold text-emerald-400">🌐 یاریکردنی ئۆنلاین (Elo)</span><span class="text-[11px] text-slate-400" id="onlineBadge">سەرهێڵ: ١</span></div>
+      <div class="p-4 rounded-2xl bg-[#1a0407] border border-emerald-500/30 space-y-3">
+        <div class="flex items-center justify-between"><span class="text-sm font-extrabold text-emerald-400">🌐 یاریکردنی ئۆنلاین (Elo)</span><span class="text-[11px] text-rose-200/75" id="onlineBadge">سەرهێڵ: ١</span></div>
         <button onclick="startOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕان بەدوای یاریزاندا</button>
       </div>
-      <div class="p-4 rounded-2xl bg-[#091326] border border-yellow-500/20 space-y-3">
+      <div class="p-4 rounded-2xl bg-[#1a0407] border border-yellow-500/20 space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-sm font-extrabold text-yellow-300">🤖 ڕاهێنان لەگەڵ بۆت</span>
-          <select id="botLevelSelect" class="bg-[#101e3b] border border-yellow-500/30 rounded-lg px-2 py-1 text-xs text-white">
+          <select id="botLevelSelect" class="bg-[#2c070d] border border-yellow-500/30 rounded-lg px-2 py-1 text-xs text-white">
             <option value="1">ئاستی ئاسان</option>
             <option value="2" selected>ئاستی مامناوەند</option>
             <option value="3">ئاستی بەهێز</option>
           </select>
         </div>
-        <button onclick="startBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#16274b] text-white border border-yellow-500/30">دەستپێکردن</button>
+        <button onclick="startBotGame()" class="w-full py-2.5 rounded-xl text-xs font-extrabold bg-[#3b0910] text-white border border-yellow-500/30">دەستپێکردن</button>
       </div>
     </div>
 
@@ -732,38 +689,41 @@
         <div class="w-16 h-16 rounded-full bg-yellow-500/20 border border-yellow-400 flex items-center justify-center text-3xl">♔</div>
       </div>
       <h3 class="text-lg font-extrabold text-yellow-300">چاوەڕێی یاریزانی کوردین...</h3>
-      <button onclick="cancelMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40">هەڵوەشاندنەوە</button>
+      <button onclick="cancelMatchmaking()" class="px-6 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/40">هەڵوەشاندنەوە</button>
     </div>
 
-   <div id="activeGameArea" class="hidden chesscom-arena">
+    <div id="activeGameArea" class="hidden chesscom-arena">
       <div class="chesscom-board-col">
-<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
+        <div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center font-bold text-white overflow-hidden" id="oppAvatar">ب</div>
             <div>
               <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="oppName">بەرامبەر</span><span id="oppEloBadge" class="text-[11px] text-yellow-400">(1200)</span><button id="inGameAddFriendBtn" onclick="sendFriendRequestFromGame()" class="hidden text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">+ هاوڕێیەتی</button></div>
             </div>
           </div>
-          <div id="oppClock" class="px-3.5 py-1.5 rounded-lg bg-[#070f20] border border-slate-700 font-mono text-lg font-extrabold text-slate-300">03:00</div>
+          <div id="oppClock" class="px-3.5 py-1.5 rounded-lg bg-[#160306] border border-amber-500/25 font-mono text-lg font-extrabold text-rose-100">03:00</div>
         </div>
 
         <div id="boardWrapper" class="board-wrapper" oncontextmenu="return false;">
-<div id="chessBoard" class="w-full h-full"></div>          <canvas id="arrowCanvas" width="480" height="480"></canvas>
+          <div id="chessBoard" class="w-full h-full"></div>
+          <canvas id="arrowCanvas" width="480" height="480"></canvas>
         </div>
 
-<div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-lg bg-yellow-500 text-[#050b18] flex items-center justify-center font-extrabold overflow-hidden" id="selfAvatar">ی</div>
+        <div class="w-full chesscom-player-strip royal-card px-4 py-2.5 rounded-xl flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-yellow-500 text-[#1a0305] flex items-center justify-center font-extrabold overflow-hidden" id="selfAvatar">ی</div>
             <div>
               <div class="text-xs font-extrabold text-white flex items-center gap-1.5"><span id="selfName">یاریزانی کورد</span><span id="selfEloBadge" class="text-[11px] text-yellow-400">(1200)</span></div>
             </div>
           </div>
-          <div id="selfClock" class="px-3.5 py-1.5 rounded-lg bg-[#070f20] border border-yellow-500/40 font-mono text-lg font-extrabold text-yellow-300">03:00</div>
+          <div id="selfClock" class="px-3.5 py-1.5 rounded-lg bg-[#160306] border border-yellow-500/40 font-mono text-lg font-extrabold text-yellow-300">03:00</div>
         </div>
       </div>
 
       <div class="w-full max-w-[480px] lg:w-80 royal-card rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between border-b border-yellow-500/20 pb-2"><span id="gameModeBadge" class="text-xs font-extrabold text-emerald-400">● ئۆنلاین</span><span id="turnIndicator" class="text-xs font-bold text-yellow-300">نۆرەی سپییە</span></div>
-        <div class="bg-[#070f20] rounded-xl p-2.5 h-32 overflow-y-auto text-xs font-mono space-y-1" id="moveHistoryBox"></div>
-        <div class="bg-[#070f20] rounded-xl p-2.5 border border-yellow-500/15 space-y-2">
+        <div class="bg-[#160306] rounded-xl p-2.5 h-32 overflow-y-auto text-xs font-mono space-y-1" id="moveHistoryBox"></div>
+        <div class="bg-[#160306] rounded-xl p-2.5 border border-yellow-500/15 space-y-2">
           <div class="flex items-center justify-between text-[11px] text-yellow-300 font-bold">
             <span>💬 چاتی ناو یاری</span>
             <div class="flex gap-1">
@@ -773,26 +733,23 @@
           </div>
           <div id="inGameChatMessages" class="h-24 overflow-y-auto space-y-1.5 text-xs p-1"></div>
           <form onsubmit="submitInGameChat(event)" class="flex gap-1.5">
-           <input id="matchChatInput" type="text" onkeydown="if(event.key==='Enter') sendMatchChat()" placeholder="نامەیەک بنووسە..." class="min-w-0 flex-1 px-3 py-2 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none" />
+            <input id="matchChatInput" type="text" onkeydown="if(event.key==='Enter') sendMatchChat()" placeholder="نامەیەک بنووسە..." class="min-w-0 flex-1 px-3 py-2 rounded-xl bg-[#1a0407] border border-yellow-500/30 text-xs text-white focus:outline-none" />
             <button onclick="sendMatchChat()" class="gold-btn px-3.5 py-2 rounded-xl text-xs shrink-0">ناردن</button>
           </form>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="clearArrows()" class="py-2 rounded-xl text-xs font-bold bg-[#142547] text-slate-200">سڕینەوەی سەهم</button>
-          <button onclick="resignGame()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300">خۆبەدەستەوەدان</button>
+          <button onclick="clearArrows()" class="py-2 rounded-xl text-xs font-bold bg-[#38080e] text-rose-100">سڕینەوەی سەهم</button>
+          <button onclick="resignGame()" class="py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-200">خۆبەدەستەوەدان</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- VIEW 3: DOMINO ARENA -->
- <!-- VIEW: DOMINOES 101 PRO -->
-  <!-- VIEW: YARIKURDI ROYAL TEAHOUSE DOMINO 101 -->
+  <!-- VIEW 3: YARIKURDI ROYAL TEAHOUSE DOMINO 101 -->
   <section id="view-domino" class="hidden max-w-md mx-auto px-2 py-2">
     <div class="yk-domino-arena">
-      <!-- سەرەوە: دوگمەی دەرچوون + نیشاندەری نۆرە + یاری نوێ -->
       <div class="space-y-2">
-       <div class="yk-dom-hud-top">
+        <div class="yk-dom-hud-top">
           <button onclick="confirmLeaveTeahouseDomino()" class="px-3 py-1.5 rounded-full bg-rose-600/90 hover:bg-rose-500 border border-rose-300/40 text-white font-black shadow-lg flex items-center gap-1 text-[11px]">
             <span>🏳️</span><span>وازهێنان</span>
           </button>
@@ -806,7 +763,7 @@
             <span>↩</span><span>گەڕانەوە</span>
           </button>
         </div>
-        <!-- شریتی بۆت و ژمارەی کاشییەکانی -->
+
         <div class="yk-dom-opponent-bar">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-base">🤖</div>
@@ -821,7 +778,6 @@
           </div>
         </div>
 
-        <!-- دوگمەی بازاڕ (بۆنیا) -->
         <div class="text-center">
           <button id="ykDomBoneyardBtn" onclick="drawTeahouseBoneyard()" class="yk-boneyard-pill">
             <span>🁣</span>
@@ -830,17 +786,15 @@
         </div>
       </div>
 
-      <!-- ناوەڕاست: مێزی دانانی کاشییەکان و هەڵبژاردنی چەپ/ڕاست -->
       <div class="relative flex-1 flex flex-col justify-center">
-        <!-- دوگمەی هەڵبژاردنی لای چەپ یان ڕاست (کاتێک کاشییەک لە هەردوو سەر دەبێت) -->
         <div id="ykDomSideChooser" class="hidden absolute top-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-slate-950/95 border-2 border-yellow-400 px-3 py-1.5 rounded-full shadow-2xl">
           <button onclick="confirmChosenSide('left')" class="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-[11px] font-black">⬅️ لای چەپ (<span id="ykLeftValHint">0</span>)</button>
           <button onclick="confirmChosenSide('right')" class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black">لای ڕاست (<span id="ykRightValHint">0</span>) ➡️</button>
         </div>
 
-<div id="ykDomBoardStage" dir="ltr" class="w-full flex-1 my-1 rounded-2xl overflow-hidden" style="min-height: 430px;"></div>      </div>
+        <div id="ykDomBoardStage" dir="ltr" class="w-full flex-1 my-1 rounded-2xl overflow-hidden" style="min-height: 430px;"></div>
+      </div>
 
-      <!-- خوارەوە: دەستی یاریزان و شریتی خاڵەکانت -->
       <div class="yk-dom-player-dock">
         <div id="ykDomPlayerHand" dir="ltr" class="flex items-center justify-center gap-1.5 min-h-[92px] px-1"></div>
 
@@ -859,84 +813,79 @@
       </div>
     </div>
   </section>
- <!-- VIEW: KONKAN (ROYAL 4K ARENA) -->
-<section id="view-konkan" class="hidden max-w-4xl mx-auto px-3 py-3 space-y-3">
-  <div class="flex items-center justify-between">
-    <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#2b170c] hover:bg-[#3b2010] border border-amber-400/40 text-xs font-black text-amber-300 flex items-center gap-1.5 shadow-lg">
-      <span>↩</span><span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
-    </button>
-    <h2 class="text-lg sm:text-xl font-black gold-text">🃏 مەیدانی کۆنکانی شاهانە</h2>
-    <div class="text-xs font-bold text-amber-200">Elo: <span id="konkanMyEloLabel" class="text-yellow-400 font-black">1200</span></div>
-  </div>
 
-  <!-- Setup Panel -->
-  <div id="konkanSetupPanel" class="max-w-lg mx-auto royal-card rounded-3xl p-6 space-y-5">
-    <div class="text-center space-y-1">
-      <h3 class="text-xl font-black text-white">هەڵبژاردنی جۆری یاری</h3>
-      <p class="text-xs text-amber-200/80">ژمارەی کارتەکان دیاری بکە و ئۆنلاین یان لەگەڵ بۆت یاری بکە</p>
+  <!-- VIEW: KONKAN (ROYAL 4K ARENA) -->
+  <section id="view-konkan" class="hidden max-w-4xl mx-auto px-3 py-3 space-y-3">
+    <div class="flex items-center justify-between">
+      <button onclick="switchView('hub')" class="px-4 py-2 rounded-xl bg-[#2a060b] hover:bg-[#3f0910] border border-amber-400/40 text-xs font-black text-amber-300 flex items-center gap-1.5 shadow-lg">
+        <span>↩</span><span>گەڕانەوە بۆ ناوەندی یارییەکان</span>
+      </button>
+      <h2 class="text-lg sm:text-xl font-black gold-text">🃏 مەیدانی کۆنکانی شاهانە</h2>
+      <div class="text-xs font-bold text-amber-200">Elo: <span id="konkanMyEloLabel" class="text-yellow-400 font-black">1200</span></div>
     </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)" class="py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0d06] border border-amber-300 shadow">🃏 کۆنکانی ١٠ کارتی</button>
-      <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)" class="py-2.5 rounded-xl text-xs font-bold bg-[#1a0d06] text-amber-100 border border-amber-500/30">🃏 کۆنکانی ٨ کارتی</button>
+
+    <div id="konkanSetupPanel" class="max-w-lg mx-auto royal-card rounded-3xl p-6 space-y-5">
+      <div class="text-center space-y-1">
+        <h3 class="text-xl font-black text-white">هەڵبژاردنی جۆری یاری</h3>
+        <p class="text-xs text-amber-200/80">ژمارەی کارتەکان دیاری بکە و ئۆنلاین یان لەگەڵ بۆت یاری بکە</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)" class="py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0305] border border-amber-300 shadow">🃏 کۆنکانی ١٠ کارتی</button>
+        <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)" class="py-2.5 rounded-xl text-xs font-bold bg-[#1a0407] text-amber-100 border border-amber-500/30">🃏 کۆنکانی ٨ کارتی</button>
+      </div>
+      <button onclick="startKonkanOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">🌐 یاریکردنی ئۆنلاین (Elo)</button>
+      <button onclick="startKonkanBotGame()" class="w-full py-3 rounded-xl text-xs font-black bg-[#1a0407] hover:bg-black/60 text-amber-200 border border-amber-400/40">🤖 ڕاهێنان لەگەڵ بۆتی شاهانە</button>
     </div>
-    <button onclick="startKonkanOnlineMatchmaking()" class="gold-btn w-full py-3 rounded-xl text-sm">🌐 یاریکردنی ئۆنلاین (Elo)</button>
-    <button onclick="startKonkanBotGame()" class="w-full py-3 rounded-xl text-xs font-black bg-[#1a0d06] hover:bg-black/60 text-amber-200 border border-amber-400/40">🤖 ڕاهێنان لەگەڵ بۆتی شاهانە</button>
-  </div>
 
-  <!-- Searching Panel -->
-  <div id="konkanSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-5">
-    <div class="text-4xl animate-bounce">🃏</div>
-    <h3 class="text-base font-black text-yellow-300">چاوەڕێی یاریزانێکی تر دەکەین...</h3>
-    <button onclick="cancelKonkanMatchmaking()" class="px-5 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40">هەڵوەشاندنەوە</button>
-  </div>
+    <div id="konkanSearchingPanel" class="hidden max-w-md mx-auto royal-card rounded-3xl p-8 text-center space-y-5">
+      <div class="text-4xl animate-bounce">🃏</div>
+      <h3 class="text-base font-black text-yellow-300">چاوەڕێی یاریزانێکی تر دەکەین...</h3>
+      <button onclick="cancelKonkanMatchmaking()" class="px-5 py-2 rounded-xl text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/40">هەڵوەشاندنەوە</button>
+    </div>
 
-  <!-- Active Konkan Game Area -->
-  <div id="konkanActiveArea" class="hidden space-y-2.5">
-    <!-- Opponent & Turn Bar -->
-    <div class="royal-card rounded-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <span class="text-lg">🤖</span>
-        <div>
-          <div class="text-xs font-black text-white"><span id="konkOppName">بۆت</span> <span id="konkOppElo" class="text-yellow-400">(1300)</span></div>
-          <div id="konkActionLog" class="text-[10px] text-amber-200/80">ئامادەیە</div>
+    <div id="konkanActiveArea" class="hidden space-y-2.5">
+      <div class="royal-card rounded-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🤖</span>
+          <div>
+            <div class="text-xs font-black text-white"><span id="konkOppName">بۆت</span> <span id="konkOppElo" class="text-yellow-400">(1300)</span></div>
+            <div id="konkActionLog" class="text-[10px] text-amber-200/80">ئامادەیە</div>
+          </div>
+        </div>
+        <div id="konkTurnBanner" class="px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black">نۆرەی تۆیە</div>
+        <div class="flex items-center gap-2">
+          <span id="konkOppCountBadge" class="px-2.5 py-1 rounded-lg bg-black/40 text-xs font-bold text-amber-200">10 کارت</span>
+          <button onclick="exitKonkanGame()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 text-white text-xs font-bold">دەرچوون</button>
         </div>
       </div>
-      <div id="konkTurnBanner" class="px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black">نۆرەی تۆیە</div>
-      <div class="flex items-center gap-2">
-        <span id="konkOppCountBadge" class="px-2.5 py-1 rounded-lg bg-black/40 text-xs font-bold text-amber-200">10 کارت</span>
-        <button onclick="exitKonkanGame()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 text-white text-xs font-bold">دەرچوون</button>
+
+      <div id="konkanPhaserStage" dir="ltr" class="w-full rounded-2xl overflow-hidden shadow-2xl" style="height: 440px;"></div>
+
+      <div class="royal-card rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <button onclick="konkanSortHand('rank')" class="px-3 py-2 rounded-xl bg-[#1a0407] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: ژمارە</button>
+          <button onclick="konkanSortHand('suit')" class="px-3 py-2 rounded-xl bg-[#1a0407] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: جۆر</button>
+          <span class="text-xs text-amber-300 font-bold px-2">دەستت: <strong id="konkMyCount">10</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="konkanLayDownMeld()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow">⬇️ داگرتنی سێت</button>
+          <button onclick="konkanDiscardSelected()" class="gold-btn px-4 py-2 rounded-xl text-xs">🗑️ فڕێدانی کارت</button>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Phaser 3 4K Konkan Table -->
-    <div id="konkanPhaserStage" dir="ltr" class="w-full rounded-2xl overflow-hidden shadow-2xl" style="height: 440px;"></div>
-
-    <!-- Action Buttons Bar -->
-    <div class="royal-card rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-1.5">
-        <button onclick="konkanSortHand('rank')" class="px-3 py-2 rounded-xl bg-[#1a0d06] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: ژمارە</button>
-        <button onclick="konkanSortHand('suit')" class="px-3 py-2 rounded-xl bg-[#1a0d06] border border-amber-400/35 text-xs font-bold text-amber-200">ڕیزکردن: جۆر</button>
-        <span class="text-xs text-amber-300 font-bold px-2">دەستت: <strong id="konkMyCount">10</strong></span>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="konkanLayDownMeld()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow">⬇️ داگرتنی سێت</button>
-        <button onclick="konkanDiscardSelected()" class="gold-btn px-4 py-2 rounded-xl text-xs">🗑️ فڕێدانی کارت</button>
-      </div>
-    </div>
-  </div>
-</section>
   <!-- VIEW 3.8: ROYAL VOICE ROOMS -->
   <section id="view-rooms" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
-    <!-- Lobby: List & Create Room -->
     <div id="roomsLobbyPanel" class="space-y-6">
       <div class="royal-card rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold gold-text">🎙️ دیوەخان و ژوورە زیندووەکان</h2>
-          <p class="text-xs text-slate-400 mt-1">بە دەنگی ڕاستەوخۆ (Live Mic) لەگەڵ یاریزانانی کوردستان قسە بکە و یاری بکە</p>
+          <p class="text-xs text-rose-100/75 mt-1">بە دەنگی ڕاستەوخۆ (Live Mic) لەگەڵ یاریزانانی کوردستان قسە بکە و یاری بکە</p>
         </div>
         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-          <input id="newRoomTitleInput" type="text" placeholder="ناوی ژوورەکەت (بۆ نموونە: دیوەخانی کەلار)..." class="px-4 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none flex-1 md:w-64" />
-          <select id="newRoomGameSelect" class="px-3 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-yellow-300 font-bold">
+          <input id="newRoomTitleInput" type="text" placeholder="ناوی ژوورەکەت (بۆ نموونە: دیوەخانی کەلار)..." class="px-4 py-2.5 rounded-xl bg-[#1a0407] border border-yellow-500/30 text-xs text-white focus:outline-none flex-1 md:w-64" />
+          <select id="newRoomGameSelect" class="px-3 py-2.5 rounded-xl bg-[#1a0407] border border-yellow-500/30 text-xs text-yellow-300 font-bold">
             <option value="chat">🎙️ تەنها دیوەخان</option>
             <option value="konkan">🃏 ژووری کۆنکان</option>
             <option value="domino">🁣 ژووری دۆمینە</option>
@@ -947,11 +896,10 @@
       </div>
 
       <div id="activeRoomsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <p class="text-xs text-slate-400">چاوەڕێی بارکردنی ژوورەکانین...</p>
+        <p class="text-xs text-rose-100/75">چاوەڕێی بارکردنی ژوورەکانین...</p>
       </div>
     </div>
 
-    <!-- Inside Active Voice Room -->
     <div id="insideRoomPanel" class="hidden space-y-5">
       <div class="royal-card rounded-3xl p-5 flex flex-wrap items-center justify-between gap-3 border-emerald-500/40">
         <div class="flex items-center gap-3">
@@ -963,42 +911,41 @@
         </div>
         <div class="flex items-center gap-2">
           <button id="roomMicToggleBtn" onclick="toggleRoomMicrophone()" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-500 text-[#050b18] shadow-lg transition">🎙️ مایک کراوەیە</button>
-          <button id="roomSpeakerToggleBtn" onclick="toggleRoomSpeaker()" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#15284d] text-white border border-yellow-500/30">🔊 دەنگ</button>
-          <button onclick="leaveVoiceRoom()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">دەرچوون</button>
+          <button id="roomSpeakerToggleBtn" onclick="toggleRoomSpeaker()" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#38080e] text-white border border-yellow-500/30">🔊 دەنگ</button>
+          <button onclick="leaveVoiceRoom()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/30">دەرچوون</button>
         </div>
       </div>
 
-      <!-- Seats / Speakers Grid -->
       <div class="royal-card rounded-3xl p-6">
         <h4 class="text-xs font-extrabold text-yellow-300 mb-4">👥 ئەندامانی ناو ژوورەکە (ئەوەی قسە دەکات بازنەی سەوزی دەردەکەوێت):</h4>
         <div id="roomSeatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
       </div>
 
-      <!-- Room Live Text Chat -->
       <div class="royal-card rounded-3xl p-5 space-y-3">
-        <div id="roomChatMessages" class="h-44 overflow-y-auto space-y-2 p-3 rounded-2xl bg-[#060e1f] border border-yellow-500/15 text-xs"></div>
+        <div id="roomChatMessages" class="h-44 overflow-y-auto space-y-2 p-3 rounded-2xl bg-[#160306] border border-yellow-500/15 text-xs"></div>
         <div class="flex gap-2">
-          <input id="roomChatInput" type="text" onkeydown="if(event.key==='Enter') sendRoomChatMessage()" placeholder="نامەیەک بنووسە بۆ ناو ژوورەکە..." class="flex-1 px-4 py-2.5 rounded-xl bg-[#071022] border border-yellow-500/30 text-xs text-white focus:outline-none" />
+          <input id="roomChatInput" type="text" onkeydown="if(event.key==='Enter') sendRoomChatMessage()" placeholder="نامەیەک بنووسە بۆ ناو ژوورەکە..." class="flex-1 px-4 py-2.5 rounded-xl bg-[#1a0407] border border-yellow-500/30 text-xs text-white focus:outline-none" />
           <button onclick="sendRoomChatMessage()" class="gold-btn px-5 py-2.5 rounded-xl text-xs">ناردن</button>
         </div>
       </div>
     </div>
     <div id="remoteAudiosContainer" class="hidden"></div>
   </section>
+
   <!-- VIEW 4: FRIENDS -->
   <section id="view-friends" class="hidden max-w-6xl mx-auto px-4 py-6 space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-5 space-y-4">
         <div class="royal-card rounded-2xl p-4 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-slate-400">ناوی بەکارهێنەری تۆ (بۆ زیادکردن):</div>
+            <div class="text-[11px] text-rose-200/75">ناوی بەکارهێنەری تۆ (بۆ زیادکردن):</div>
             <div id="myFullIdDisplay" class="text-sm font-mono font-extrabold text-yellow-300 mt-0.5">---</div>
           </div>
           <button onclick="copyMyPlayerId()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-500/20 text-yellow-300">کۆپیکردن</button>
         </div>
         <div class="royal-card rounded-2xl p-4 space-y-3">
           <h3 class="text-sm font-extrabold text-white">🔍 گەڕان و ناردنی داواکاری</h3>
-          <input id="friendSearchInput" type="text" oninput="searchPlayersForFriend()" placeholder="ناوی یاریزان یان Username بنووسە..." class="w-full bg-[#091326] border border-yellow-500/25 rounded-xl px-3 py-2 text-xs text-white" />
+          <input id="friendSearchInput" type="text" oninput="searchPlayersForFriend()" placeholder="ناوی یاریزان یان Username بنووسە..." class="w-full bg-[#1a0407] border border-yellow-500/25 rounded-xl px-3 py-2 text-xs text-white" />
           <div id="friendSearchResults" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
         </div>
         <div id="incomingRequestsCard" class="hidden royal-card rounded-2xl p-4 space-y-3 border border-emerald-500/40">
@@ -1006,18 +953,18 @@
           <div id="incomingRequestsList" class="space-y-2"></div>
         </div>
         <div class="royal-card rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between"><h3 class="text-sm font-extrabold text-yellow-300">👥 لیستی هاوڕێکانم</h3><span id="friendsCountLabel" class="text-xs text-slate-400">٠</span></div>
-          <div id="friendsListContainer" class="space-y-2 max-h-72 overflow-y-auto"><div class="text-xs text-slate-400 text-center py-6">هیچ هاوڕێیەکت نییە.</div></div>
+          <div class="flex items-center justify-between"><h3 class="text-sm font-extrabold text-yellow-300">👥 لیستی هاوڕێکانم</h3><span id="friendsCountLabel" class="text-xs text-rose-200/75">٠</span></div>
+          <div id="friendsListContainer" class="space-y-2 max-h-72 overflow-y-auto"><div class="text-xs text-rose-200/75 text-center py-6">هیچ هاوڕێیەکت نییە.</div></div>
         </div>
       </div>
 
       <div class="lg:col-span-7 royal-card rounded-3xl flex flex-col h-[540px] overflow-hidden">
-        <div id="privateChatHeader" class="p-4 border-b border-yellow-500/20 bg-[#0b1730] flex items-center justify-between">
+        <div id="privateChatHeader" class="p-4 border-b border-yellow-500/20 bg-[#2a060b] flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div id="chatFriendAvatar" class="w-10 h-10 rounded-xl bg-[#16274b] text-yellow-300 font-extrabold flex items-center justify-center text-base overflow-hidden">💬</div>
+            <div id="chatFriendAvatar" class="w-10 h-10 rounded-xl bg-[#3f0910] text-yellow-300 font-extrabold flex items-center justify-center text-base overflow-hidden">💬</div>
             <div>
               <div id="chatFriendName" class="text-sm font-extrabold text-white">چاتی تایبەت</div>
-              <div id="chatFriendStatus" class="text-[11px] text-slate-400">هاوڕێیەک هەڵبژێرە</div>
+              <div id="chatFriendStatus" class="text-[11px] text-rose-200/75">هاوڕێیەک هەڵبژێرە</div>
             </div>
           </div>
           <div id="challengeButtonsGroup" class="hidden flex gap-1.5">
@@ -1025,11 +972,11 @@
             <button onclick="sendChallengeToActiveFriend('domino')" class="gold-btn px-3 py-1.5 rounded-xl text-xs">🁣 دۆمینە</button>
           </div>
         </div>
-        <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-2.5 bg-[#070f20]/70">
-          <div class="h-full flex items-center justify-center text-center text-slate-400 text-xs">هاوڕێیەک هەڵبژێرە بۆ گفتوگۆ یان یاری.</div>
+        <div id="privateChatMessages" class="flex-1 p-4 overflow-y-auto space-y-2.5 bg-[#160306]/70">
+          <div class="h-full flex items-center justify-center text-center text-rose-200/75 text-xs">هاوڕێیەک هەڵبژێرە بۆ گفتوگۆ یان یاری.</div>
         </div>
-        <form id="privateChatForm" onsubmit="submitPrivateChat(event)" class="hidden p-3 bg-[#0b1730] border-t border-yellow-500/20 flex gap-2">
-          <input id="privateChatInput" type="text" placeholder="نامەکەت بنووسە..." class="flex-1 bg-[#091326] border border-yellow-500/25 rounded-xl px-3.5 py-2.5 text-xs text-white" />
+        <form id="privateChatForm" onsubmit="submitPrivateChat(event)" class="hidden p-3 bg-[#2a060b] border-t border-yellow-500/20 flex gap-2">
+          <input id="privateChatInput" type="text" placeholder="نامەکەت بنووسە..." class="flex-1 bg-[#1a0407] border border-yellow-500/25 rounded-xl px-3.5 py-2.5 text-xs text-white" />
           <button type="submit" class="gold-btn px-5 py-2.5 rounded-xl text-xs">ناردن</button>
         </form>
       </div>
@@ -1037,20 +984,23 @@
   </section>
 
   <!-- VIEW 5: LEADERBOARD -->
-<section id="view-leaderboard" class="hidden max-w-4xl mx-auto px-4 pt-3 pb-24 space-y-4">    <div class="text-center space-y-2">
+  <section id="view-leaderboard" class="hidden max-w-4xl mx-auto px-4 pt-3 pb-24 space-y-4">
+    <div class="text-center space-y-2">
       <h2 class="text-3xl font-extrabold gold-text">🏆 ڕیزبەندی پاڵەوانانی YariKurdi</h2>
-      <p class="text-xs text-slate-400">بەپێی سیستەمی Elo</p>
+      <p class="text-xs text-rose-200/75">بەپێی سیستەمی Elo</p>
     </div>
-    <div class="flex flex-wrap justify-center gap-2 bg-[#0a1428] p-2 rounded-2xl border border-yellow-500/25">
-      <button onclick="loadLeaderboard('chess')" id="lb-tab-chess" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#050b18]">♔ شەتڕەنج</button>
-      <button onclick="loadLeaderboard('domino')" id="lb-tab-domino" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold text-slate-300">🁣 دۆمینە</button>
+    <div class="flex flex-wrap justify-center gap-2 bg-[#220509] p-2 rounded-2xl border border-yellow-500/25">
+      <button onclick="loadLeaderboard('chess')" id="lb-tab-chess" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold bg-yellow-500 text-[#1a0305]">♔ شەتڕەنج</button>
+      <button onclick="loadLeaderboard('domino')" id="lb-tab-domino" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold text-rose-100">🁣 دۆمینە</button>
       <button onclick="loadLeaderboard('overall')" id="lb-tab-overall" class="lb-tab px-3.5 py-2 rounded-xl text-xs font-extrabold text-yellow-300">👑 گشتی</button>
     </div>
     <div class="royal-card rounded-3xl overflow-hidden">
-      <div class="p-4 border-b border-yellow-500/20 flex items-center justify-between bg-[#0c1830]">
+      <div class="p-4 border-b border-yellow-500/20 flex items-center justify-between bg-[#2a060b]">
         <span id="lbCurrentTitle" class="text-sm font-extrabold text-yellow-300">ڕیزبەندی</span>
       </div>
-<div id="leaderboardList" class="divide-y divide-slate-800/80 max-h-[50vh] overflow-y-auto overscroll-contain pb-6" style="-webkit-overflow-scrolling: touch;">        <div class="p-8 text-center text-sm text-slate-400">داتاکان دەهێنرێن...</div>
+      <div id="leaderboardList" class="divide-y divide-amber-500/15 max-h-[50vh] overflow-y-auto overscroll-contain pb-6" style="-webkit-overflow-scrolling: touch;">
+        <div class="p-8 text-center text-sm text-rose-200/75">داتاکان دەهێنرێن...</div>
+      </div>
     </div>
   </section>
 
@@ -1060,10 +1010,10 @@
       <div id="modalIcon" class="text-5xl">🏆</div>
       <div class="space-y-1">
         <h3 id="modalTitle" class="text-2xl font-extrabold gold-text">سەرکەوتن!</h3>
-        <p id="modalSubtitle" class="text-xs text-slate-300">یارییەکەت بردەوە</p>
+        <p id="modalSubtitle" class="text-xs text-rose-100">یارییەکەت بردەوە</p>
       </div>
-      <div id="eloChangeBox" class="bg-[#091326] p-3 rounded-2xl border border-yellow-500/30">
-        <div class="text-xs text-slate-400">گۆڕانکاری خاڵی Elo:</div>
+      <div id="eloChangeBox" class="bg-[#1a0407] p-3 rounded-2xl border border-yellow-500/30">
+        <div class="text-xs text-rose-200/75">گۆڕانکاری خاڵی Elo:</div>
         <div id="eloChangeText" class="text-xl font-extrabold text-emerald-400 mt-1">1200</div>
       </div>
       <button onclick="closeGameOverModal()" class="gold-btn w-full py-3 rounded-xl text-sm">گەڕانەوە</button>
@@ -1072,7 +1022,7 @@
 
 <script>
   let myFriendsMap = {}, incomingRequestsMap = {}, activeChatFriendId = null, activePrivateChatRef = null, pendingChallengeData = null;
- const firebaseConfig = {
+  const firebaseConfig = {
     apiKey: "AIzaSyDdqs1jA9TOwO1QGxzru9YXCMWVAEP-u0E",
     authDomain: "yarikurdi-dc836.firebaseapp.com",
     databaseURL: "https://yarikurdi-dc836-default-rtdb.europe-west1.firebasedatabase.app",
@@ -1123,21 +1073,22 @@
   let playerName = '';
   const OWNER_EMAIL = 'ah6753038@gmail.com';
 
-    function isOwnerEmail(email) {
-      return !!(email && email.trim().toLowerCase() === OWNER_EMAIL);
-    }
+  function isOwnerEmail(email) {
+    return !!(email && email.trim().toLowerCase() === OWNER_EMAIL);
+  }
 
-    function getVerifiedBadgeHTML(email) {
-      if (!isOwnerEmail(email)) return '';
-      return `<span title="خاوەنی پلاتفۆرم • Verified Owner" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[10px] font-black shadow-md shadow-sky-500/40 mr-1 align-middle">✓</span>`;
-    }
-  let playerAvatarData = ''; // Base64 compressed image or empty
+  function getVerifiedBadgeHTML(email) {
+    if (!isOwnerEmail(email)) return '';
+    return `<span title="خاوەنی پلاتفۆرم • Verified Owner" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[10px] font-black shadow-md shadow-sky-500/40 mr-1 align-middle">✓</span>`;
+  }
+  let playerAvatarData = '';
   let pendingRegAvatar = '';
   let pendingEditAvatar = null;
 
   const DEFAULT_ELOS = { chess: 1200, domino: 1200, konkan: 1200, backgammon: 1200, dama: 1200, deza: 1200 };
   const DEFAULT_STATS = { chess: 0, domino: 0, konkan: 0, backgammon: 0, dama: 0, deza: 0 };
-// ==================== LEVEL & XP ENGINE (2-YEAR CURVE TO LVL 100) ====================
+
+  // ==================== LEVEL & XP ENGINE (2-YEAR CURVE TO LVL 100) ====================
   function getLevelInfo(totalXp = 0) {
     let xp = Math.max(0, Number(totalXp) || 0);
     let level = 1;
@@ -1230,11 +1181,11 @@
 
     if (tab === 'login') {
       loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
-      tabLogin.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition';
+      tabLogin.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#1a0305] transition';
       tabReg.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
     } else {
       regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
-      tabReg.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#050b18] transition';
+      tabReg.className = 'py-2 rounded-lg text-xs font-extrabold bg-yellow-500 text-[#1a0305] transition';
       tabLogin.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
     }
   }
@@ -1245,7 +1196,6 @@
     box.classList.remove('hidden');
   }
 
-  // Compress uploaded image to small 120x120 JPEG Base64 for instant Firebase sync
   function previewAvatarFile(inputEl, previewId, targetType) {
     const file = inputEl.files && inputEl.files[0];
     if (!file) return;
@@ -1285,7 +1235,7 @@
     if (avatarUrl && (avatarUrl.startsWith('data:image') || avatarUrl.startsWith('http'))) {
       return `<div class="${sizeClass} rounded-xl overflow-hidden border border-yellow-500/40 shrink-0"><img src="${avatarUrl}" class="w-full h-full object-cover" /></div>`;
     }
-    return `<div class="${sizeClass} rounded-xl bg-[#16274b] text-yellow-300 font-extrabold flex items-center justify-center text-sm shrink-0">${(name || 'ی').charAt(0)}</div>`;
+    return `<div class="${sizeClass} rounded-xl bg-[#38080e] text-yellow-300 font-extrabold flex items-center justify-center text-sm shrink-0">${(name || 'ی').charAt(0)}</div>`;
   }
 
   function handleRegister(e) {
@@ -1361,7 +1311,7 @@
     updateLevelUI();
     initRealtimeListenersAfterLogin();
     const splash = document.getElementById('royalSplashScreen');
-      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
+    if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
   }
 
   function openEditProfileModal() {
@@ -1413,57 +1363,56 @@
     location.reload();
   }
 
-function updateProfileUI() {
-      const hName = document.getElementById('headerPlayerName');
-      if (hName) hName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
+  function updateProfileUI() {
+    const hName = document.getElementById('headerPlayerName');
+    if (hName) hName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
 
-      const hElo = document.getElementById('headerChessElo');
-      if (hElo) hElo.textContent = playerProfile.elo.chess;
+    const hElo = document.getElementById('headerChessElo');
+    if (hElo) hElo.textContent = playerProfile.elo.chess;
 
-      const dElo = document.getElementById('dominoMyEloLabel');
-      if (dElo) dElo.textContent = playerProfile.elo.domino;
+    const dElo = document.getElementById('dominoMyEloLabel');
+    if (dElo) dElo.textContent = playerProfile.elo.domino;
 
-      const fId = document.getElementById('myFullIdDisplay');
-      if (fId) fId.textContent = playerProfile.username;
+    const fId = document.getElementById('myFullIdDisplay');
+    if (fId) fId.textContent = playerProfile.username;
 
-      renderAvatarContent('headerAvatar', playerAvatarData, playerName);
+    renderAvatarContent('headerAvatar', playerAvatarData, playerName);
 
-      const sName = document.getElementById('selfName');
-      if (sName) sName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
+    const sName = document.getElementById('selfName');
+    if (sName) sName.innerHTML = playerName + getVerifiedBadgeHTML(auth.currentUser?.email);
 
-      renderAvatarContent('selfAvatar', playerAvatarData, playerName);
+    renderAvatarContent('selfAvatar', playerAvatarData, playerName);
 
-      const sBadge = document.getElementById('selfEloBadge');
-      if (sBadge) sBadge.textContent = `(${playerProfile.elo.chess})`;
-    }
+    const sBadge = document.getElementById('selfEloBadge');
+    if (sBadge) sBadge.textContent = `(${playerProfile.elo.chess})`;
+  }
+
   function copyMyPlayerId() {
     navigator.clipboard.writeText(playerProfile.username);
     alert("ناوی بەکارهێنەرەکەت کۆپی کرا: " + playerProfile.username);
   }
 
-  // Auto-restore session if logged in previously
-    function finishSplashAndShowAuth() {
-      document.getElementById('authModal').classList.remove('hidden');
-      const splash = document.getElementById('royalSplashScreen');
-      if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
-    }
+  function finishSplashAndShowAuth() {
+    document.getElementById('authModal').classList.remove('hidden');
+    const splash = document.getElementById('royalSplashScreen');
+    if (splash) { splash.classList.add('fade-out'); setTimeout(() => splash.remove(), 550); }
+  }
 
-    if (playerId) {
-      const st = document.getElementById('splashStatusText');
-      if (st) st.textContent = 'پشکنینی پڕۆفایل...';
-      db.ref('players/' + playerId).once('value', snap => {
-        if (snap.exists()) {
-          completeAuthSession(playerId, snap.val());
-        } else {
-          localStorage.removeItem('yk_auth_uid');
-          finishSplashAndShowAuth();
-        }
-      });
-    } else {
-      setTimeout(finishSplashAndShowAuth, 900);
-    }
+  if (playerId) {
+    const st = document.getElementById('splashStatusText');
+    if (st) st.textContent = 'پشکنینی پڕۆفایل...';
+    db.ref('players/' + playerId).once('value', snap => {
+      if (snap.exists()) {
+        completeAuthSession(playerId, snap.val());
+      } else {
+        localStorage.removeItem('yk_auth_uid');
+        finishSplashAndShowAuth();
+      }
+    });
+  } else {
+    setTimeout(finishSplashAndShowAuth, 900);
+  }
 
-  // Global players & presence listeners
   db.ref('players').on('value', snap => {
     allPlayersCache = snap.val() || {};
     if (playerId) renderFriendsList();
@@ -1472,10 +1421,10 @@ function updateProfileUI() {
   db.ref('presence').on('value', snap => {
     onlineUsersMap = snap.val() || {};
     const count = snap.numChildren() || 1;
-   const ocText = document.getElementById('onlineCountText');
-      if (ocText) ocText.textContent = `${count} یاریزان ئێستا لە سەرهێڵن`;
-      const oBadge = document.getElementById('onlineBadge');
-      if (oBadge) oBadge.textContent = `سەرهێڵ: ${count}`;
+    const ocText = document.getElementById('onlineCountText');
+    if (ocText) ocText.textContent = `${count} یاریزان ئێستا لە سەرهێڵن`;
+    const oBadge = document.getElementById('onlineBadge');
+    if (oBadge) oBadge.textContent = `سەرهێڵ: ${count}`;
     if (playerId) renderFriendsList();
   });
 
@@ -1509,53 +1458,54 @@ function updateProfileUI() {
     }
   }
 
- function switchView(view, subTab = 'chess') {
-      ['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => {
-        const sec = document.getElementById('view-' + v);
-        if (sec) sec.classList.add('hidden');
-        const nav = document.getElementById('nav-' + v);
-        if (nav) {
-          nav.classList.remove('bg-yellow-500', 'text-[#050b18]');
-          nav.classList.add('text-slate-300');
-        }
-      });
-
-      const targetViewEl = document.getElementById('view-' + view);
-      if (targetViewEl) targetViewEl.classList.remove('hidden');
-
-      const activeNav = document.getElementById('nav-' + view);
-      if (activeNav) {
-        activeNav.classList.add('bg-yellow-500', 'text-[#050b18]');
-        activeNav.classList.remove('text-slate-300');
+  function switchView(view, subTab = 'chess') {
+    ['hub', 'chess', 'domino', 'konkan', 'ludo', 'rooms', 'friends', 'leaderboard'].forEach(v => {
+      const sec = document.getElementById('view-' + v);
+      if (sec) sec.classList.add('hidden');
+      const nav = document.getElementById('nav-' + v);
+      if (nav) {
+        nav.classList.remove('bg-yellow-500', 'text-[#050b18]');
+        nav.classList.add('text-slate-300');
       }
+    });
 
-      document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
-      const dockKey = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo') ? 'hub' : view;
-      const activeDock = document.getElementById('dock-' + dockKey);
-      if (activeDock) activeDock.classList.add('active');
+    const targetViewEl = document.getElementById('view-' + view);
+    if (targetViewEl) targetViewEl.classList.remove('hidden');
 
-      if (view === 'domino' && typeof teahouseDom !== 'undefined' && teahouseDom.myHand.length === 0) {
-        startRoyalTeahouseDomino();
-      } else if (view === 'leaderboard' && typeof loadLeaderboard === 'function') {
-        loadLeaderboard(subTab);
-      } else if (view === 'friends' && typeof renderFriendsList === 'function') {
-        renderFriendsList();
-      } else if (view === 'rooms' && typeof loadActiveVoiceRooms === 'function') {
-        loadActiveVoiceRooms();
-       } const isGameView = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');
-      const topHeader = document.querySelector('header');
-      if (topHeader) topHeader.style.display = isGameView ? 'none' : '';
-      const bottomDock = document.querySelector('.floating-bottom-dock');
-      if (bottomDock) bottomDock.style.display = isGameView ? 'none' : '';
-      document.querySelectorAll('.fixed.bottom-4, .fixed.bottom-3, .fixed.bottom-5, nav.fixed, .mobile-dock').forEach(el => {
-        if (el.id !== 'challengeToast' && el.id !== 'gameOverModal') {
-          el.style.display = isGameView ? 'none' : '';
-        }
-      });
-      
+    const activeNav = document.getElementById('nav-' + view);
+    if (activeNav) {
+      activeNav.classList.add('bg-yellow-500', 'text-[#050b18]');
+      activeNav.classList.remove('text-slate-300');
     }
-  // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
 
+    document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+    const dockKey = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo') ? 'hub' : view;
+    const activeDock = document.getElementById('dock-' + dockKey);
+    if (activeDock) activeDock.classList.add('active');
+
+    if (view === 'domino' && typeof teahouseDom !== 'undefined' && teahouseDom.myHand.length === 0) {
+      startRoyalTeahouseDomino();
+    } else if (view === 'leaderboard' && typeof loadLeaderboard === 'function') {
+      loadLeaderboard(subTab);
+    } else if (view === 'friends' && typeof renderFriendsList === 'function') {
+      renderFriendsList();
+    } else if (view === 'rooms' && typeof loadActiveVoiceRooms === 'function') {
+      loadActiveVoiceRooms();
+    }
+
+    const isGameView = (view === 'chess' || view === 'domino' || view === 'konkan' || view === 'ludo');
+    const topHeader = document.querySelector('header');
+    if (topHeader) topHeader.style.display = isGameView ? 'none' : '';
+    const bottomDock = document.querySelector('.floating-bottom-dock');
+    if (bottomDock) bottomDock.style.display = isGameView ? 'none' : '';
+    document.querySelectorAll('.fixed.bottom-4, .fixed.bottom-3, .fixed.bottom-5, nav.fixed, .mobile-dock').forEach(el => {
+      if (el.id !== 'challengeToast' && el.id !== 'gameOverModal') {
+        el.style.display = isGameView ? 'none' : '';
+      }
+    });
+  }
+
+  // ==================== REALTIME USER LISTENERS (AFTER LOGIN) ====================
   function initRealtimeListenersAfterLogin() {
     const presenceRef = db.ref('presence/' + playerId);
     presenceRef.onDisconnect().remove();
@@ -1571,22 +1521,26 @@ function updateProfileUI() {
       const reqKeys = Object.keys(incomingRequestsMap);
       const badge = document.getElementById('friendBadgeCount'), card = document.getElementById('incomingRequestsCard'), list = document.getElementById('incomingRequestsList');
       if (reqKeys.length > 0) {
-        badge.textContent = reqKeys.length; badge.classList.remove('hidden'); card.classList.remove('hidden');
+        if (badge) { badge.textContent = reqKeys.length; badge.classList.remove('hidden'); }
+        card.classList.remove('hidden');
         list.innerHTML = reqKeys.map(senderId => {
           const req = incomingRequestsMap[senderId];
           const sProfile = allPlayersCache[senderId] || {};
-          return `<div class="flex items-center justify-between bg-[#091326] p-2.5 rounded-xl border border-emerald-500/30">
+          return `<div class="flex items-center justify-between bg-[#1a0407] p-2.5 rounded-xl border border-emerald-500/30">
             <div class="flex items-center gap-2">
               ${getAvatarBadgeHTML(sProfile.avatar, req.name, 'w-8 h-8')}
               <div class="text-xs font-extrabold text-white">${req.name}</div>
             </div>
             <div class="flex gap-1.5">
               <button onclick="acceptFriendRequest('${senderId}', '${req.name.replace(/'/g, "")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500 text-[#050b18]">قبوڵ</button>
-              <button onclick="rejectFriendRequest('${senderId}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-red-500/20 text-red-300">✕</button>
+              <button onclick="rejectFriendRequest('${senderId}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-red-500/20 text-red-200">✕</button>
             </div>
           </div>`;
         }).join('');
-      } else { badge.classList.add('hidden'); card.classList.add('hidden'); }
+      } else {
+        if (badge) badge.classList.add('hidden');
+        card.classList.add('hidden');
+      }
     });
 
     db.ref('challenges/' + playerId).on('value', snap => {
@@ -1610,12 +1564,12 @@ function updateProfileUI() {
     if (q.length < 1) { resBox.innerHTML = ''; return; }
     const matches = Object.entries(allPlayersCache).filter(([id, data]) => id !== playerId && ((data.name || '').toLowerCase().includes(q) || (data.username || '').toLowerCase().includes(q))).slice(0, 8);
     resBox.innerHTML = matches.map(([id, data]) => `
-      <div class="flex items-center justify-between bg-[#091326] px-3 py-2 rounded-xl border border-yellow-500/15">
+      <div class="flex items-center justify-between bg-[#1a0407] px-3 py-2 rounded-xl border border-yellow-500/15">
         <div class="flex items-center gap-2">
           ${getAvatarBadgeHTML(data.avatar, data.name, 'w-7 h-7')}
           <div>
             <div class="text-xs font-bold text-white">${data.name || 'یاریزان'}</div>
-            <div class="text-[10px] text-slate-400 font-mono">@${data.username || id}</div>
+            <div class="text-[10px] text-rose-200/70 font-mono">@${data.username || id}</div>
           </div>
         </div>
         ${myFriendsMap[id] ? `<button onclick="openPrivateChat('${id}')" class="text-xs text-yellow-300 font-bold">چات</button>` : `<button onclick="sendFriendRequest('${id}', this)" class="text-xs text-emerald-300 font-bold">+ هاوڕێ</button>`}
@@ -1643,17 +1597,17 @@ function updateProfileUI() {
   function renderFriendsList() {
     const container = document.getElementById('friendsListContainer'), friendIds = Object.keys(myFriendsMap);
     document.getElementById('friendsCountLabel').textContent = friendIds.length;
-    if (friendIds.length === 0) { container.innerHTML = '<div class="text-xs text-slate-400 text-center py-6">هیچ هاوڕێیەکت نییە.</div>'; return; }
+    if (friendIds.length === 0) { container.innerHTML = '<div class="text-xs text-rose-200/75 text-center py-6">هیچ هاوڕێیەکت نییە.</div>'; return; }
     container.innerHTML = friendIds.map(fid => {
       const fProfile = allPlayersCache[fid] || {};
       const fName = fProfile.name || myFriendsMap[fid].name || 'هاوڕێ';
       const isOnline = !!onlineUsersMap[fid];
-      return `<div onclick="openPrivateChat('${fid}')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#091326] border border-yellow-500/15 hover:border-yellow-500/40 transition">
+      return `<div onclick="openPrivateChat('${fid}')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#1a0407] border border-yellow-500/15 hover:border-yellow-500/40 transition">
         <div class="flex items-center gap-2.5">
           ${getAvatarBadgeHTML(fProfile.avatar, fName, 'w-9 h-9')}
           <div>
             <div class="text-xs font-extrabold text-white">${fName}</div>
-            <div class="text-[10px] ${isOnline ? 'text-emerald-400' : 'text-slate-400'}">${isOnline ? '● لە سەرهێڵە' : 'دەرەوەی هێڵ'}</div>
+            <div class="text-[10px] ${isOnline ? 'text-emerald-400' : 'text-rose-200/60'}">${isOnline ? '● لە سەرهێڵە' : 'دەرەوەی هێڵ'}</div>
           </div>
         </div>
         <span class="text-xs text-yellow-300 font-bold">چات ➔</span>
@@ -1674,7 +1628,7 @@ function updateProfileUI() {
     const msgBox = document.getElementById('privateChatMessages');
     activePrivateChatRef.limitToLast(50).on('value', snap => {
       const msgs = []; snap.forEach(c => msgs.push(c.val()));
-      msgBox.innerHTML = msgs.map(m => `<div class="flex ${m.from === playerId ? 'justify-start' : 'justify-end'}"><div class="px-3.5 py-2 rounded-2xl text-xs ${m.from === playerId ? 'bg-yellow-500 text-[#050b18] font-bold' : 'bg-[#15284d] text-white'}">${escapeHtml(m.text)}</div></div>`).join('');
+      msgBox.innerHTML = msgs.map(m => `<div class="flex ${m.from === playerId ? 'justify-start' : 'justify-end'}"><div class="px-3.5 py-2 rounded-2xl text-xs ${m.from === playerId ? 'bg-yellow-500 text-[#1a0305] font-bold' : 'bg-[#3b0910] text-white'}">${escapeHtml(m.text)}</div></div>`).join('');
       msgBox.scrollTop = msgBox.scrollHeight;
     });
   }
@@ -1719,10 +1673,9 @@ function updateProfileUI() {
 
   function declineIncomingChallenge() { db.ref('challenges/' + playerId).remove(); document.getElementById('challengeToast').classList.add('hidden'); }
   function escapeHtml(str) { return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
-
-
 </script>
-<!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
+
+  <!-- FLOATING MODERN BOTTOM NAVIGATION DOCK -->
   <nav class="floating-bottom-dock" aria-label="Bottom Navigation">
     <button id="dock-hub" onclick="switchView('hub')" class="dock-item active" title="یارییەکان">🎮</button>
     <button id="dock-rooms" onclick="switchView('rooms')" class="dock-item" title="دیوەخان و مایک">🎙️</button>
@@ -1730,6 +1683,7 @@ function updateProfileUI() {
     <button id="dock-leaderboard" onclick="switchView('leaderboard')" class="dock-item" title="ڕیزبەندی">🏆</button>
     <button id="dock-profile" onclick="openEditProfileModal()" class="dock-item" title="پڕۆفایل">👤</button>
   </nav>
+
   <!-- پاشبنەمای زیندووی پڕیشکە زێڕینەکانی دیوەخانی شاهانە -->
   <canvas id="ykMasterpieceBg" style="position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1;"></canvas>
   <script>
