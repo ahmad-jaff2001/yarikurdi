@@ -1848,5 +1848,180 @@
       new MutationObserver(() => enforceRoyalRed()).observe(document.head, { childList: true });
     })();
   </script>
+  <!-- پاشبنەمای سووری مەخمەلیی ساف (بێ خەت و تیشک) + ناوی سپیی ڕوون -->
+  <script>
+    (function () {
+      function isPurple(r, g, b) {
+        return b > g + 18 && r > g + 8;
+      }
+
+      function cleanInjectedStyles(styleEl) {
+        if (!styleEl || styleEl.id === 'yk-royal-red-lock') return;
+        let css = styleEl.textContent || '';
+        let changed = false;
+
+        if (css.includes('repeating-conic-gradient')) {
+          css = css.replace(/repeating-conic-gradient\([^;{}]+\)/gi, 'none');
+          changed = true;
+        }
+
+        css = css.replace(/#([0-9a-f]{6})\b/gi, (m, hex) => {
+          const r = parseInt(hex.slice(0, 2), 16);
+          const g = parseInt(hex.slice(2, 4), 16);
+          const b = parseInt(hex.slice(4, 6), 16);
+          if (!isPurple(r, g, b)) return m;
+          changed = true;
+          if (b < 90) return '#140305';
+          if (b < 165) return '#38070d';
+          return '#5c0c15';
+        });
+
+        css = css.replace(/(rgba?)\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/gi, (m, fn, rs, gs, bs) => {
+          const r = +rs, g = +gs, b = +bs;
+          if (!isPurple(r, g, b)) return m;
+          changed = true;
+          if (b < 90) return `${fn}(20, 3, 5`;
+          if (b < 165) return `${fn}(56, 7, 13`;
+          return `${fn}(92, 12, 21`;
+        });
+
+        if (changed) styleEl.textContent = css;
+      }
+
+      const LOCK_CSS = `
+        /* سڕینەوەی تەواوی خەت و تیشکەکانی پشتەوە */
+        #ykMasterpieceBg,
+        .yk-splash-sunburst,
+        [class*="sunburst" i],
+        [class*="ray" i],
+        [class*="beam" i],
+        [id*="sunburst" i],
+        [id*="ray" i] {
+          display: none !important;
+          background: none !important;
+          background-image: none !important;
+        }
+
+        /* پاشبنەمای سووری مەخمەلیی تێر و تەواو ساف بێ هیچ وێنە و هێڵێک */
+        html, html body {
+          background-color: #120204 !important;
+          background-image:
+            radial-gradient(ellipse at 50% 0%, #5c0d16 0%, #2d050a 42%, #120204 88%) !important;
+          background-size: 100% 100% !important;
+          background-attachment: fixed !important;
+        }
+        html body::before, html body::after,
+        #view-hub::before, #view-hub::after {
+          background: none !important;
+          background-image: none !important;
+          display: none !important;
+        }
+
+        /* شریتی سەرەوە */
+        html body header,
+        html body .yk-top-bar,
+        html body #ykTopHeader {
+          background: linear-gradient(180deg, #470910 0%, #260408 100%) !important;
+          border-bottom: 1px solid rgba(212, 180, 117, 0.25) !important;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65) !important;
+        }
+
+        /* کارتی دیوەخان */
+        html body .yk-diwexan-hero {
+          background: linear-gradient(90deg, #290509 0%, #540c14 55%, #240408 100%) !important;
+          border: 1px solid rgba(212, 180, 117, 0.45) !important;
+          border-radius: 18px !important;
+          box-shadow: 0 10px 26px rgba(0, 0, 0, 0.72) !important;
+        }
+        html body .yk-diwexan-hero::before {
+          display: none !important;
+        }
+
+        /* کارتەکانی یاری و ناوە سپییە ڕوونەکان */
+        html body .pito-game-card {
+          background: #180306 !important;
+          border: 1px solid rgba(212, 180, 117, 0.35) !important;
+          border-radius: 18px !important;
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.82) !important;
+        }
+        html body .pito-game-card::after {
+          display: none !important;
+        }
+        html body .pito-game-card > span {
+          background: rgba(34, 12, 10, 0.88) !important;
+          background-image: none !important;
+          border: 1px solid rgba(212, 180, 117, 0.35) !important;
+          color: #e5c687 !important;
+          box-shadow: none !important;
+        }
+        html body .pito-game-card .pito-card-overlay {
+          background: linear-gradient(to top, rgba(12, 2, 4, 0.96) 10%, rgba(18, 3, 5, 0.3) 50%, transparent 100%) !important;
+        }
+        html body .pito-game-card .pito-card-title,
+        html body .pito-card-overlay span {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          -webkit-text-stroke: 0px transparent !important;
+          background: none !important;
+          font-size: 16.5px !important;
+          font-weight: 800 !important;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.98) !important;
+        }
+
+        /* شریتی خوارەوە بێ بازنەی زەردی گەورە */
+        html body nav.floating-bottom-dock,
+        html body .floating-bottom-dock {
+          background: rgba(18, 3, 5, 0.96) !important;
+          background-image: none !important;
+          border: 1px solid rgba(212, 180, 117, 0.28) !important;
+          border-radius: 22px !important;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.92) !important;
+        }
+        html body .dock-item,
+        html body .dock-item:first-child,
+        html body .dock-item:last-child {
+          background: transparent !important;
+          background-image: none !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #e2e8f0 !important;
+        }
+        html body .dock-item.active {
+          background: rgba(212, 180, 117, 0.18) !important;
+          border: 1px solid rgba(212, 180, 117, 0.45) !important;
+          color: #f3d999 !important;
+          transform: translateY(-2px) !important;
+        }
+      `;
+
+      function enforceCleanRoyalRed() {
+        document.querySelectorAll('head style, body style').forEach(cleanInjectedStyles);
+        document.querySelectorAll('div, section').forEach(el => {
+          const bg = el.style && el.style.backgroundImage;
+          if (bg && bg.includes('conic-gradient')) {
+            el.style.display = 'none';
+          }
+        });
+        let lock = document.getElementById('yk-royal-red-lock');
+        if (!lock) {
+          lock = document.createElement('style');
+          lock.id = 'yk-royal-red-lock';
+          lock.textContent = LOCK_CSS;
+        }
+        if (document.head.lastElementChild !== lock) {
+          document.head.appendChild(lock);
+        }
+      }
+
+      enforceCleanRoyalRed();
+      window.addEventListener('DOMContentLoaded', enforceCleanRoyalRed);
+      window.addEventListener('load', () => {
+        enforceCleanRoyalRed();
+        setTimeout(enforceCleanRoyalRed, 350);
+        setTimeout(enforceCleanRoyalRed, 1000);
+      });
+      new MutationObserver(() => enforceCleanRoyalRed()).observe(document.head, { childList: true });
+    })();
+  </script>
 </body>
 </html>
